@@ -24,6 +24,14 @@ export type Lab = {
   b: number;
 };
 
+export type Oklab = {
+  l: number;
+  a: number;
+  b: number;
+};
+
+export type ColorMatchMode = "natural" | "vivid" | "soft" | "contrast";
+
 export function rgbToLab(rgb: RGB): Lab {
   const pivotRgb = (value: number) => {
     const normalized = value / 255;
@@ -48,6 +56,28 @@ export function rgbToLab(rgb: RGB): Lab {
 
 export function deltaE76(a: Lab, b: Lab): number {
   return Math.hypot(a.l - b.l, a.a - b.a, a.b - b.b);
+}
+
+export function rgbToOklab(rgb: RGB): Oklab {
+  const linear = (value: number) => {
+    const normalized = value / 255;
+    return normalized <= 0.04045 ? normalized / 12.92 : Math.pow((normalized + 0.055) / 1.055, 2.4);
+  };
+  const r = linear(rgb.r);
+  const g = linear(rgb.g);
+  const b = linear(rgb.b);
+  const l = Math.cbrt(0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b);
+  const m = Math.cbrt(0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b);
+  const s = Math.cbrt(0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b);
+  return {
+    l: 0.2104542553 * l + 0.793617785 * m - 0.0040720468 * s,
+    a: 1.9779984951 * l - 2.428592205 * m + 0.4505937099 * s,
+    b: 0.0259040371 * l + 0.7827717662 * m - 0.808675766 * s
+  };
+}
+
+export function oklabDistance(a: Oklab, b: Oklab): number {
+  return Math.hypot((a.l - b.l) * 1.35, a.a - b.a, a.b - b.b) * 100;
 }
 
 export function hueDistance(a: number, b: number): number {
@@ -84,24 +114,28 @@ export function findClosestBeadColor(rgb: RGB, palette: BeadColor[]) {
   return findClosestBeadColorWithDebug(rgb, palette);
 }
 
-export function findClosestBeadColorWithDebug(rgb: RGB, palette: BeadColor[]) {
+export function findClosestBeadColorWithDebug(rgb: RGB, palette: BeadColor[], mode: ColorMatchMode = "natural") {
   const sourceHsl = rgbToHsl(rgb);
   const sourceSaturation = sourceHsl.s;
   const sourceLab = rgbToLab(rgb);
+  const sourceOklab = rgbToOklab(rgb);
   const ranked = palette.map((color) => {
     const targetRgb = hexToRgb(color.hex);
     const targetHsl = rgbToHsl(targetRgb);
     const saturation = targetHsl.s;
     const targetLab = rgbToLab(targetRgb);
+    const targetOklab = rgbToOklab(targetRgb);
     const distance = colorDistance(rgb, targetRgb);
     const deltaE = deltaE76(sourceLab, targetLab);
-    const huePenalty = sourceSaturation > 0.14 && saturation > 0.1 ? hueDistance(sourceHsl.h, targetHsl.h) * 115 : 0;
-    const grayPenalty = sourceSaturation > 0.14 && saturation < 0.09 ? 48 : 0;
-    const colorPenalty = sourceSaturation < 0.1 && saturation > 0.24 ? 34 : 0;
-    const saturationPenalty = Math.abs(sourceSaturation - saturation) * (sourceSaturation > 0.18 ? 42 : 18);
-    const lightnessPenalty = Math.abs(sourceHsl.l - targetHsl.l) * 32;
-    const familyPenalty = colorFamilyPenalty(sourceHsl, targetHsl);
-    const adjustedDistance = deltaE + huePenalty + grayPenalty + colorPenalty + saturationPenalty + lightnessPenalty + familyPenalty;
+    const okDistance = oklabDistance(sourceOklab, targetOklab);
+    const weights = modeWeights(mode);
+    const huePenalty = sourceSaturation > 0.13 && saturation > 0.1 ? hueDistance(sourceHsl.h, targetHsl.h) * weights.hue : 0;
+    const grayPenalty = sourceSaturation > 0.13 && saturation < 0.09 ? weights.gray : 0;
+    const colorPenalty = sourceSaturation < 0.1 && saturation > 0.24 ? 24 : 0;
+    const saturationPenalty = Math.abs(sourceSaturation - saturation) * weights.saturation;
+    const lightnessPenalty = Math.abs(sourceHsl.l - targetHsl.l) * weights.lightness;
+    const familyPenalty = colorFamilyPenalty(sourceHsl, targetHsl) * weights.family;
+    const adjustedDistance = okDistance * 0.78 + deltaE * 0.42 + huePenalty + grayPenalty + colorPenalty + saturationPenalty + lightnessPenalty + familyPenalty;
     return {
       color,
       code: color.code,
@@ -134,6 +168,13 @@ export function findClosestBeadColorWithDebug(rgb: RGB, palette: BeadColor[]) {
       lightness
     }))
   };
+}
+
+function modeWeights(mode: ColorMatchMode) {
+  if (mode === "vivid") return { hue: 135, gray: 66, saturation: 52, lightness: 22, family: 1.12 };
+  if (mode === "soft") return { hue: 105, gray: 42, saturation: 30, lightness: 36, family: 0.92 };
+  if (mode === "contrast") return { hue: 118, gray: 52, saturation: 40, lightness: 44, family: 1 };
+  return { hue: 125, gray: 58, saturation: 44, lightness: 30, family: 1 };
 }
 
 function colorFamilyPenalty(source: ReturnType<typeof rgbToHsl>, target: ReturnType<typeof rgbToHsl>): number {
