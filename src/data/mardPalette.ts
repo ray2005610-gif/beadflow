@@ -1,22 +1,20 @@
-import type { BeadColor } from "../types/bead";
+﻿import type { BeadColor } from "../types/bead";
+import rawMardColors from "./mard_palette_291_pixel_beads.json";
 
-const rows: Array<[string, string]> = [
-  ["A1", "#FAF4C8"], ["A2", "#FFF6D8"], ["A3", "#F9E6A0"], ["A4", "#F1D36A"], ["A5", "#E7B839"], ["A6", "#D99A22"], ["A7", "#C77C19"], ["A8", "#A85D18"], ["A9", "#874315"], ["A10", "#6A3214"],
-  ["B1", "#FFE4E4"], ["B2", "#FFC8C8"], ["B3", "#FFA6AC"], ["B4", "#FF808C"], ["B5", "#F85B70"], ["B6", "#E43C59"], ["B7", "#C82043"], ["B8", "#A91436"], ["B9", "#850E2D"], ["B10", "#650B25"], ["B12", "#E91E63"],
-  ["C1", "#FFEBD6"], ["C2", "#FFD6AE"], ["C3", "#FFBB78"], ["C4", "#FF9D45"], ["C5", "#F47E21"], ["C6", "#D96516"], ["C7", "#B85113"], ["C8", "#964111"], ["C9", "#74320E"], ["C10", "#56260B"],
-  ["D1", "#E8F7CF"], ["D2", "#D2F0A6"], ["D3", "#B9E77B"], ["D4", "#9DD950"], ["D5", "#7FC52F"], ["D6", "#63A922"], ["D7", "#4D8B1C"], ["D8", "#3A7018"], ["D9", "#2A5513"], ["D10", "#1D3B0E"],
-  ["E1", "#DCF7ED"], ["E2", "#BCEEDF"], ["E3", "#93E1CE"], ["E4", "#64D0B9"], ["E5", "#35BBA2"], ["E6", "#1E9E89"], ["E7", "#168171"], ["E8", "#11665A"], ["E9", "#0C4D45"], ["E10", "#073633"],
-  ["F1", "#DDF4FF"], ["F2", "#BCE9FF"], ["F3", "#90D9F8"], ["F4", "#5FC2ED"], ["F5", "#31A9DD"], ["F6", "#178EC4"], ["F7", "#0F72A1"], ["F8", "#0B587D"], ["F9", "#073F5B"], ["F10", "#052B40"],
-  ["G1", "#E8E2FF"], ["G2", "#D4CAFF"], ["G3", "#B9AAFF"], ["G4", "#9C86F5"], ["G5", "#7F61E4"], ["G6", "#6247C8"], ["G7", "#4A34A2"], ["G8", "#37277D"], ["G9", "#281D5C"], ["G10", "#1A143E"],
-  ["H1", "#FFFFFF"], ["H2", "#F8F8F8"], ["H3", "#EAEAEA"], ["H4", "#D5D5D5"], ["H5", "#B8B8B8"], ["H6", "#969696"], ["H7", "#747474"], ["H8", "#565656"], ["H9", "#383838"], ["H10", "#151515"],
-  ["M1", "#F7E7D7"], ["M2", "#E7C9AA"], ["M3", "#D3AA7F"], ["M4", "#B9865C"], ["M5", "#98683F"], ["M6", "#76502F"], ["M7", "#563821"], ["M8", "#3C2617"], ["M9", "#24170F"], ["M10", "#16100B"], ["M15", "#C8A26A"]
-];
+type RawMardColor = Omit<BeadColor, "name" | "symbol"> & {
+  paletteVersion: string;
+  nameZh: string;
+  nameEn: string;
+};
 
-export const mardPalette: BeadColor[] = rows.map(([code, hex]) => ({
-  code,
-  name: `MARD ${code}`,
-  hex,
-  symbol: code,
-  series: code[0],
+export const MARD_PALETTE_VERSION = "MARD_291_PIXEL_BEADS";
+
+export const mardPalette: BeadColor[] = (rawMardColors as RawMardColor[]).map((color) => ({
+  ...color,
+  name: color.nameZh || color.nameEn || `MARD ${color.code}`,
+  symbol: color.code,
+  series: color.series ?? color.code.match(/^[A-Z]+/)?.[0] ?? color.code[0],
   brand: "MARD"
 }));
+
+export const mardPaletteByCode = new Map(mardPalette.map((color) => [color.code, color]));

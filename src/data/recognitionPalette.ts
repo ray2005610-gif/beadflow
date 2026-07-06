@@ -1,12 +1,14 @@
-import { mardPalette } from "./mardPalette";
+﻿import { mardPalette } from "./mardPalette";
+import { getActiveMardPalette, type ActiveMardPaletteOptions } from "./mardColorMeta";
 
-export function getVisiblePalette() {
-  return mardPalette.filter((color) => color.series !== "M");
+export function getVisiblePalette(options: ActiveMardPaletteOptions = {}) {
+  return getActiveMardPalette(options);
 }
 
-export function getRecognitionPalette({ excludePearl = true }: { excludePearl?: boolean } = {}) {
-  return excludePearl ? getVisiblePalette() : mardPalette;
+export function getRecognitionPalette(options: ActiveMardPaletteOptions = {}) {
+  return getActiveMardPalette(options);
 }
 
 export const visiblePalette = getVisiblePalette();
-export const recognitionPalette = getRecognitionPalette({ excludePearl: true });
+export const recognitionPalette = getRecognitionPalette();
+export const allMardPalette = mardPalette;

@@ -180,7 +180,8 @@ export function findClosestBeadColorWithDebug(rgb: RGB, palette: BeadColor[], mo
     const saturationPenalty = Math.abs(sourceSaturation - saturation) * weights.saturation;
     const lightnessPenalty = Math.abs(sourceHsl.l - targetHsl.l) * weights.lightness;
     const familyPenalty = colorFamilyPenalty(sourceHsl, targetHsl) * weights.family;
-    const adjustedDistance = okDistance * 0.7 + deltaE2k * 1.15 + deltaE * 0.18 + huePenalty + grayPenalty + colorPenalty + saturationPenalty + lightnessPenalty + familyPenalty;
+    const priorityPenalty = color.priorityPenalty ?? 0;
+    const adjustedDistance = okDistance * 0.7 + deltaE2k * 1.15 + deltaE * 0.18 + huePenalty + grayPenalty + colorPenalty + saturationPenalty + lightnessPenalty + familyPenalty + priorityPenalty;
     return {
       color,
       code: color.code,
