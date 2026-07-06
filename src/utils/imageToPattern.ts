@@ -1,4 +1,4 @@
-import type { BeadColor, RGB } from "../types/bead";
+﻿import type { BeadColor, RGB } from "../types/bead";
 import type { PatternCell, PatternGrid } from "../types/pattern";
 import {
   colorDistance,
@@ -13,6 +13,7 @@ import {
 } from "./colorUtils";
 
 export type PhotoColorMode = ColorMatchMode;
+export type PhotoFitMode = "contain" | "stretch" | "crop" | "manual";
 
 export type BackgroundRemovalOptions = {
   mode: "none" | "transparentOnly" | "auto" | "whiteBackground" | "checkerboard" | "pickedColor";
@@ -31,6 +32,27 @@ export type BackgroundRemovalOptions = {
 export type PhotoPatternOptions = {
   colorMode: PhotoColorMode;
   maxColors: number;
+  fitMode: PhotoFitMode;
+  manualScale: number;
+  offsetX: number;
+  offsetY: number;
+};
+
+export type PhotoPatternMeta = {
+  boardWidth: number;
+  boardHeight: number;
+  patternWidth: number;
+  patternHeight: number;
+  offsetX: number;
+  offsetY: number;
+  blankCells: number;
+  beadCells: number;
+  fitMode: PhotoFitMode;
+};
+
+export type PhotoPatternResult = {
+  grid: PatternGrid;
+  meta: PhotoPatternMeta;
 };
 
 type SampledColor = RGB & { alpha: number };
@@ -41,6 +63,27 @@ type CellSample = {
   adjustedRgb: RGB;
   alpha: number;
   empty: boolean;
+};
+
+type Placement = {
+  patternWidth: number;
+  patternHeight: number;
+  offsetX: number;
+  offsetY: number;
+  cropX: number;
+  cropY: number;
+  cropWidth: number;
+  cropHeight: number;
+  fitMode: PhotoFitMode;
+};
+
+export const defaultPhotoPatternOptions: PhotoPatternOptions = {
+  colorMode: "natural",
+  maxColors: 48,
+  fitMode: "contain",
+  manualScale: 1,
+  offsetX: 0,
+  offsetY: 0
 };
 
 export const defaultBackgroundRemovalOptions: BackgroundRemovalOptions = {
@@ -96,32 +139,35 @@ export async function imageToPattern(
   height: number,
   palette: BeadColor[],
   backgroundOptions: BackgroundRemovalOptions = defaultBackgroundRemovalOptions,
-  photoOptions: PhotoPatternOptions = { colorMode: "natural", maxColors: 48 }
-): Promise<PatternGrid> {
+  rawPhotoOptions: Partial<PhotoPatternOptions> = defaultPhotoPatternOptions
+): Promise<PhotoPatternResult> {
+  const photoOptions = { ...defaultPhotoPatternOptions, ...rawPhotoOptions };
   const image = await loadImage(imageDataUrl);
   const canvas = document.createElement("canvas");
   canvas.width = image.naturalWidth;
   canvas.height = image.naturalHeight;
   const ctx = canvas.getContext("2d", { willReadFrequently: true });
-  if (!ctx) throw new Error("無法建立圖片轉換畫布");
+  if (!ctx) throw new Error("無法建立圖片分析畫布");
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctx.imageSmoothingEnabled = true;
   ctx.imageSmoothingQuality = "high";
   ctx.drawImage(image, 0, 0);
   const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-  const rawSamples = sampleImageToCells(imageData, width, height);
+  const placement = calculatePhotoPlacement(imageData.width, imageData.height, width, height, photoOptions);
+  const rawSamples = sampleImageToCells(imageData, width, height, placement);
   const backgroundMask = buildCellBackgroundMask(rawSamples, width, height, backgroundOptions);
   const cellSamples = rawSamples.map((sample, index): CellSample => {
     const row = Math.floor(index / width);
     const col = index % width;
     const rgb = { r: sample.r, g: sample.g, b: sample.b };
+    const outsidePlacedImage = !cellInPlacedImage(row, col, placement);
     return {
       row,
       col,
       rgb,
       adjustedRgb: adjustForMode(rgb, photoOptions.colorMode),
       alpha: sample.alpha,
-      empty: backgroundMask[index]
+      empty: outsidePlacedImage || backgroundMask[index]
     };
   });
   const paletteForImage = selectPaletteForImage(cellSamples, palette, photoOptions);
@@ -155,7 +201,54 @@ export async function imageToPattern(
       };
     })
   );
-  return smoothIsolatedCells(grid, paletteForImage);
+  const smoothedGrid = smoothIsolatedCells(grid, paletteForImage);
+  const beadCells = smoothedGrid.flat().filter((cell) => !cell.empty && cell.colorCode).length;
+  return {
+    grid: smoothedGrid,
+    meta: {
+      boardWidth: width,
+      boardHeight: height,
+      patternWidth: placement.patternWidth,
+      patternHeight: placement.patternHeight,
+      offsetX: placement.offsetX,
+      offsetY: placement.offsetY,
+      blankCells: width * height - beadCells,
+      beadCells,
+      fitMode: placement.fitMode
+    }
+  };
+}
+
+export function calculatePhotoPlacement(imageWidth: number, imageHeight: number, boardWidth: number, boardHeight: number, options: Partial<PhotoPatternOptions>): Placement {
+  const fitMode = options.fitMode ?? "contain";
+  if (fitMode === "stretch") {
+    return { patternWidth: boardWidth, patternHeight: boardHeight, offsetX: 0, offsetY: 0, cropX: 0, cropY: 0, cropWidth: imageWidth, cropHeight: imageHeight, fitMode };
+  }
+  if (fitMode === "crop") {
+    const boardRatio = boardWidth / boardHeight;
+    const imageRatio = imageWidth / imageHeight;
+    let cropWidth = imageWidth;
+    let cropHeight = imageHeight;
+    let cropX = 0;
+    let cropY = 0;
+    if (imageRatio > boardRatio) {
+      cropWidth = imageHeight * boardRatio;
+      cropX = (imageWidth - cropWidth) / 2;
+    } else {
+      cropHeight = imageWidth / boardRatio;
+      cropY = (imageHeight - cropHeight) / 2;
+    }
+    return { patternWidth: boardWidth, patternHeight: boardHeight, offsetX: 0, offsetY: 0, cropX, cropY, cropWidth, cropHeight, fitMode };
+  }
+  const containScale = Math.min(boardWidth / imageWidth, boardHeight / imageHeight);
+  const manualScale = fitMode === "manual" ? Math.max(0.1, Math.min(3, options.manualScale ?? 1)) : 1;
+  const scaledWidth = Math.max(1, Math.min(boardWidth, Math.round(imageWidth * containScale * manualScale)));
+  const scaledHeight = Math.max(1, Math.min(boardHeight, Math.round(imageHeight * containScale * manualScale)));
+  const centeredX = Math.round((boardWidth - scaledWidth) / 2);
+  const centeredY = Math.round((boardHeight - scaledHeight) / 2);
+  const offsetX = Math.max(0, Math.min(boardWidth - scaledWidth, centeredX + Math.round(options.offsetX ?? 0)));
+  const offsetY = Math.max(0, Math.min(boardHeight - scaledHeight, centeredY + Math.round(options.offsetY ?? 0)));
+  return { patternWidth: scaledWidth, patternHeight: scaledHeight, offsetX, offsetY, cropX: 0, cropY: 0, cropWidth: imageWidth, cropHeight: imageHeight, fitMode };
 }
 
 export function loadImage(src: string): Promise<HTMLImageElement> {
@@ -167,14 +260,23 @@ export function loadImage(src: string): Promise<HTMLImageElement> {
   });
 }
 
-function sampleImageToCells(imageData: ImageData, width: number, height: number): SampledColor[] {
-  const cellW = imageData.width / width;
-  const cellH = imageData.height / height;
+function sampleImageToCells(imageData: ImageData, width: number, height: number, placement: Placement): SampledColor[] {
   return Array.from({ length: width * height }, (_, index) => {
     const row = Math.floor(index / width);
     const col = index % width;
-    return sampleCell(imageData, col * cellW, row * cellH, cellW, cellH);
+    if (!cellInPlacedImage(row, col, placement)) return { r: 255, g: 255, b: 255, alpha: 0 };
+    const localCol = col - placement.offsetX;
+    const localRow = row - placement.offsetY;
+    const cellW = placement.cropWidth / placement.patternWidth;
+    const cellH = placement.cropHeight / placement.patternHeight;
+    const sourceX = placement.cropX + localCol * cellW;
+    const sourceY = placement.cropY + localRow * cellH;
+    return sampleCell(imageData, sourceX, sourceY, cellW, cellH);
   });
+}
+
+function cellInPlacedImage(row: number, col: number, placement: Placement): boolean {
+  return row >= placement.offsetY && row < placement.offsetY + placement.patternHeight && col >= placement.offsetX && col < placement.offsetX + placement.patternWidth;
 }
 
 function sampleCell(imageData: ImageData, x: number, y: number, w: number, h: number): SampledColor {
@@ -215,9 +317,9 @@ function dominantColor(samples: SampledColor[]): SampledColor {
 
 function adjustForMode(rgb: RGB, mode: PhotoColorMode): RGB {
   const hsl = rgbToHsl(rgb);
-  if (mode === "vivid") return hslToRgb({ ...hsl, s: clamp01(hsl.s * 1.16), l: clamp01(hsl.l * 1.02) });
+  if (mode === "vivid") return hslToRgb({ ...hsl, s: clamp01(hsl.s * 1.18), l: clamp01(hsl.l * 1.02) });
   if (mode === "soft") return hslToRgb({ ...hsl, s: clamp01(hsl.s * 0.82), l: clamp01(hsl.l * 1.04 + 0.015) });
-  if (mode === "contrast") return hslToRgb({ ...hsl, s: clamp01(hsl.s * 1.05), l: clamp01((hsl.l - 0.5) * 1.18 + 0.5) });
+  if (mode === "contrast") return hslToRgb({ ...hsl, s: clamp01(hsl.s * 1.06), l: clamp01((hsl.l - 0.5) * 1.18 + 0.5) });
   return rgb;
 }
 

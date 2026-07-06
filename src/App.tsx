@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+﻿import { useEffect, useMemo, useState } from "react";
 import { visiblePalette } from "./data/recognitionPalette";
 import type { BeadColor } from "./types/bead";
 import type { InventoryItem, InventoryTransaction } from "./types/inventory";
@@ -21,6 +21,8 @@ import { calculateColorStats } from "./utils/patternStats";
 
 const editOnlyTools: ActiveTool[] = ["paint", "eraser", "eyedropper", "fill"];
 
+type MirrorAxis = "horizontal" | "vertical";
+
 export default function App() {
   const [mode, setMode] = useState<AppMode>("grid");
   const [project, setProject] = useState<PatternProject | null>(null);
@@ -36,6 +38,7 @@ export default function App() {
   const [showCoordinates, setShowCoordinates] = useState(true);
   const [onlyUnfinished, setOnlyUnfinished] = useState(false);
   const [correctionMode, setCorrectionMode] = useState(false);
+  const [mirrorOriginalGrid, setMirrorOriginalGrid] = useState<PatternGrid | null>(null);
   const stats = useMemo(() => project ? calculateColorStats(project.grid) : [], [project]);
 
   useEffect(() => storage.saveProjects(projects), [projects]);
@@ -45,6 +48,7 @@ export default function App() {
 
   const openProject = (nextProject: PatternProject | null) => {
     setProject(nextProject ? sanitizeProjectPalette(nextProject) : null);
+    setMirrorOriginalGrid(null);
     setCorrectionMode(false);
     setActiveTool(nextProject?.sourceType === "manual_drawing" ? "paint" : "inspect");
     setSelectedColorCode(null);
@@ -63,6 +67,18 @@ export default function App() {
 
   const setGrid = (grid: PatternGrid) => {
     setProject((current) => current ? { ...current, grid, updatedAt: new Date().toISOString() } : current);
+  };
+
+  const mirrorProject = (axis: MirrorAxis) => {
+    if (!project) return;
+    setMirrorOriginalGrid((current) => current ?? project.grid);
+    setGrid(mirrorGrid(project.grid, axis));
+  };
+
+  const restoreMirror = () => {
+    if (!mirrorOriginalGrid) return;
+    setGrid(mirrorOriginalGrid);
+    setMirrorOriginalGrid(null);
   };
 
   const handleCellAction = (row: number, col: number, tool: ActiveTool) => {
@@ -144,6 +160,7 @@ export default function App() {
             showCoordinates={showCoordinates}
             onlyUnfinished={onlyUnfinished}
             correctionMode={correctionMode}
+            mirrorActive={Boolean(mirrorOriginalGrid)}
             onToolChange={setActiveTool}
             onEnterCorrectionMode={() => { setCorrectionMode(true); setActiveTool("paint"); }}
             onLeaveCorrectionMode={() => { setCorrectionMode(false); setActiveTool("inspect"); }}
@@ -154,7 +171,11 @@ export default function App() {
             }}
             onCellAction={handleCellAction}
             onSave={saveProject}
-            onExport={() => exportPatternPng(project.name, project.grid, { showDone: true, showSymbols, showCoordinates })}
+            onExport={() => exportPatternPng(project.name, project.grid, { showDone: true, showSymbols, showCoordinates, mirrored: Boolean(mirrorOriginalGrid) })}
+            onExportMirror={() => exportPatternPng(project.name, mirrorOriginalGrid ? project.grid : mirrorGrid(project.grid, "horizontal"), { showDone: true, showSymbols, showCoordinates, mirrored: true })}
+            onMirrorHorizontal={() => mirrorProject("horizontal")}
+            onMirrorVertical={() => mirrorProject("vertical")}
+            onRestoreMirror={restoreMirror}
             onInventoryChange={setInventory}
             onConsumeInventory={consumeCurrent}
             onRename={(name) => updateProject({ name })}
@@ -223,6 +244,19 @@ function floodFill(grid: PatternGrid, row: number, col: number, color: BeadColor
 function sameFillTarget(cell: PatternCell, target: PatternCell): boolean {
   if (target.empty || !target.colorCode) return Boolean(cell.empty || !cell.colorCode);
   return !cell.empty && cell.colorCode === target.colorCode;
+}
+
+function mirrorGrid(grid: PatternGrid, axis: MirrorAxis): PatternGrid {
+  const height = grid.length;
+  const width = grid[0]?.length ?? 0;
+  return Array.from({ length: height }, (_, row) =>
+    Array.from({ length: width }, (_, col) => {
+      const sourceRow = axis === "vertical" ? height - 1 - row : row;
+      const sourceCol = axis === "horizontal" ? width - 1 - col : col;
+      const source = grid[sourceRow][sourceCol];
+      return { ...source, row, col };
+    })
+  );
 }
 
 function sanitizeProjectPalette(project: PatternProject): PatternProject {
