@@ -46,6 +46,15 @@ h4 { font-size: 13px; margin-bottom: 8px; color: #4b5563; }
   border-bottom: 1px solid #d9deea;
 }
 .topbar p { margin-bottom: 0; color: #667085; }
+.version-badge {
+  font-size: 13px;
+  font-weight: 700;
+  color: #b42318;
+  background: #fff1f1;
+  border: 1px solid #f3b4b4;
+  border-radius: 8px;
+  padding: 6px 10px;
+}
 .mode-selector {
   display: flex;
   gap: 8px;
@@ -292,6 +301,7 @@ h4 { font-size: 13px; margin-bottom: 8px; color: #4b5563; }
 @media (max-width: 720px) {
   .topbar, .mode-selector, .workspace, .editor-topline { padding-left: 12px; padding-right: 12px; }
   .topbar { display: block; }
+  .version-badge { display: inline-block; margin-top: 10px; }
   .mode-selector { overflow-x: auto; }
   .mode-selector button, .toolbar button, .canvas-tools button { min-height: 40px; }
   .two-col { gap: 12px; }
