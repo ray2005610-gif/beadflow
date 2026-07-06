@@ -5,7 +5,6 @@ import {
   findClosestBeadColorWithDebug,
   hexToRgb,
   isNearRgb,
-  isNearWhite,
   rgbToHex,
   rgbToHsl,
   rgbToOklab,
@@ -59,6 +58,12 @@ export type PhotoPatternResult = {
 };
 
 type SampledColor = RGB & { alpha: number };
+type CellPixels = {
+  row: number;
+  col: number;
+  insideImage: boolean;
+  pixels: SampledColor[];
+};
 type CellSample = {
   row: number;
   col: number;
@@ -67,7 +72,6 @@ type CellSample = {
   alpha: number;
   empty: boolean;
 };
-
 type Placement = {
   patternWidth: number;
   patternHeight: number;
@@ -79,10 +83,20 @@ type Placement = {
   cropHeight: number;
   fitMode: PhotoFitMode;
 };
+type ImageCharacteristics = {
+  transparencyRatio: number;
+  estimatedPaletteSize: number;
+  edgeDensity: number;
+  flatAreaRatio: number;
+  hasAlpha: boolean;
+  likelyLineArt: boolean;
+  likelyPhoto: boolean;
+  backgroundRgb: RGB;
+};
 
 export const defaultPhotoPatternOptions: PhotoPatternOptions = {
   colorMode: "natural",
-  maxColors: 48,
+  maxColors: 0,
   fitMode: "contain",
   manualScale: 1,
   offsetX: 0,
@@ -106,16 +120,7 @@ export const defaultBackgroundRemovalOptions: BackgroundRemovalOptions = {
 
 export function createBlankPattern(width: number, height: number, color: BeadColor): PatternGrid {
   return Array.from({ length: height }, (_, row) =>
-    Array.from({ length: width }, (_, col) => ({
-      row,
-      col,
-      colorCode: color.code,
-      colorName: color.name,
-      hex: color.hex,
-      symbol: color.symbol,
-      done: false,
-      empty: false
-    }))
+    Array.from({ length: width }, (_, col) => ({ row, col, colorCode: color.code, colorName: color.name, hex: color.hex, symbol: color.symbol, done: false, empty: false }))
   );
 }
 
@@ -145,6 +150,17 @@ export async function imageToPattern(
   backgroundOptions: BackgroundRemovalOptions = defaultBackgroundRemovalOptions,
   rawPhotoOptions: Partial<PhotoPatternOptions> = defaultPhotoPatternOptions
 ): Promise<PhotoPatternResult> {
+  return convertImageToBeadPatternV2(imageDataUrl, width, height, palette, backgroundOptions, rawPhotoOptions);
+}
+
+export async function convertImageToBeadPatternV2(
+  imageDataUrl: string,
+  width: number,
+  height: number,
+  palette: BeadColor[],
+  backgroundOptions: BackgroundRemovalOptions = defaultBackgroundRemovalOptions,
+  rawPhotoOptions: Partial<PhotoPatternOptions> = defaultPhotoPatternOptions
+): Promise<PhotoPatternResult> {
   const photoOptions = { ...defaultPhotoPatternOptions, ...rawPhotoOptions };
   const image = await loadImage(imageDataUrl);
   const canvas = document.createElement("canvas");
@@ -156,26 +172,30 @@ export async function imageToPattern(
   ctx.imageSmoothingEnabled = true;
   ctx.imageSmoothingQuality = "high";
   ctx.drawImage(image, 0, 0);
+
   const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-  const placement = calculatePhotoPlacement(imageData.width, imageData.height, width, height, photoOptions);
-  const detectedKind = photoOptions.imageKind === "auto" ? detectImageKind(imageData) : photoOptions.imageKind;
-  const rawSamples = sampleImageToCells(imageData, width, height, placement, detectedKind, backgroundOptions);
-  const backgroundMask = buildCellBackgroundMask(rawSamples, width, height, backgroundOptions);
+  const globalInfo = analyzeImageCharacteristics(imageData);
+  const detectedKind = photoOptions.imageKind === "auto" ? (globalInfo.likelyLineArt ? "lineArt" : "photo") : photoOptions.imageKind;
+  const placement = computePatternFit(imageData.width, imageData.height, width, height, photoOptions);
+  const cellPixels = buildCellPixels(imageData, width, height, placement, detectedKind);
+  const rawSamples = cellPixels.map((cell) => convertCellPixelsToSample(cell, detectedKind, globalInfo, backgroundOptions));
   const cellSamples = rawSamples.map((sample, index): CellSample => {
     const row = Math.floor(index / width);
     const col = index % width;
     const rgb = { r: sample.r, g: sample.g, b: sample.b };
-    const outsidePlacedImage = !cellInPlacedImage(row, col, placement);
     return {
       row,
       col,
       rgb,
       adjustedRgb: adjustForMode(rgb, photoOptions.colorMode),
       alpha: sample.alpha,
-      empty: outsidePlacedImage || sample.alpha <= 0 || backgroundMask[index]
+      empty: sample.alpha <= 0
     };
   });
-  const paletteForImage = selectPaletteForImage(cellSamples, palette, photoOptions);
+  const paletteForImage = detectedKind === "lineArt"
+    ? buildCandidatePaletteForLimitedColorImage(cellSamples, palette, photoOptions.colorMode)
+    : selectPaletteForImage(cellSamples, palette, photoOptions);
+
   const grid = Array.from({ length: height }, (_, row) =>
     Array.from({ length: width }, (_, col) => {
       const sample = cellSamples[row * width + col];
@@ -206,10 +226,10 @@ export async function imageToPattern(
       };
     })
   );
-  const smoothedGrid = smoothIsolatedCells(grid, paletteForImage);
-  const beadCells = smoothedGrid.flat().filter((cell) => !cell.empty && cell.colorCode).length;
+  const finalGrid = detectedKind === "photo" ? smoothIsolatedCells(grid, paletteForImage) : preserveLineArtGrid(grid);
+  const beadCells = finalGrid.flat().filter((cell) => !cell.empty && cell.colorCode).length;
   return {
-    grid: smoothedGrid,
+    grid: finalGrid,
     meta: {
       boardWidth: width,
       boardHeight: height,
@@ -226,10 +246,12 @@ export async function imageToPattern(
 }
 
 export function calculatePhotoPlacement(imageWidth: number, imageHeight: number, boardWidth: number, boardHeight: number, options: Partial<PhotoPatternOptions>): Placement {
+  return computePatternFit(imageWidth, imageHeight, boardWidth, boardHeight, options);
+}
+
+function computePatternFit(imageWidth: number, imageHeight: number, boardWidth: number, boardHeight: number, options: Partial<PhotoPatternOptions>): Placement {
   const fitMode = options.fitMode ?? "contain";
-  if (fitMode === "stretch") {
-    return { patternWidth: boardWidth, patternHeight: boardHeight, offsetX: 0, offsetY: 0, cropX: 0, cropY: 0, cropWidth: imageWidth, cropHeight: imageHeight, fitMode };
-  }
+  if (fitMode === "stretch") return { patternWidth: boardWidth, patternHeight: boardHeight, offsetX: 0, offsetY: 0, cropX: 0, cropY: 0, cropWidth: imageWidth, cropHeight: imageHeight, fitMode };
   if (fitMode === "crop") {
     const boardRatio = boardWidth / boardHeight;
     const imageRatio = imageWidth / imageHeight;
@@ -266,96 +288,146 @@ export function loadImage(src: string): Promise<HTMLImageElement> {
   });
 }
 
-function sampleImageToCells(
-  imageData: ImageData,
-  width: number,
-  height: number,
-  placement: Placement,
-  imageKind: Exclude<PhotoImageKind, "auto">,
-  backgroundOptions: BackgroundRemovalOptions
-): SampledColor[] {
+export function analyzeImageCharacteristics(imageData: ImageData): ImageCharacteristics {
+  const stride = Math.max(1, Math.floor(Math.sqrt((imageData.width * imageData.height) / 12000)));
+  let total = 0;
+  let transparent = 0;
+  let backgroundLike = 0;
+  let saturatedOrDark = 0;
+  let edgeCount = 0;
+  const bins = new Set<string>();
+  const cornerColors = collectCornerPixels(imageData);
+  const backgroundRgb = dominantColor(cornerColors.filter((pixel) => pixel.alpha > 20));
+
+  for (let y = 0; y < imageData.height; y += stride) {
+    for (let x = 0; x < imageData.width; x += stride) {
+      const pixel = pixelAt(imageData, x, y);
+      total += 1;
+      if (pixel.alpha <= 20) {
+        transparent += 1;
+        continue;
+      }
+      const hsl = rgbToHsl(pixel);
+      if (isLikelyBackgroundPixel(pixel, backgroundRgb, defaultBackgroundRemovalOptions, true)) backgroundLike += 1;
+      if (hsl.s > 0.18 || hsl.l < 0.36) saturatedOrDark += 1;
+      if (sobelAt(imageData, x, y) > 42) edgeCount += 1;
+      bins.add(`${Math.round(pixel.r / 24)},${Math.round(pixel.g / 24)},${Math.round(pixel.b / 24)}`);
+    }
+  }
+
+  const transparencyRatio = transparent / Math.max(1, total);
+  const flatAreaRatio = backgroundLike / Math.max(1, total);
+  const edgeDensity = edgeCount / Math.max(1, total);
+  const estimatedPaletteSize = bins.size;
+  const likelyLineArt = (transparencyRatio + flatAreaRatio > 0.38) && saturatedOrDark / Math.max(1, total) > 0.015 && estimatedPaletteSize < 160 && edgeDensity > 0.012;
+  return {
+    transparencyRatio,
+    estimatedPaletteSize,
+    edgeDensity,
+    flatAreaRatio,
+    hasAlpha: transparencyRatio > 0.01,
+    likelyLineArt,
+    likelyPhoto: !likelyLineArt,
+    backgroundRgb
+  };
+}
+
+function buildCellPixels(imageData: ImageData, width: number, height: number, placement: Placement, imageKind: Exclude<PhotoImageKind, "auto">): CellPixels[] {
   return Array.from({ length: width * height }, (_, index) => {
     const row = Math.floor(index / width);
     const col = index % width;
-    if (!cellInPlacedImage(row, col, placement)) return { r: 255, g: 255, b: 255, alpha: 0 };
-    const localCol = col - placement.offsetX;
-    const localRow = row - placement.offsetY;
-    const cellW = placement.cropWidth / placement.patternWidth;
-    const cellH = placement.cropHeight / placement.patternHeight;
-    const sourceX = placement.cropX + localCol * cellW;
-    const sourceY = placement.cropY + localRow * cellH;
-    return imageKind === "lineArt"
-      ? sampleCellForLineArtMode(imageData, sourceX, sourceY, cellW, cellH, backgroundOptions)
-      : sampleCellForPhotoMode(imageData, sourceX, sourceY, cellW, cellH);
+    if (!cellInPlacedImage(row, col, placement)) return { row, col, insideImage: false, pixels: [] };
+    const rect = mapCellToSourceRect(row, col, placement);
+    return { row, col, insideImage: true, pixels: sampleCellPixels(imageData, rect, imageKind) };
   });
 }
 
-function cellInPlacedImage(row: number, col: number, placement: Placement): boolean {
-  return row >= placement.offsetY && row < placement.offsetY + placement.patternHeight && col >= placement.offsetX && col < placement.offsetX + placement.patternWidth;
+function mapCellToSourceRect(row: number, col: number, placement: Placement) {
+  const localCol = col - placement.offsetX;
+  const localRow = row - placement.offsetY;
+  const cellW = placement.cropWidth / placement.patternWidth;
+  const cellH = placement.cropHeight / placement.patternHeight;
+  return {
+    x: placement.cropX + localCol * cellW,
+    y: placement.cropY + localRow * cellH,
+    w: cellW,
+    h: cellH
+  };
 }
 
-function sampleCellForPhotoMode(imageData: ImageData, x: number, y: number, w: number, h: number): SampledColor {
-  const ratio = 0.64;
-  const sx = x + (w * (1 - ratio)) / 2;
-  const sy = y + (h * (1 - ratio)) / 2;
-  const sw = w * ratio;
-  const sh = h * ratio;
-  const steps = 7;
-  const samples: SampledColor[] = [];
+function sampleCellPixels(imageData: ImageData, rect: { x: number; y: number; w: number; h: number }, imageKind: Exclude<PhotoImageKind, "auto">): SampledColor[] {
+  const steps = imageKind === "lineArt" ? 10 : 7;
+  const ratio = imageKind === "lineArt" ? 1 : 0.62;
+  const sx = rect.x + (rect.w * (1 - ratio)) / 2;
+  const sy = rect.y + (rect.h * (1 - ratio)) / 2;
+  const sw = rect.w * ratio;
+  const sh = rect.h * ratio;
+  const pixels: SampledColor[] = [];
   for (let py = 0; py < steps; py += 1) {
     for (let px = 0; px < steps; px += 1) {
-      samples.push(pixelAt(imageData, sx + (px + 0.5) * (sw / steps), sy + (py + 0.5) * (sh / steps)));
+      pixels.push(pixelAt(imageData, sx + (px + 0.5) * (sw / steps), sy + (py + 0.5) * (sh / steps)));
     }
   }
-  const visible = samples.filter((sample) => sample.alpha > 20);
+  return pixels;
+}
+
+function convertCellPixelsToSample(cell: CellPixels, imageKind: Exclude<PhotoImageKind, "auto">, globalInfo: ImageCharacteristics, options: BackgroundRemovalOptions): SampledColor {
+  if (!cell.insideImage || !cell.pixels.length) return { r: 255, g: 255, b: 255, alpha: 0 };
+  return imageKind === "lineArt" ? sampleLineAwareColor(cell.pixels, globalInfo, options) : samplePhotoColor(cell.pixels, globalInfo, options);
+}
+
+function samplePhotoColor(pixels: SampledColor[], globalInfo: ImageCharacteristics, options: BackgroundRemovalOptions): SampledColor {
+  const visible = pixels.filter((pixel) => pixel.alpha > options.alphaThreshold);
   if (!visible.length) return { r: 255, g: 255, b: 255, alpha: 0 };
-  return dominantColor(visible);
+  const nonBackground = visible.filter((pixel) => !isLikelyBackgroundPixel(pixel, globalInfo.backgroundRgb, options, false));
+  const usable = nonBackground.length >= Math.max(3, visible.length * 0.18) ? nonBackground : visible;
+  return getRepresentativeColor(usable, false);
 }
 
-function sampleCellForLineArtMode(imageData: ImageData, x: number, y: number, w: number, h: number, backgroundOptions: BackgroundRemovalOptions): SampledColor {
-  const steps = 9;
-  const samples: SampledColor[] = [];
-  for (let py = 0; py < steps; py += 1) {
-    for (let px = 0; px < steps; px += 1) {
-      samples.push(pixelAt(imageData, x + (px + 0.5) * (w / steps), y + (py + 0.5) * (h / steps)));
-    }
-  }
-  const visible = samples.filter((sample) => sample.alpha > backgroundOptions.alphaThreshold);
+function sampleLineAwareColor(pixels: SampledColor[], globalInfo: ImageCharacteristics, options: BackgroundRemovalOptions): SampledColor {
+  const visible = pixels.filter((pixel) => pixel.alpha > options.alphaThreshold);
   if (!visible.length) return { r: 255, g: 255, b: 255, alpha: 0 };
-
-  const foreground = visible.filter((sample) => !isLineArtBackground(sample, backgroundOptions));
-  const foregroundRatio = foreground.length / samples.length;
-  const strongForeground = foreground.filter((sample) => {
-    const hsl = rgbToHsl(sample);
-    return hsl.s > 0.18 || hsl.l < 0.38;
-  }).length;
-  if (foregroundRatio < 0.035 && strongForeground < 2) return { r: 255, g: 255, b: 255, alpha: 0 };
-
-  return representativeLineArtColor(foreground);
+  const foreground = visible.filter((pixel) => !isLikelyBackgroundPixel(pixel, globalInfo.backgroundRgb, options, true));
+  const important = detectImportantLinePixels(foreground, globalInfo);
+  const foregroundRatio = foreground.length / pixels.length;
+  const importantRatio = important.length / pixels.length;
+  if (foregroundRatio < 0.045 && importantRatio < 0.025) return { r: 255, g: 255, b: 255, alpha: 0 };
+  const colorPixels = important.length >= 2 ? important : foreground;
+  return getRepresentativeColor(colorPixels, true);
 }
 
-function representativeLineArtColor(samples: SampledColor[]): SampledColor {
-  const scored = samples
-    .map((sample) => {
-      const hsl = rgbToHsl(sample);
-      const darkness = 1 - hsl.l;
-      return { sample, score: hsl.s * 1.55 + darkness * 0.75 + sample.alpha / 255 * 0.2 };
-    })
-    .sort((a, b) => b.score - a.score);
-  const strong = scored.slice(0, Math.max(3, Math.ceil(scored.length * 0.58))).map((item) => item.sample);
-  return dominantColor(strong);
+function isLikelyBackgroundPixel(pixel: SampledColor, globalBackground: RGB, options: BackgroundRemovalOptions, lineArt: boolean): boolean {
+  if (pixel.alpha <= options.alphaThreshold) return true;
+  if (options.mode === "none") return false;
+  if (options.mode === "pickedColor" && options.backgroundSampleColor && isNearRgb(pixel, hexToRgb(options.backgroundSampleColor), options.backgroundTolerance)) return true;
+  if (isLikelyCheckerboardPixel(pixel, options.checkerboardTolerance)) return true;
+  const hsl = rgbToHsl(pixel);
+  if (lineArt && hsl.l >= 0.83 && hsl.s <= 0.24) return true;
+  if (lineArt && isNearRgb(pixel, globalBackground, 36) && hsl.s <= 0.28) return true;
+  return false;
 }
 
-function dominantColor(samples: SampledColor[]): SampledColor {
+function detectImportantLinePixels(pixels: SampledColor[], globalInfo: ImageCharacteristics): SampledColor[] {
+  return pixels.filter((pixel) => {
+    const hsl = rgbToHsl(pixel);
+    const colorInk = hsl.s > 0.18 && !isNearRgb(pixel, globalInfo.backgroundRgb, 42);
+    const darkInk = hsl.l < 0.48 && !isNearRgb(pixel, globalInfo.backgroundRgb, 36);
+    return colorInk || darkInk;
+  });
+}
+
+function getRepresentativeColor(samples: SampledColor[], preserveInk: boolean): SampledColor {
+  if (!samples.length) return { r: 255, g: 255, b: 255, alpha: 0 };
   const med = {
     r: median(samples.map((sample) => sample.r)),
     g: median(samples.map((sample) => sample.g)),
     b: median(samples.map((sample) => sample.b))
   };
   const ranked = samples
-    .map((sample) => ({ sample, distance: sampleDistanceToMedian(sample, med) }))
-    .sort((a, b) => a.distance - b.distance);
-  const kept = ranked.slice(0, Math.max(5, Math.ceil(ranked.length * 0.7))).map((item) => item.sample);
+    .map((sample) => ({ sample, distance: sampleDistanceToMedian(sample, med), score: inkScore(sample) }))
+    .sort((a, b) => preserveInk ? b.score - a.score || a.distance - b.distance : a.distance - b.distance);
+  const keptRatio = preserveInk ? 0.62 : 0.72;
+  const kept = ranked.slice(0, Math.max(3, Math.ceil(ranked.length * keptRatio))).map((item) => item.sample);
   return {
     r: trimmedMean(kept.map((sample) => sample.r)),
     g: trimmedMean(kept.map((sample) => sample.g)),
@@ -364,18 +436,45 @@ function dominantColor(samples: SampledColor[]): SampledColor {
   };
 }
 
+function dominantColor(samples: SampledColor[]): SampledColor {
+  return getRepresentativeColor(samples, false);
+}
+
+function inkScore(sample: SampledColor): number {
+  const hsl = rgbToHsl(sample);
+  return hsl.s * 1.45 + (1 - hsl.l) * 0.75 + sample.alpha / 255 * 0.2;
+}
+
 function sampleDistanceToMedian(sample: SampledColor, med: RGB): number {
   const sampleLab = rgbToOklab(sample);
   const medianLab = rgbToOklab(med);
   const perceptual = Math.hypot((sampleLab.l - medianLab.l) * 1.4, sampleLab.a - medianLab.a, sampleLab.b - medianLab.b) * 100;
   return perceptual + colorDistance(sample, med) * 0.18;
 }
+
 function adjustForMode(rgb: RGB, mode: PhotoColorMode): RGB {
   const hsl = rgbToHsl(rgb);
   if (mode === "vivid") return hslToRgb({ ...hsl, s: clamp01(hsl.s * 1.18), l: clamp01(hsl.l * 1.02) });
   if (mode === "soft") return hslToRgb({ ...hsl, s: clamp01(hsl.s * 0.82), l: clamp01(hsl.l * 1.04 + 0.015) });
   if (mode === "contrast") return hslToRgb({ ...hsl, s: clamp01(hsl.s * 1.06), l: clamp01((hsl.l - 0.5) * 1.18 + 0.5) });
   return rgb;
+}
+
+function buildCandidatePaletteForLimitedColorImage(samples: CellSample[], palette: BeadColor[], mode: PhotoColorMode): BeadColor[] {
+  const colors = samples.filter((sample) => !sample.empty).map((sample) => sample.adjustedRgb);
+  if (!colors.length) return palette;
+  const centers = kMeansOklab(colors, Math.min(18, colors.length), 10);
+  const selected = new Map<string, BeadColor>();
+  for (const center of centers) {
+    const match = findClosestBeadColorWithDebug(center, palette, mode);
+    selected.set(match.color.code, match.color);
+  }
+  for (const color of colors) {
+    const match = findClosestBeadColorWithDebug(color, palette, mode);
+    selected.set(match.color.code, match.color);
+    if (selected.size >= 36) break;
+  }
+  return selected.size ? Array.from(selected.values()) : palette;
 }
 
 function selectPaletteForImage(samples: CellSample[], palette: BeadColor[], options: PhotoPatternOptions): BeadColor[] {
@@ -388,20 +487,7 @@ function selectPaletteForImage(samples: CellSample[], palette: BeadColor[], opti
     const match = findClosestBeadColorWithDebug(center, palette, options.colorMode);
     selected.set(match.color.code, match.color);
   }
-  if (selected.size < options.maxColors) {
-    const mappedCounts = new Map<string, { color: BeadColor; total: number }>();
-    for (const color of colors) {
-      const match = findClosestBeadColorWithDebug(color, palette, options.colorMode);
-      const item = mappedCounts.get(match.color.code) ?? { color: match.color, total: 0 };
-      item.total += 1;
-      mappedCounts.set(match.color.code, item);
-    }
-    for (const item of Array.from(mappedCounts.values()).sort((a, b) => b.total - a.total)) {
-      selected.set(item.color.code, item.color);
-      if (selected.size >= options.maxColors) break;
-    }
-  }
-  return Array.from(selected.values());
+  return selected.size ? Array.from(selected.values()) : palette;
 }
 
 function kMeansOklab(colors: RGB[], k: number, iterations: number): RGB[] {
@@ -428,59 +514,8 @@ function kMeansOklab(colors: RGB[], k: number, iterations: number): RGB[] {
   return centers;
 }
 
-function buildCellBackgroundMask(samples: SampledColor[], width: number, height: number, rawOptions: BackgroundRemovalOptions): boolean[] {
-  const options = normalizeBackgroundOptions(rawOptions);
-  const direct = samples.map((sample) => isDirectBackground(sample, options));
-  if (!options.protectRealWhiteAndGray) return direct;
-  return keepOnlyEdgeConnectedBackground(direct, width, height);
-}
-
-function isDirectBackground(sample: SampledColor, options: BackgroundRemovalOptions): boolean {
-  const rgb = { r: sample.r, g: sample.g, b: sample.b };
-  if (options.removeTransparent && sample.alpha <= options.alphaThreshold) return true;
-  if (options.removeNearBackgroundColor && options.backgroundSampleColor && isNearRgb(rgb, hexToRgb(options.backgroundSampleColor), options.backgroundTolerance)) return true;
-  if (options.removeCheckerboardBackground && isLikelyCheckerboardPixel(rgb, options.checkerboardTolerance)) return true;
-  if (options.removeWhiteBackground && isNearWhite(rgb, options.whiteThreshold)) return true;
-  return false;
-}
-
-function keepOnlyEdgeConnectedBackground(directMask: boolean[], width: number, height: number): boolean[] {
-  const edgeMask = new Array<boolean>(width * height).fill(false);
-  const queue: number[] = [];
-  const push = (x: number, y: number) => {
-    const index = y * width + x;
-    if (directMask[index] && !edgeMask[index]) {
-      edgeMask[index] = true;
-      queue.push(index);
-    }
-  };
-  for (let x = 0; x < width; x += 1) {
-    push(x, 0);
-    push(x, height - 1);
-  }
-  for (let y = 0; y < height; y += 1) {
-    push(0, y);
-    push(width - 1, y);
-  }
-  while (queue.length) {
-    const index = queue.shift()!;
-    const x = index % width;
-    const y = Math.floor(index / width);
-    if (x > 0) push(x - 1, y);
-    if (x < width - 1) push(x + 1, y);
-    if (y > 0) push(x, y - 1);
-    if (y < height - 1) push(x, y + 1);
-  }
-  return edgeMask;
-}
-
-function normalizeBackgroundOptions(options: BackgroundRemovalOptions): BackgroundRemovalOptions {
-  if (options.mode === "none") return { ...options, removeTransparent: false, removeWhiteBackground: false, removeCheckerboardBackground: false, removeNearBackgroundColor: false };
-  if (options.mode === "transparentOnly") return { ...options, removeTransparent: true, removeWhiteBackground: false, removeCheckerboardBackground: false, removeNearBackgroundColor: false };
-  if (options.mode === "whiteBackground") return { ...options, removeTransparent: true, removeWhiteBackground: true, removeCheckerboardBackground: false, removeNearBackgroundColor: false };
-  if (options.mode === "checkerboard") return { ...options, removeTransparent: true, removeWhiteBackground: false, removeCheckerboardBackground: true, removeNearBackgroundColor: false };
-  if (options.mode === "pickedColor") return { ...options, removeTransparent: true, removeNearBackgroundColor: true };
-  return options;
+function preserveLineArtGrid(grid: PatternGrid): PatternGrid {
+  return grid;
 }
 
 function smoothIsolatedCells(grid: PatternGrid, palette: BeadColor[]): PatternGrid {
@@ -511,49 +546,8 @@ function neighborCells(grid: PatternGrid, row: number, col: number) {
   return cells;
 }
 
-export function detectImageKind(imageData: ImageData): Exclude<PhotoImageKind, "auto"> {
-  const stride = Math.max(1, Math.floor(Math.sqrt((imageData.width * imageData.height) / 9000)));
-  let total = 0;
-  let transparent = 0;
-  let brightBackground = 0;
-  let saturated = 0;
-  let dark = 0;
-  const bins = new Set<string>();
-
-  for (let y = 0; y < imageData.height; y += stride) {
-    for (let x = 0; x < imageData.width; x += stride) {
-      const pixel = pixelAt(imageData, x, y);
-      total += 1;
-      if (pixel.alpha <= 20) {
-        transparent += 1;
-        continue;
-      }
-      const hsl = rgbToHsl(pixel);
-      if (isLikelyWhiteOrPaper(pixel)) brightBackground += 1;
-      if (hsl.s > 0.18) saturated += 1;
-      if (hsl.l < 0.28) dark += 1;
-      bins.add(`${Math.round(pixel.r / 28)},${Math.round(pixel.g / 28)},${Math.round(pixel.b / 28)}`);
-    }
-  }
-
-  const backgroundRatio = (transparent + brightBackground) / Math.max(1, total);
-  const inkRatio = (saturated + dark) / Math.max(1, total);
-  const lowColorVariety = bins.size <= 90;
-  const hasLargeFlatBackground = backgroundRatio >= 0.34;
-  const hasLogoInkAmount = inkRatio >= 0.025 && inkRatio <= 0.55;
-  return hasLargeFlatBackground && hasLogoInkAmount && lowColorVariety ? "lineArt" : "photo";
-}
-
-function isLineArtBackground(sample: SampledColor, options: BackgroundRemovalOptions): boolean {
-  if (sample.alpha <= options.alphaThreshold) return true;
-  if (options.mode === "none") return false;
-  if (options.mode === "pickedColor" && options.backgroundSampleColor && isNearRgb(sample, hexToRgb(options.backgroundSampleColor), options.backgroundTolerance)) return true;
-  return isLikelyWhiteOrPaper(sample) || isLikelyCheckerboardPixel(sample, options.checkerboardTolerance);
-}
-
-function isLikelyWhiteOrPaper(rgb: RGB): boolean {
-  const hsl = rgbToHsl(rgb);
-  return hsl.l >= 0.86 && hsl.s <= 0.22;
+function cellInPlacedImage(row: number, col: number, placement: Placement): boolean {
+  return row >= placement.offsetY && row < placement.offsetY + placement.patternHeight && col >= placement.offsetX && col < placement.offsetX + placement.patternWidth;
 }
 
 function pixelAt(imageData: ImageData, x: number, y: number): SampledColor {
@@ -561,6 +555,32 @@ function pixelAt(imageData: ImageData, x: number, y: number): SampledColor {
   const py = Math.max(0, Math.min(imageData.height - 1, Math.round(y)));
   const i = (py * imageData.width + px) * 4;
   return { r: imageData.data[i], g: imageData.data[i + 1], b: imageData.data[i + 2], alpha: imageData.data[i + 3] };
+}
+
+function collectCornerPixels(imageData: ImageData): SampledColor[] {
+  const pixels: SampledColor[] = [];
+  const marginX = Math.max(1, Math.floor(imageData.width * 0.08));
+  const marginY = Math.max(1, Math.floor(imageData.height * 0.08));
+  const steps = 8;
+  for (let i = 0; i < steps; i += 1) {
+    const x = (i / Math.max(1, steps - 1)) * marginX;
+    const y = (i / Math.max(1, steps - 1)) * marginY;
+    pixels.push(pixelAt(imageData, x, y));
+    pixels.push(pixelAt(imageData, imageData.width - 1 - x, y));
+    pixels.push(pixelAt(imageData, x, imageData.height - 1 - y));
+    pixels.push(pixelAt(imageData, imageData.width - 1 - x, imageData.height - 1 - y));
+  }
+  return pixels;
+}
+
+function sobelAt(imageData: ImageData, x: number, y: number): number {
+  const lum = (px: number, py: number) => {
+    const pixel = pixelAt(imageData, px, py);
+    return pixel.r * 0.2126 + pixel.g * 0.7152 + pixel.b * 0.0722;
+  };
+  const gx = -lum(x - 1, y - 1) - 2 * lum(x - 1, y) - lum(x - 1, y + 1) + lum(x + 1, y - 1) + 2 * lum(x + 1, y) + lum(x + 1, y + 1);
+  const gy = -lum(x - 1, y - 1) - 2 * lum(x, y - 1) - lum(x + 1, y - 1) + lum(x - 1, y + 1) + 2 * lum(x, y + 1) + lum(x + 1, y + 1);
+  return Math.hypot(gx, gy);
 }
 
 function isLikelyCheckerboardPixel(rgb: RGB, tolerance: number): boolean {
@@ -619,4 +639,3 @@ function trimmedMean(values: number[]): number {
 function clamp01(value: number): number {
   return Math.max(0, Math.min(1, value));
 }
-

@@ -7,7 +7,6 @@ import {
   imageToPattern,
   type BackgroundRemovalOptions,
   type PhotoFitMode,
-  type PhotoImageKind,
   type PhotoPatternMeta,
   type PhotoPatternResult
 } from "../utils/imageToPattern";
@@ -22,12 +21,6 @@ const fitModeLabels: Record<PhotoFitMode, string> = {
   manual: "手動調整"
 };
 
-const imageKindLabels: Record<PhotoImageKind | "photo" | "lineArt", string> = {
-  auto: "自動判斷",
-  photo: "照片 / 插畫",
-  lineArt: "Logo / 文字 / 線稿"
-};
-
 export function PhotoToPatternPage({ onProjectReady }: { onProjectReady: (project: PatternProject) => void }) {
   const [imageDataUrl, setImageDataUrl] = useState("");
   const [width, setWidth] = useState(52);
@@ -36,7 +29,6 @@ export function PhotoToPatternPage({ onProjectReady }: { onProjectReady: (projec
   const [manualScale, setManualScale] = useState(1);
   const [offsetX, setOffsetX] = useState(0);
   const [offsetY, setOffsetY] = useState(0);
-  const [imageKind, setImageKind] = useState<PhotoImageKind>("auto");
   const [previewMode, setPreviewMode] = useState<PreviewMode>("compare");
   const [working, setWorking] = useState(false);
   const [previewing, setPreviewing] = useState(false);
@@ -50,8 +42,8 @@ export function PhotoToPatternPage({ onProjectReady }: { onProjectReady: (projec
     manualScale,
     offsetX,
     offsetY,
-    imageKind
-  }), [fitMode, manualScale, offsetX, offsetY, imageKind]);
+    imageKind: "auto" as const
+  }), [fitMode, manualScale, offsetX, offsetY]);
 
   const upload = (file: File | null) => {
     if (!file) return;
@@ -97,7 +89,7 @@ export function PhotoToPatternPage({ onProjectReady }: { onProjectReady: (projec
         createdAt: now,
         updatedAt: now,
         status: "draft",
-        tags: [fitModeLabels[fitMode], imageKindLabels[result.meta.detectedKind], `${result.meta.patternWidth}x${result.meta.patternHeight}`]
+        tags: [fitModeLabels[fitMode], `${result.meta.patternWidth}x${result.meta.patternHeight}`]
       });
     } finally {
       setWorking(false);
@@ -133,17 +125,6 @@ export function PhotoToPatternPage({ onProjectReady }: { onProjectReady: (projec
       </section>
       <aside className="side-rail">
         <BoardPresetSelector width={width} height={height} onChange={(nextWidth, nextHeight) => { setWidth(nextWidth); setHeight(nextHeight); }} />
-        <div className="panel">
-          <h3>圖片類型</h3>
-          <label>
-            辨識方式
-            <select value={imageKind} onChange={(event) => setImageKind(event.target.value as PhotoImageKind)}>
-              <option value="auto">自動判斷</option>
-              <option value="photo">照片 / 插畫</option>
-              <option value="lineArt">Logo / 文字 / 線稿</option>
-            </select>
-          </label>
-        </div>
         <div className="panel">
           <h3>圖片適配</h3>
           <label>
@@ -192,7 +173,6 @@ function PhotoMeta({ meta, width, height }: { meta?: PhotoPatternMeta; width: nu
     <dl className="meta-grid">
       <div><dt>底板尺寸</dt><dd>{width} × {height}</dd></div>
       <div><dt>實際圖案尺寸</dt><dd>{meta ? `${meta.patternWidth} × ${meta.patternHeight}` : "尚未產生"}</dd></div>
-      <div><dt>辨識方式</dt><dd>{meta ? imageKindLabels[meta.detectedKind] : "自動判斷"}</dd></div>
       <div><dt>留白格數</dt><dd>{meta ? meta.blankCells.toLocaleString("zh-TW") : boardCells.toLocaleString("zh-TW")}</dd></div>
       <div><dt>實際豆數</dt><dd>{meta ? meta.beadCells.toLocaleString("zh-TW") : "0"}</dd></div>
     </dl>
