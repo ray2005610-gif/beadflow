@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
-import { mardPalette } from "./data/mardPalette";
+import { visiblePalette } from "./data/recognitionPalette";
+import type { BeadColor } from "./types/bead";
 import type { InventoryItem, InventoryTransaction } from "./types/inventory";
 import type { PatternCell, PatternGrid } from "./types/pattern";
 import type { PatternProject, PatternStatus } from "./types/project";
@@ -7,6 +8,7 @@ import { consumeInventory } from "./utils/inventoryUtils";
 import { storage } from "./utils/storageUtils";
 import { exportPatternPng } from "./utils/exportUtils";
 import { createEmptyCell } from "./utils/imageToPattern";
+import { findClosestBeadColorWithDebug, hexToRgb } from "./utils/colorUtils";
 import { Layout } from "./components/Layout";
 import { ModeSelector, type AppMode } from "./components/ModeSelector";
 import { GridImportPage } from "./components/GridImportPage";
@@ -22,13 +24,13 @@ const editOnlyTools: ActiveTool[] = ["paint", "eraser", "eyedropper", "fill"];
 export default function App() {
   const [mode, setMode] = useState<AppMode>("grid");
   const [project, setProject] = useState<PatternProject | null>(null);
-  const [projects, setProjects] = useState<PatternProject[]>(() => storage.getProjects());
+  const [projects, setProjects] = useState<PatternProject[]>(() => storage.getProjects().map(sanitizeProjectPalette));
   const [inventory, setInventory] = useState<InventoryItem[]>(() => initialInventory());
   const [transactions, setTransactions] = useState<InventoryTransaction[]>(() => storage.getTransactions());
-  const [activeTool, setActiveTool] = useState<ActiveTool>("replaceColor");
-  const [brushColorCode, setBrushColorCode] = useState("A1");
+  const [activeTool, setActiveTool] = useState<ActiveTool>("inspect");
+  const [brushColorCode, setBrushColorCode] = useState(visiblePalette[0]?.code ?? "A1");
   const [selectedColorCode, setSelectedColorCode] = useState<string | null>(null);
-  const [recentColors, setRecentColors] = useState<string[]>(() => storage.getRecentColors());
+  const [recentColors, setRecentColors] = useState<string[]>(() => storage.getRecentColors().filter((code) => visiblePalette.some((color) => color.code === code)));
   const [showGrid, setShowGrid] = useState(true);
   const [showSymbols, setShowSymbols] = useState(false);
   const [showCoordinates, setShowCoordinates] = useState(true);
@@ -42,15 +44,15 @@ export default function App() {
   useEffect(() => storage.saveRecentColors(recentColors), [recentColors]);
 
   const openProject = (nextProject: PatternProject | null) => {
-    setProject(nextProject);
+    setProject(nextProject ? sanitizeProjectPalette(nextProject) : null);
     setCorrectionMode(false);
-    setActiveTool(nextProject?.sourceType === "manual_drawing" ? "paint" : "replaceColor");
+    setActiveTool(nextProject?.sourceType === "manual_drawing" ? "paint" : "inspect");
     setSelectedColorCode(null);
     setOnlyUnfinished(false);
   };
 
   const selectBrush = (code: string) => {
-    if (!mardPalette.some((color) => color.code === code)) return;
+    if (!visiblePalette.some((color) => color.code === code)) return;
     setBrushColorCode(code);
     setRecentColors((items) => [code, ...items.filter((item) => item !== code)].slice(0, 12));
   };
@@ -67,8 +69,13 @@ export default function App() {
     if (!project) return;
     const canUseEditTools = project.sourceType === "manual_drawing" || correctionMode;
     if (!canUseEditTools && editOnlyTools.includes(tool)) return;
-    const brush = mardPalette.find((c) => c.code === brushColorCode) ?? mardPalette[0];
+    const brush = visiblePalette.find((c) => c.code === brushColorCode) ?? visiblePalette[0];
+    if (!brush) return;
     const clicked = project.grid[row][col];
+    if (tool === "inspect") {
+      setSelectedColorCode(clicked.empty || !clicked.colorCode ? null : clicked.colorCode);
+      return;
+    }
     if (tool === "eyedropper") {
       if (!clicked.empty && clicked.colorCode) selectBrush(clicked.colorCode);
       setActiveTool("paint");
@@ -93,7 +100,7 @@ export default function App() {
     if (!project) return;
     const next = { ...project, updatedAt: new Date().toISOString() };
     setProject(next);
-    setProjects((items) => [next, ...items.filter((item) => item.id !== next.id)]);
+    setProjects((items) => [sanitizeProjectPalette(next), ...items.filter((item) => item.id !== next.id)]);
   };
 
   const deleteProject = (id: string) => {
@@ -139,7 +146,7 @@ export default function App() {
             correctionMode={correctionMode}
             onToolChange={setActiveTool}
             onEnterCorrectionMode={() => { setCorrectionMode(true); setActiveTool("paint"); }}
-            onLeaveCorrectionMode={() => { setCorrectionMode(false); setActiveTool("replaceColor"); }}
+            onLeaveCorrectionMode={() => { setCorrectionMode(false); setActiveTool("inspect"); }}
             onBrushColorChange={selectBrush}
             onSelectedColorChange={(code) => {
               setSelectedColorCode(code);
@@ -180,11 +187,11 @@ export default function App() {
 
 function initialInventory(): InventoryItem[] {
   const stored = storage.getInventory();
-  if (stored.length) return stored;
-  return mardPalette.map((color) => ({ colorCode: color.code, colorName: color.name, hex: color.hex, quantity: 0, warningThreshold: 100 }));
+  if (stored.length) return stored.filter((item) => visiblePalette.some((color) => color.code === item.colorCode));
+  return visiblePalette.map((color) => ({ colorCode: color.code, colorName: color.name, hex: color.hex, quantity: 0, warningThreshold: 100 }));
 }
 
-function colorCell(cell: PatternCell, color: typeof mardPalette[number]): PatternCell {
+function colorCell(cell: PatternCell, color: BeadColor): PatternCell {
   return {
     ...cell,
     colorCode: color.code,
@@ -196,7 +203,7 @@ function colorCell(cell: PatternCell, color: typeof mardPalette[number]): Patter
   };
 }
 
-function floodFill(grid: PatternGrid, row: number, col: number, color: typeof mardPalette[number]): PatternGrid {
+function floodFill(grid: PatternGrid, row: number, col: number, color: BeadColor): PatternGrid {
   const target = grid[row][col];
   if (!target.empty && target.colorCode === color.code) return grid;
   const next = grid.map((line) => line.map((cell) => ({ ...cell })));
@@ -216,4 +223,44 @@ function floodFill(grid: PatternGrid, row: number, col: number, color: typeof ma
 function sameFillTarget(cell: PatternCell, target: PatternCell): boolean {
   if (target.empty || !target.colorCode) return Boolean(cell.empty || !cell.colorCode);
   return !cell.empty && cell.colorCode === target.colorCode;
+}
+
+function sanitizeProjectPalette(project: PatternProject): PatternProject {
+  const visibleCodes = new Set(visiblePalette.map((color) => color.code));
+  let changed = false;
+  const grid = project.grid.map((row) => row.map((cell) => {
+    if (cell.empty || !cell.colorCode || visibleCodes.has(cell.colorCode)) return cell;
+    const rgb = cell.rawRgb ?? safeHexToRgb(cell.hex);
+    if (!rgb) {
+      changed = true;
+      return createEmptyCell(cell.row, cell.col, cell.rawRgb, cell.alpha, cell.sourceRow, cell.sourceCol);
+    }
+    const match = findClosestBeadColorWithDebug(rgb, visiblePalette);
+    changed = true;
+    return {
+      ...cell,
+      colorCode: match.color.code,
+      colorName: match.color.name,
+      hex: match.color.hex,
+      symbol: match.color.symbol,
+      matchedHex: match.color.hex,
+      confidence: match.confidence,
+      distance: match.distance,
+      adjustedDistance: match.adjustedDistance,
+      candidates: match.candidates,
+      rawHue: match.rawHue,
+      rawSaturation: match.rawSaturation,
+      rawLightness: match.rawLightness
+    };
+  }));
+  return changed ? { ...project, grid, updatedAt: new Date().toISOString() } : project;
+}
+
+function safeHexToRgb(hex: string) {
+  try {
+    if (!hex || hex === "transparent") return null;
+    return hexToRgb(hex);
+  } catch {
+    return null;
+  }
 }

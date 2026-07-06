@@ -24,9 +24,13 @@ export type PatternCell = {
     adjustedDistance?: number;
     saturation?: number;
     hue?: number;
+    lightness?: number;
   }>;
   rawHue?: number;
   rawSaturation?: number;
+  rawLightness?: number;
+  matchedHex?: string;
+  backgroundReason?: string;
   sourceRow?: number;
   sourceCol?: number;
 };

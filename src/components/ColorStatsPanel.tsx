@@ -27,6 +27,7 @@ export function ColorStatsPanel({
   onToggleOnlyUnfinished: () => void;
 }) {
   const sorted = [...stats].sort((a, b) => b.total - a.total);
+
   return (
     <div className="panel stats-panel">
       <h3>色號統計</h3>
@@ -34,7 +35,7 @@ export function ColorStatsPanel({
         <button onClick={onPrev} disabled={!stats.length}>上一色</button>
         <button onClick={onNext} disabled={!stats.length}>下一色</button>
         <button className={onlyUnfinished ? "active" : ""} onClick={onToggleOnlyUnfinished} disabled={!selectedColorCode}>只看未完成</button>
-        <button onClick={() => onSelect(null)} disabled={!selectedColorCode}>清除高亮</button>
+        <button onClick={() => onSelect(null)} disabled={!selectedColorCode}>取消高亮</button>
       </div>
       {selectedColorCode && <p className="highlight-note">目前高亮：{selectedColorCode}</p>}
       <div className="stat-list">
@@ -51,9 +52,9 @@ export function ColorStatsPanel({
               <span>{stat.percent}%</span>
               <span className={lacks ? "danger" : "ok"}>{lacks ? `缺 ${stat.remaining - stock}` : "足夠"}</span>
               <span className="row-actions">
-                <em onClick={(e) => { e.stopPropagation(); onBrush(stat.code); }}>設為筆刷</em>
-                <em onClick={(e) => { e.stopPropagation(); onCompleteColor(stat.code); }}>標記此色完成</em>
-                <em onClick={(e) => { e.stopPropagation(); onClearCompleteColor(stat.code); }}>清除此色完成</em>
+                <em onClick={(event) => { event.stopPropagation(); onBrush(stat.code); }}>設為筆刷</em>
+                <em onClick={(event) => { event.stopPropagation(); onCompleteColor(stat.code); }}>標記完成</em>
+                <em onClick={(event) => { event.stopPropagation(); onClearCompleteColor(stat.code); }}>清除完成</em>
               </span>
             </button>
           );

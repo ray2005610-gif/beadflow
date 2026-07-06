@@ -18,6 +18,38 @@ export function colorDistance(a: RGB, b: RGB): number {
   return Math.sqrt(dr * dr * 0.3 + dg * dg * 0.59 + db * db * 0.11);
 }
 
+export type Lab = {
+  l: number;
+  a: number;
+  b: number;
+};
+
+export function rgbToLab(rgb: RGB): Lab {
+  const pivotRgb = (value: number) => {
+    const normalized = value / 255;
+    return normalized > 0.04045 ? Math.pow((normalized + 0.055) / 1.055, 2.4) : normalized / 12.92;
+  };
+  const r = pivotRgb(rgb.r);
+  const g = pivotRgb(rgb.g);
+  const b = pivotRgb(rgb.b);
+  const x = (r * 0.4124564 + g * 0.3575761 + b * 0.1804375) / 0.95047;
+  const y = (r * 0.2126729 + g * 0.7151522 + b * 0.072175) / 1;
+  const z = (r * 0.0193339 + g * 0.119192 + b * 0.9503041) / 1.08883;
+  const pivotXyz = (value: number) => value > 0.008856 ? Math.cbrt(value) : 7.787 * value + 16 / 116;
+  const fx = pivotXyz(x);
+  const fy = pivotXyz(y);
+  const fz = pivotXyz(z);
+  return {
+    l: 116 * fy - 16,
+    a: 500 * (fx - fy),
+    b: 200 * (fy - fz)
+  };
+}
+
+export function deltaE76(a: Lab, b: Lab): number {
+  return Math.hypot(a.l - b.l, a.a - b.a, a.b - b.b);
+}
+
 export function hueDistance(a: number, b: number): number {
   const diff = Math.abs(a - b);
   return Math.min(diff, 1 - diff);
@@ -55,32 +87,35 @@ export function findClosestBeadColor(rgb: RGB, palette: BeadColor[]) {
 export function findClosestBeadColorWithDebug(rgb: RGB, palette: BeadColor[]) {
   const sourceHsl = rgbToHsl(rgb);
   const sourceSaturation = sourceHsl.s;
+  const sourceLab = rgbToLab(rgb);
   const ranked = palette.map((color) => {
     const targetRgb = hexToRgb(color.hex);
     const targetHsl = rgbToHsl(targetRgb);
     const saturation = targetHsl.s;
+    const targetLab = rgbToLab(targetRgb);
     const distance = colorDistance(rgb, targetRgb);
-    const huePenalty = sourceSaturation > 0.18 && saturation > 0.12 ? hueDistance(sourceHsl.h, targetHsl.h) * 95 : 0;
-    const grayPenalty = sourceSaturation > 0.18 && saturation < 0.08 ? 42 : 0;
-    const oversaturatedPenalty = sourceSaturation < 0.12 && saturation > 0.35 ? 24 : 0;
-    const saturationPenalty = Math.abs(sourceSaturation - saturation) * (sourceSaturation > 0.18 ? 28 : 12);
-    const mismatchPenalty =
-      sourceSaturation > 0.18 && saturation < 0.08 ? 1.25 :
-      sourceSaturation < 0.12 && saturation > 0.35 ? 1.15 :
-      1;
-    const adjustedDistance = distance * mismatchPenalty + huePenalty + grayPenalty + oversaturatedPenalty + saturationPenalty;
+    const deltaE = deltaE76(sourceLab, targetLab);
+    const huePenalty = sourceSaturation > 0.14 && saturation > 0.1 ? hueDistance(sourceHsl.h, targetHsl.h) * 115 : 0;
+    const grayPenalty = sourceSaturation > 0.14 && saturation < 0.09 ? 48 : 0;
+    const colorPenalty = sourceSaturation < 0.1 && saturation > 0.24 ? 34 : 0;
+    const saturationPenalty = Math.abs(sourceSaturation - saturation) * (sourceSaturation > 0.18 ? 42 : 18);
+    const lightnessPenalty = Math.abs(sourceHsl.l - targetHsl.l) * 32;
+    const familyPenalty = colorFamilyPenalty(sourceHsl, targetHsl);
+    const adjustedDistance = deltaE + huePenalty + grayPenalty + colorPenalty + saturationPenalty + lightnessPenalty + familyPenalty;
     return {
       color,
       code: color.code,
       hex: color.hex,
       distance,
+      deltaE,
       adjustedDistance,
       saturation,
-      hue: targetHsl.h
+      hue: targetHsl.h,
+      lightness: targetHsl.l
     };
   }).sort((a, b) => a.adjustedDistance - b.adjustedDistance);
   const best = ranked[0];
-  const confidence = Math.max(0, Math.min(1, 1 - best.adjustedDistance / 180));
+  const confidence = Math.max(0, Math.min(1, 1 - best.adjustedDistance / 145));
   return {
     color: best.color,
     distance: best.distance,
@@ -88,15 +123,34 @@ export function findClosestBeadColorWithDebug(rgb: RGB, palette: BeadColor[]) {
     confidence,
     rawHue: sourceHsl.h,
     rawSaturation: sourceSaturation,
-    candidates: ranked.slice(0, 5).map(({ code, hex, distance, adjustedDistance, saturation, hue }) => ({
+    rawLightness: sourceHsl.l,
+    candidates: ranked.slice(0, 5).map(({ code, hex, distance, adjustedDistance, saturation, hue, lightness }) => ({
       code,
       hex,
       distance,
       adjustedDistance,
       saturation,
-      hue
+      hue,
+      lightness
     }))
   };
+}
+
+function colorFamilyPenalty(source: ReturnType<typeof rgbToHsl>, target: ReturnType<typeof rgbToHsl>): number {
+  if (source.s < 0.1 || target.s < 0.1) return 0;
+  const sourceHue = source.h * 360;
+  const targetHue = target.h * 360;
+  const sourceIsOrangeBrown = sourceHue >= 15 && sourceHue <= 48;
+  const targetIsYellowCream = targetHue >= 48 && targetHue <= 72;
+  const sourceIsPinkRed = sourceHue >= 330 || sourceHue <= 18;
+  const targetIsOrange = targetHue >= 20 && targetHue <= 45;
+  const sourceIsGreen = sourceHue >= 70 && sourceHue <= 170;
+  const targetIsGray = target.s < 0.14;
+  let penalty = 0;
+  if (sourceIsOrangeBrown && targetIsYellowCream && target.l > source.l + 0.08) penalty += 20;
+  if (sourceIsPinkRed && targetIsOrange && source.s > 0.18) penalty += 16;
+  if (sourceIsGreen && targetIsGray) penalty += 35;
+  return penalty;
 }
 
 export function findClosestBeadColorLegacy(rgb: RGB, palette: BeadColor[]) {

@@ -45,9 +45,13 @@ export function Toolbar({
   onSave: () => void;
 }) {
   const allowEditingTools = canDirectEdit || correctionMode;
+
   return (
     <div className="toolbar-wrap">
       <div className="toolbar wrap">
+        <button className={activeTool === "inspect" ? "active" : ""} onClick={() => onToolChange("inspect")}>
+          檢查
+        </button>
         {allowEditingTools ? (
           editTools.map((tool) => (
             <button key={tool.id} className={activeTool === tool.id ? "active" : ""} onClick={() => onToolChange(tool.id)}>
@@ -58,11 +62,15 @@ export function Toolbar({
           <button onClick={onEnterCorrectionMode}>進入修正模式</button>
         )}
         {correctionMode && !canDirectEdit && <button onClick={onLeaveCorrectionMode}>離開修正模式</button>}
-        <button className={activeTool === "replaceColor" ? "active" : ""} onClick={() => onToolChange("replaceColor")}>替換色號</button>
+        <button className={activeTool === "replaceColor" ? "active" : ""} onClick={() => onToolChange("replaceColor")}>
+          替換色號
+        </button>
         <button className={showGrid ? "active" : ""} onClick={onToggleGrid}>格線</button>
         <button className={showSymbols ? "active" : ""} onClick={onToggleSymbols}>色號</button>
         <button className={showCoordinates ? "active" : ""} onClick={onToggleCoordinates}>座標</button>
-        <button className={onlyUnfinished ? "active" : ""} onClick={onToggleOnlyUnfinished} disabled={!selectedColorCode}>只看未完成</button>
+        <button className={onlyUnfinished ? "active" : ""} onClick={onToggleOnlyUnfinished} disabled={!selectedColorCode}>
+          只看未完成
+        </button>
         <button onClick={onSave}>儲存圖紙</button>
         <button onClick={onExport}>匯出 PNG</button>
       </div>

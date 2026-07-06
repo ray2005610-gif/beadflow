@@ -14,7 +14,10 @@ export function GridImportPage({ onProjectReady }: { onProjectReady: (project: P
   const upload = (file: File | null) => {
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = () => setImageDataUrl(String(reader.result));
+    reader.onload = () => {
+      setCalibration(null);
+      setImageDataUrl(String(reader.result));
+    };
     reader.readAsDataURL(file);
   };
 
@@ -45,9 +48,9 @@ export function GridImportPage({ onProjectReady }: { onProjectReady: (project: P
     <main className="workspace two-col">
       <section className="main-stage">
         <div className="panel">
-          <h2>格線圖紙辨識</h2>
-          <p>請上傳有格線的拼豆圖紙，可以是截圖或下載圖片。框選 3×3 格子後，可用辨識範圍排除色號表、邊框或浮水印。</p>
-          <input type="file" accept="image/png,image/jpeg,image/webp" onChange={(e) => upload(e.target.files?.[0] ?? null)} />
+          <h2>辨識格線圖紙</h2>
+          <p>請上傳有格線的拼豆圖紙，可以是截圖或下載圖片。先框選一個 3×3 格子範圍，再用右側欄位微調格線與裁切範圍。</p>
+          <input type="file" accept="image/png,image/jpeg,image/webp" onChange={(event) => upload(event.target.files?.[0] ?? null)} />
         </div>
         {imageDataUrl && <GridCalibrationCanvas imageDataUrl={imageDataUrl} calibration={calibration} onCalibrationChange={setCalibration} />}
       </section>

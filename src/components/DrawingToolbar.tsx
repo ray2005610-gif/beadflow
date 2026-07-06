@@ -1,6 +1,7 @@
-export type ActiveTool = "paint" | "eraser" | "eyedropper" | "fill" | "replaceColor";
+export type ActiveTool = "inspect" | "paint" | "eraser" | "eyedropper" | "fill" | "replaceColor";
 
 const tools: Array<{ id: ActiveTool; label: string }> = [
+  { id: "inspect", label: "檢查" },
   { id: "paint", label: "畫筆" },
   { id: "eraser", label: "橡皮擦" },
   { id: "eyedropper", label: "取色" },

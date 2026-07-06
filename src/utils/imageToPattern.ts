@@ -21,7 +21,7 @@ export const defaultBackgroundRemovalOptions: BackgroundRemovalOptions = {
   removeTransparent: true,
   alphaThreshold: 20,
   removeWhiteBackground: true,
-  whiteThreshold: 245,
+  whiteThreshold: 240,
   removeCheckerboardBackground: true,
   checkerboardTolerance: 18,
   removeNearBackgroundColor: false,
@@ -75,7 +75,7 @@ export async function imageToPattern(
   canvas.width = width;
   canvas.height = height;
   const ctx = canvas.getContext("2d", { willReadFrequently: true });
-  if (!ctx) throw new Error("無法建立圖片處理畫布");
+  if (!ctx) throw new Error("無法建立圖片轉換畫布");
   ctx.clearRect(0, 0, width, height);
   ctx.drawImage(image, 0, 0, width, height);
   const imageData = ctx.getImageData(0, 0, width, height);
@@ -87,7 +87,8 @@ export async function imageToPattern(
       const i = (row * width + col) * 4;
       const alpha = data[i + 3];
       const rgb = { r: data[i], g: data[i + 1], b: data[i + 2] };
-      if (backgroundMask[row * width + col]) return createEmptyCell(row, col, rgb, alpha, row, col);
+      const backgroundReason = backgroundMask[row * width + col];
+      if (backgroundReason) return { ...createEmptyCell(row, col, rgb, alpha, row, col), backgroundReason };
       const match = findClosestBeadColorWithDebug(rgb, palette);
       return {
         row,
@@ -100,6 +101,7 @@ export async function imageToPattern(
         empty: false,
         rawRgb: rgb,
         rawHex: rgbToHex(rgb),
+        matchedHex: match.color.hex,
         alpha,
         confidence: match.confidence,
         distance: match.distance,
@@ -107,6 +109,7 @@ export async function imageToPattern(
         candidates: match.candidates,
         rawHue: match.rawHue,
         rawSaturation: match.rawSaturation,
+        rawLightness: match.rawLightness,
         sourceRow: row,
         sourceCol: col
       };
@@ -123,31 +126,33 @@ export function loadImage(src: string): Promise<HTMLImageElement> {
   });
 }
 
-function buildBackgroundMask(imageData: ImageData, rawOptions: BackgroundRemovalOptions): boolean[] {
+function buildBackgroundMask(imageData: ImageData, rawOptions: BackgroundRemovalOptions): Array<string | null> {
   const options = normalizeBackgroundOptions(rawOptions);
   const { width, height, data } = imageData;
-  const directMask = Array.from({ length: width * height }, (_, index) => {
+  const edgeBackgroundColors = collectEdgeBackgroundColors(imageData, options);
+  const directReasons = Array.from({ length: width * height }, (_, index) => {
     const i = index * 4;
     const alpha = data[i + 3];
     const rgb = { r: data[i], g: data[i + 1], b: data[i + 2] };
-    if (options.removeTransparent && alpha <= options.alphaThreshold) return true;
-    if (options.removeNearBackgroundColor && options.backgroundSampleColor && isNearRgb(rgb, hexToRgb(options.backgroundSampleColor), options.backgroundTolerance)) return true;
-    if (options.removeCheckerboardBackground && isLikelyCheckerboardPixel(rgb, options.checkerboardTolerance)) return true;
-    if (options.removeWhiteBackground && isNearWhite(rgb, options.whiteThreshold)) return true;
-    return false;
+    if (options.removeTransparent && alpha <= options.alphaThreshold) return "透明背景";
+    if (options.removeNearBackgroundColor && options.backgroundSampleColor && isNearRgb(rgb, hexToRgb(options.backgroundSampleColor), options.backgroundTolerance)) return "指定背景色";
+    if (options.removeCheckerboardBackground && isLikelyCheckerboardPixel(rgb, options.checkerboardTolerance)) return "棋盤格背景";
+    if (options.removeWhiteBackground && isNearWhite(rgb, options.whiteThreshold)) return "白色背景";
+    if (edgeBackgroundColors.some((color) => isNearRgb(rgb, color, options.backgroundTolerance))) return "邊緣背景色";
+    return null;
   });
 
-  if (!options.protectRealWhiteAndGray) return directMask;
-  return keepOnlyEdgeConnectedBackground(directMask, width, height);
+  if (!options.protectRealWhiteAndGray) return directReasons;
+  return keepOnlyEdgeConnectedBackground(directReasons, width, height);
 }
 
-function keepOnlyEdgeConnectedBackground(directMask: boolean[], width: number, height: number): boolean[] {
-  const edgeMask = new Array<boolean>(width * height).fill(false);
+function keepOnlyEdgeConnectedBackground(directReasons: Array<string | null>, width: number, height: number): Array<string | null> {
+  const edgeMask = new Array<string | null>(width * height).fill(null);
   const queue: number[] = [];
   const push = (x: number, y: number) => {
     const index = y * width + x;
-    if (directMask[index] && !edgeMask[index]) {
-      edgeMask[index] = true;
+    if (directReasons[index] && !edgeMask[index]) {
+      edgeMask[index] = directReasons[index];
       queue.push(index);
     }
   };
@@ -178,6 +183,38 @@ function normalizeBackgroundOptions(options: BackgroundRemovalOptions): Backgrou
   if (options.mode === "checkerboard") return { ...options, removeTransparent: true, removeWhiteBackground: false, removeCheckerboardBackground: true, removeNearBackgroundColor: false };
   if (options.mode === "pickedColor") return { ...options, removeTransparent: true, removeNearBackgroundColor: true };
   return options;
+}
+
+function collectEdgeBackgroundColors(imageData: ImageData, options: BackgroundRemovalOptions): RGB[] {
+  if (options.mode === "none" || options.mode === "transparentOnly") return [];
+  const { width, height, data } = imageData;
+  const samples: RGB[] = [];
+  const push = (x: number, y: number) => {
+    const i = (y * width + x) * 4;
+    if (data[i + 3] <= options.alphaThreshold) return;
+    const rgb = { r: data[i], g: data[i + 1], b: data[i + 2] };
+    const hsl = rgbToHsl(rgb);
+    if (hsl.l > 0.72 && hsl.s < 0.18) samples.push(rgb);
+  };
+  const stepX = Math.max(1, Math.floor(width / 12));
+  const stepY = Math.max(1, Math.floor(height / 12));
+  for (let x = 0; x < width; x += stepX) {
+    push(x, 0);
+    push(x, height - 1);
+  }
+  for (let y = 0; y < height; y += stepY) {
+    push(0, y);
+    push(width - 1, y);
+  }
+  return dedupeColors(samples, 18).slice(0, 4);
+}
+
+function dedupeColors(colors: RGB[], tolerance: number): RGB[] {
+  const result: RGB[] = [];
+  for (const color of colors) {
+    if (!result.some((item) => isNearRgb(item, color, tolerance))) result.push(color);
+  }
+  return result;
 }
 
 function isLikelyCheckerboardPixel(rgb: RGB, tolerance: number): boolean {

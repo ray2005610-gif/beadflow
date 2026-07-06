@@ -53,13 +53,15 @@ export async function recognizeGridPatternFromImage(
         empty: false,
         rawRgb: rgb,
         rawHex: rgbToHex(rgb),
+        matchedHex: match.color.hex,
         alpha: sample.alpha,
         confidence: match.confidence,
         distance: match.distance,
         adjustedDistance: match.adjustedDistance,
         candidates: match.candidates,
         rawHue: match.rawHue,
-        rawSaturation: match.rawSaturation
+        rawSaturation: match.rawSaturation,
+        rawLightness: match.rawLightness
       };
     })
   );
