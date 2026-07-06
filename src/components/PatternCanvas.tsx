@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import type { PointerEvent } from "react";
-import type { PatternCell, PatternGrid } from "../types/pattern";
+import type { PatternGrid } from "../types/pattern";
 import type { ActiveTool } from "./DrawingToolbar";
 import { canvasToWorld, clamp } from "../utils/canvasMath";
 import { textColorForBackground } from "../utils/colorUtils";
@@ -10,7 +10,6 @@ type PointerPoint = Point & { clientX: number; clientY: number };
 type GestureState = {
   startDistance: number;
   startZoom: number;
-  startPan: Point;
   worldCenter: Point;
 };
 
@@ -46,7 +45,6 @@ export function PatternCanvas({
   const moved = useRef(false);
   const [zoom, setZoom] = useState(1);
   const [pan, setPan] = useState({ x: 24, y: 24 });
-  const [hoverCell, setHoverCell] = useState<PatternCell | null>(null);
 
   useEffect(() => {
     const canvas = ref.current;
@@ -76,7 +74,7 @@ export function PatternCanvas({
     const coordOffset = showCoordinates ? 24 : 0;
     const col = Math.floor((world.x - coordOffset) / CELL_SIZE);
     const row = Math.floor((world.y - coordOffset) / CELL_SIZE);
-    if (row >= 0 && row < grid.length && col >= 0 && col < grid[0].length) return { row, col, cell: grid[row][col] };
+    if (row >= 0 && row < grid.length && col >= 0 && col < grid[0].length) return { row, col };
     return null;
   };
 
@@ -100,18 +98,13 @@ export function PatternCanvas({
     setPan({ x: screenCenter.x - worldCenter.x * clamped, y: screenCenter.y - worldCenter.y * clamped });
   };
 
-  const updateHover = (clientX: number, clientY: number) => {
-    const hit = cellAt(clientX, clientY);
-    setHoverCell(hit?.cell ?? null);
-  };
-
   return (
     <div className="canvas-wrap">
       <div className="canvas-tools" aria-label="畫布檢視控制">
         <button type="button" onClick={() => zoomAtCenter(zoom + 0.2)}>放大</button>
         <button type="button" onClick={() => zoomAtCenter(zoom - 0.2)}>縮小</button>
         <button type="button" onClick={() => { setZoom(1); setPan({ x: 24, y: 24 }); }}>重置視圖</button>
-        <span className="canvas-hint">手機可單指拖曳檢視，雙指縮放。畫筆工具只在手動畫圖或修正模式啟用。</span>
+        <span className="canvas-hint">手機可單指拖曳檢視，雙指縮放。</span>
       </div>
       <canvas
         ref={ref}
@@ -130,63 +123,46 @@ export function PatternCanvas({
           lastPanPoint.current = point;
           moved.current = false;
           lastPaintKey.current = "";
-          updateHover(event.clientX, event.clientY);
-
           if (pointers.current.size === 2) {
             gesture.current = createGesture(Array.from(pointers.current.values()), zoom, pan, ref.current);
             return;
           }
-
-          if (EDIT_DRAG_TOOLS.includes(activeTool)) {
-            runActionAt(event.clientX, event.clientY, activeTool);
-          }
+          if (EDIT_DRAG_TOOLS.includes(activeTool)) runActionAt(event.clientX, event.clientY, activeTool);
         }}
         onPointerMove={(event) => {
           event.preventDefault();
           const nextPoint = toPoint(event);
-          if (!pointers.current.has(event.pointerId)) {
-            updateHover(event.clientX, event.clientY);
-            return;
-          }
+          if (!pointers.current.has(event.pointerId)) return;
           pointers.current.set(event.pointerId, nextPoint);
-          updateHover(event.clientX, event.clientY);
-
           const points = Array.from(pointers.current.values());
           if (points.length >= 2) {
             if (!gesture.current) gesture.current = createGesture(points, zoom, pan, ref.current);
-            const nextGesture = gesture.current;
-            if (!nextGesture) return;
+            const currentGesture = gesture.current;
+            if (!currentGesture) return;
             const center = midpoint(points[0], points[1]);
-            const scale = distance(points[0], points[1]) / Math.max(nextGesture.startDistance, 1);
-            const nextZoom = clamp(nextGesture.startZoom * scale, 0.25, 5);
+            const scale = distance(points[0], points[1]) / Math.max(currentGesture.startDistance, 1);
+            const nextZoom = clamp(currentGesture.startZoom * scale, 0.25, 5);
             setZoom(nextZoom);
             setPan({
-              x: center.x - nextGesture.worldCenter.x * nextZoom,
-              y: center.y - nextGesture.worldCenter.y * nextZoom
+              x: center.x - currentGesture.worldCenter.x * nextZoom,
+              y: center.y - currentGesture.worldCenter.y * nextZoom
             });
             moved.current = true;
             return;
           }
-
           const start = pointerStart.current;
           if (start && distance(start, nextPoint) > 5) moved.current = true;
-
           if (EDIT_DRAG_TOOLS.includes(activeTool)) {
             runActionAt(event.clientX, event.clientY, activeTool);
             return;
           }
-
           const last = lastPanPoint.current;
-          if (last) {
-            setPan((value) => ({ x: value.x + event.clientX - last.clientX, y: value.y + event.clientY - last.clientY }));
-          }
+          if (last) setPan((value) => ({ x: value.x + event.clientX - last.clientX, y: value.y + event.clientY - last.clientY }));
           lastPanPoint.current = nextPoint;
         }}
         onPointerUp={(event) => {
           event.preventDefault();
-          if (TAP_TOOLS.includes(activeTool) && pointers.current.size === 1 && !moved.current) {
-            runActionAt(event.clientX, event.clientY, activeTool);
-          }
+          if (TAP_TOOLS.includes(activeTool) && pointers.current.size === 1 && !moved.current) runActionAt(event.clientX, event.clientY, activeTool);
           pointers.current.delete(event.pointerId);
           gesture.current = null;
           pointerStart.current = null;
@@ -201,23 +177,6 @@ export function PatternCanvas({
           lastPaintKey.current = "";
         }}
       />
-      {hoverCell && <CellDebug cell={hoverCell} />}
-    </div>
-  );
-}
-
-function CellDebug({ cell }: { cell: PatternCell }) {
-  return (
-    <div className="cell-debug">
-      <strong>列 {cell.row + 1} / 欄 {cell.col + 1}</strong>
-      {cell.sourceRow != null && cell.sourceCol != null && <span>來源 {cell.sourceRow + 1}/{cell.sourceCol + 1}</span>}
-      <span>{cell.empty ? "空白" : `${cell.colorCode} ${cell.hex}`}</span>
-      <span>原始 {cell.rawHex ?? "-"} / 配色 {cell.matchedHex ?? cell.hex}</span>
-      <span>信心 {cell.confidence == null ? "-" : `${Math.round(cell.confidence * 100)}%`}</span>
-      {cell.backgroundReason && <span>背景：{cell.backgroundReason}</span>}
-      <span>H {cell.rawHue == null ? "-" : Math.round(cell.rawHue * 360)} / S {cell.rawSaturation == null ? "-" : cell.rawSaturation.toFixed(2)} / L {cell.rawLightness == null ? "-" : cell.rawLightness.toFixed(2)}</span>
-      <span>距離 {cell.distance?.toFixed(1) ?? "-"} / 校正 {cell.adjustedDistance?.toFixed(1) ?? "-"}</span>
-      <span>{cell.done ? "已完成" : "未完成"}</span>
     </div>
   );
 }
@@ -233,7 +192,6 @@ function drawGrid(
   ctx.font = "9px Arial";
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
-
   for (const row of grid) {
     for (const c of row) {
       const x = coord + c.col * cell;
@@ -243,7 +201,6 @@ function drawGrid(
       const highlight = !options.selectedColorCode || isSelected;
       const hiddenByDone = options.onlyUnfinished && c.done;
       ctx.globalAlpha = isEmpty ? 0.45 : hiddenByDone ? 0.08 : highlight ? 1 : 0.22;
-
       if (isEmpty) {
         drawEmptyCell(ctx, x, y, cell);
       } else {
@@ -260,7 +217,6 @@ function drawGrid(
           ctx.fillText("✓", x + cell / 2, y + cell / 2);
         }
       }
-
       ctx.globalAlpha = 1;
       if (options.showGrid) {
         ctx.strokeStyle = isSelected ? "#111827" : c.row % 10 === 0 || c.col % 10 === 0 ? "#4b5563" : c.row % 5 === 0 || c.col % 5 === 0 ? "#9ca3af" : "#d1d5db";
@@ -269,7 +225,6 @@ function drawGrid(
       }
     }
   }
-
   if (options.showCoordinates) {
     ctx.fillStyle = "#374151";
     for (let col = 0; col < grid[0].length; col += 5) ctx.fillText(String(col + 1), coord + col * cell + cell / 2, 12);
@@ -294,12 +249,7 @@ function createGesture(points: PointerPoint[], zoom: number, pan: Point, canvas:
   if (points.length < 2 || !canvas) return null;
   const center = midpoint(points[0], points[1]);
   const worldCenter = canvasToWorld(center.x, center.y, { zoom, panX: pan.x, panY: pan.y });
-  return {
-    startDistance: distance(points[0], points[1]),
-    startZoom: zoom,
-    startPan: pan,
-    worldCenter
-  };
+  return { startDistance: distance(points[0], points[1]), startZoom: zoom, worldCenter };
 }
 
 function midpoint(a: Point, b: Point): Point {

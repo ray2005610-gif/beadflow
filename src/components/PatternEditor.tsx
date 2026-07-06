@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import type { InventoryItem } from "../types/inventory";
 import type { PatternProject, PatternStatus } from "../types/project";
 import type { ActiveTool } from "./DrawingToolbar";
@@ -7,7 +7,6 @@ import { PatternCanvas } from "./PatternCanvas";
 import { Toolbar } from "./Toolbar";
 import { PalettePanel } from "./PalettePanel";
 import { ColorStatsPanel } from "./ColorStatsPanel";
-import { RecognitionReviewPanel } from "./RecognitionReviewPanel";
 import { InventoryPanel } from "./InventoryPanel";
 import { ProjectDetailPanel } from "./ProjectDetailPanel";
 
@@ -78,8 +77,17 @@ export function PatternEditor({
 }) {
   const stats = useMemo(() => calculateColorStats(project.grid), [project.grid]);
   const canDirectEdit = project.sourceType === "manual_drawing";
+  const [paletteCollapsed, setPaletteCollapsed] = useState(() => localStorage.getItem("paletteCollapsed") !== "false");
+  const togglePalette = () => {
+    setPaletteCollapsed((current) => {
+      const next = !current;
+      localStorage.setItem("paletteCollapsed", String(next));
+      return next;
+    });
+  };
+
   return (
-    <main className="editor-layout">
+    <main className={paletteCollapsed ? "editor-layout palette-collapsed" : "editor-layout"}>
       <section className="editor-main">
         <Toolbar
           activeTool={activeTool}
@@ -111,8 +119,9 @@ export function PatternEditor({
           onCellAction={onCellAction}
         />
       </section>
-      <aside className="left-rail">
-        <PalettePanel selectedCode={brushColorCode} recentColors={recentColors} onSelect={onBrushColorChange} />
+      <aside className="left-rail palette-rail">
+        <button className="palette-toggle" onClick={togglePalette}>{paletteCollapsed ? "展開色卡" : "收合色卡"}</button>
+        {!paletteCollapsed && <PalettePanel selectedCode={brushColorCode} recentColors={recentColors} onSelect={onBrushColorChange} />}
       </aside>
       <aside className="right-rail">
         <ProjectDetailPanel project={project} onRename={onRename} onStatusChange={onStatusChange} />
@@ -129,7 +138,6 @@ export function PatternEditor({
           onNext={onNextColor}
           onToggleOnlyUnfinished={onToggleOnlyUnfinished}
         />
-        {project.sourceType === "grid_recognition" && <RecognitionReviewPanel grid={project.grid} threshold={0.75} onSelectColor={onSelectedColorChange} />}
         <InventoryPanel inventory={inventory} stats={stats} onChange={onInventoryChange} onConsume={onConsumeInventory} />
       </aside>
     </main>

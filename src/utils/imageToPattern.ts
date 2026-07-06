@@ -1,6 +1,6 @@
 import type { BeadColor, RGB } from "../types/bead";
 import type { PatternCell, PatternGrid } from "../types/pattern";
-import { findClosestBeadColorWithDebug, hexToRgb, isNearRgb, isNearWhite, rgbToHex, rgbToHsl } from "./colorUtils";
+import { colorDistance, findClosestBeadColorWithDebug, hexToRgb, isNearRgb, isNearWhite, rgbToHex, rgbToHsl } from "./colorUtils";
 
 export type BackgroundRemovalOptions = {
   mode: "none" | "transparentOnly" | "auto" | "whiteBackground" | "checkerboard" | "pickedColor";
@@ -15,6 +15,8 @@ export type BackgroundRemovalOptions = {
   backgroundTolerance: number;
   protectRealWhiteAndGray: boolean;
 };
+
+type SampledColor = RGB & { alpha: number };
 
 export const defaultBackgroundRemovalOptions: BackgroundRemovalOptions = {
   mode: "auto",
@@ -72,23 +74,21 @@ export async function imageToPattern(
 ): Promise<PatternGrid> {
   const image = await loadImage(imageDataUrl);
   const canvas = document.createElement("canvas");
-  canvas.width = width;
-  canvas.height = height;
+  canvas.width = image.naturalWidth;
+  canvas.height = image.naturalHeight;
   const ctx = canvas.getContext("2d", { willReadFrequently: true });
   if (!ctx) throw new Error("無法建立圖片轉換畫布");
-  ctx.clearRect(0, 0, width, height);
-  ctx.drawImage(image, 0, 0, width, height);
-  const imageData = ctx.getImageData(0, 0, width, height);
-  const backgroundMask = buildBackgroundMask(imageData, backgroundOptions);
-  const data = imageData.data;
-
-  return Array.from({ length: height }, (_, row) =>
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.drawImage(image, 0, 0);
+  const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  const sampled = sampleImageToCells(imageData, width, height);
+  const backgroundMask = buildCellBackgroundMask(sampled, width, height, backgroundOptions);
+  const grid = Array.from({ length: height }, (_, row) =>
     Array.from({ length: width }, (_, col) => {
-      const i = (row * width + col) * 4;
-      const alpha = data[i + 3];
-      const rgb = { r: data[i], g: data[i + 1], b: data[i + 2] };
-      const backgroundReason = backgroundMask[row * width + col];
-      if (backgroundReason) return { ...createEmptyCell(row, col, rgb, alpha, row, col), backgroundReason };
+      const index = row * width + col;
+      const sample = sampled[index];
+      const rgb = { r: sample.r, g: sample.g, b: sample.b };
+      if (backgroundMask[index]) return createEmptyCell(row, col, rgb, sample.alpha, row, col);
       const match = findClosestBeadColorWithDebug(rgb, palette);
       return {
         row,
@@ -102,7 +102,7 @@ export async function imageToPattern(
         rawRgb: rgb,
         rawHex: rgbToHex(rgb),
         matchedHex: match.color.hex,
-        alpha,
+        alpha: sample.alpha,
         confidence: match.confidence,
         distance: match.distance,
         adjustedDistance: match.adjustedDistance,
@@ -115,6 +115,7 @@ export async function imageToPattern(
       };
     })
   );
+  return smoothIsolatedCells(grid, palette);
 }
 
 export function loadImage(src: string): Promise<HTMLImageElement> {
@@ -126,33 +127,75 @@ export function loadImage(src: string): Promise<HTMLImageElement> {
   });
 }
 
-function buildBackgroundMask(imageData: ImageData, rawOptions: BackgroundRemovalOptions): Array<string | null> {
-  const options = normalizeBackgroundOptions(rawOptions);
-  const { width, height, data } = imageData;
-  const edgeBackgroundColors = collectEdgeBackgroundColors(imageData, options);
-  const directReasons = Array.from({ length: width * height }, (_, index) => {
-    const i = index * 4;
-    const alpha = data[i + 3];
-    const rgb = { r: data[i], g: data[i + 1], b: data[i + 2] };
-    if (options.removeTransparent && alpha <= options.alphaThreshold) return "透明背景";
-    if (options.removeNearBackgroundColor && options.backgroundSampleColor && isNearRgb(rgb, hexToRgb(options.backgroundSampleColor), options.backgroundTolerance)) return "指定背景色";
-    if (options.removeCheckerboardBackground && isLikelyCheckerboardPixel(rgb, options.checkerboardTolerance)) return "棋盤格背景";
-    if (options.removeWhiteBackground && isNearWhite(rgb, options.whiteThreshold)) return "白色背景";
-    if (edgeBackgroundColors.some((color) => isNearRgb(rgb, color, options.backgroundTolerance))) return "邊緣背景色";
-    return null;
+function sampleImageToCells(imageData: ImageData, width: number, height: number): SampledColor[] {
+  const cellW = imageData.width / width;
+  const cellH = imageData.height / height;
+  return Array.from({ length: width * height }, (_, index) => {
+    const row = Math.floor(index / width);
+    const col = index % width;
+    return sampleCell(imageData, col * cellW, row * cellH, cellW, cellH);
   });
-
-  if (!options.protectRealWhiteAndGray) return directReasons;
-  return keepOnlyEdgeConnectedBackground(directReasons, width, height);
 }
 
-function keepOnlyEdgeConnectedBackground(directReasons: Array<string | null>, width: number, height: number): Array<string | null> {
-  const edgeMask = new Array<string | null>(width * height).fill(null);
+function sampleCell(imageData: ImageData, x: number, y: number, w: number, h: number): SampledColor {
+  const ratio = 0.62;
+  const sx = x + (w * (1 - ratio)) / 2;
+  const sy = y + (h * (1 - ratio)) / 2;
+  const sw = w * ratio;
+  const sh = h * ratio;
+  const steps = 7;
+  const samples: SampledColor[] = [];
+  for (let py = 0; py < steps; py += 1) {
+    for (let px = 0; px < steps; px += 1) {
+      samples.push(pixelAt(imageData, sx + (px + 0.5) * (sw / steps), sy + (py + 0.5) * (sh / steps)));
+    }
+  }
+  const visible = samples.filter((sample) => sample.alpha > 20);
+  if (!visible.length) return { r: 255, g: 255, b: 255, alpha: 0 };
+  return robustColor(visible);
+}
+
+function robustColor(samples: SampledColor[]): SampledColor {
+  const med = {
+    r: median(samples.map((sample) => sample.r)),
+    g: median(samples.map((sample) => sample.g)),
+    b: median(samples.map((sample) => sample.b))
+  };
+  const ranked = samples
+    .map((sample) => ({ sample, distance: colorDistance(sample, med) }))
+    .sort((a, b) => a.distance - b.distance);
+  const kept = ranked.slice(0, Math.max(3, Math.ceil(ranked.length * 0.72))).map((item) => item.sample);
+  return {
+    r: trimmedMean(kept.map((sample) => sample.r)),
+    g: trimmedMean(kept.map((sample) => sample.g)),
+    b: trimmedMean(kept.map((sample) => sample.b)),
+    alpha: trimmedMean(kept.map((sample) => sample.alpha))
+  };
+}
+
+function buildCellBackgroundMask(samples: SampledColor[], width: number, height: number, rawOptions: BackgroundRemovalOptions): boolean[] {
+  const options = normalizeBackgroundOptions(rawOptions);
+  const direct = samples.map((sample) => isDirectBackground(sample, options));
+  if (!options.protectRealWhiteAndGray) return direct;
+  return keepOnlyEdgeConnectedBackground(direct, width, height);
+}
+
+function isDirectBackground(sample: SampledColor, options: BackgroundRemovalOptions): boolean {
+  const rgb = { r: sample.r, g: sample.g, b: sample.b };
+  if (options.removeTransparent && sample.alpha <= options.alphaThreshold) return true;
+  if (options.removeNearBackgroundColor && options.backgroundSampleColor && isNearRgb(rgb, hexToRgb(options.backgroundSampleColor), options.backgroundTolerance)) return true;
+  if (options.removeCheckerboardBackground && isLikelyCheckerboardPixel(rgb, options.checkerboardTolerance)) return true;
+  if (options.removeWhiteBackground && isNearWhite(rgb, options.whiteThreshold)) return true;
+  return false;
+}
+
+function keepOnlyEdgeConnectedBackground(directMask: boolean[], width: number, height: number): boolean[] {
+  const edgeMask = new Array<boolean>(width * height).fill(false);
   const queue: number[] = [];
   const push = (x: number, y: number) => {
     const index = y * width + x;
-    if (directReasons[index] && !edgeMask[index]) {
-      edgeMask[index] = directReasons[index];
+    if (directMask[index] && !edgeMask[index]) {
+      edgeMask[index] = true;
       queue.push(index);
     }
   };
@@ -185,36 +228,39 @@ function normalizeBackgroundOptions(options: BackgroundRemovalOptions): Backgrou
   return options;
 }
 
-function collectEdgeBackgroundColors(imageData: ImageData, options: BackgroundRemovalOptions): RGB[] {
-  if (options.mode === "none" || options.mode === "transparentOnly") return [];
-  const { width, height, data } = imageData;
-  const samples: RGB[] = [];
-  const push = (x: number, y: number) => {
-    const i = (y * width + x) * 4;
-    if (data[i + 3] <= options.alphaThreshold) return;
-    const rgb = { r: data[i], g: data[i + 1], b: data[i + 2] };
-    const hsl = rgbToHsl(rgb);
-    if (hsl.l > 0.72 && hsl.s < 0.18) samples.push(rgb);
-  };
-  const stepX = Math.max(1, Math.floor(width / 12));
-  const stepY = Math.max(1, Math.floor(height / 12));
-  for (let x = 0; x < width; x += stepX) {
-    push(x, 0);
-    push(x, height - 1);
-  }
-  for (let y = 0; y < height; y += stepY) {
-    push(0, y);
-    push(width - 1, y);
-  }
-  return dedupeColors(samples, 18).slice(0, 4);
+function smoothIsolatedCells(grid: PatternGrid, palette: BeadColor[]): PatternGrid {
+  return grid.map((row, rowIndex) => row.map((cell, colIndex) => {
+    if (cell.empty || !cell.colorCode) return cell;
+    const neighbors = neighborCells(grid, rowIndex, colIndex).filter((item) => !item.empty && item.colorCode);
+    const sameCount = neighbors.filter((item) => item.colorCode === cell.colorCode).length;
+    if (sameCount >= 2 || neighbors.length < 5) return cell;
+    const counts = new Map<string, number>();
+    for (const neighbor of neighbors) counts.set(neighbor.colorCode, (counts.get(neighbor.colorCode) ?? 0) + 1);
+    const dominant = Array.from(counts.entries()).sort((a, b) => b[1] - a[1])[0];
+    if (!dominant || dominant[1] < 5) return cell;
+    const color = palette.find((item) => item.code === dominant[0]);
+    if (!color) return cell;
+    return { ...cell, colorCode: color.code, colorName: color.name, hex: color.hex, symbol: color.symbol, matchedHex: color.hex };
+  }));
 }
 
-function dedupeColors(colors: RGB[], tolerance: number): RGB[] {
-  const result: RGB[] = [];
-  for (const color of colors) {
-    if (!result.some((item) => isNearRgb(item, color, tolerance))) result.push(color);
+function neighborCells(grid: PatternGrid, row: number, col: number) {
+  const cells: PatternCell[] = [];
+  for (let dr = -1; dr <= 1; dr += 1) {
+    for (let dc = -1; dc <= 1; dc += 1) {
+      if (dr === 0 && dc === 0) continue;
+      const next = grid[row + dr]?.[col + dc];
+      if (next) cells.push(next);
+    }
   }
-  return result;
+  return cells;
+}
+
+function pixelAt(imageData: ImageData, x: number, y: number): SampledColor {
+  const px = Math.max(0, Math.min(imageData.width - 1, Math.round(x)));
+  const py = Math.max(0, Math.min(imageData.height - 1, Math.round(y)));
+  const i = (py * imageData.width + px) * 4;
+  return { r: imageData.data[i], g: imageData.data[i + 1], b: imageData.data[i + 2], alpha: imageData.data[i + 3] };
 }
 
 function isLikelyCheckerboardPixel(rgb: RGB, tolerance: number): boolean {
@@ -225,4 +271,16 @@ function isLikelyCheckerboardPixel(rgb: RGB, tolerance: number): boolean {
     Math.abs(rgb.g - target) <= tolerance &&
     Math.abs(rgb.b - target) <= tolerance
   );
+}
+
+function median(values: number[]): number {
+  const sorted = [...values].sort((a, b) => a - b);
+  return sorted[Math.floor(sorted.length / 2)] ?? 0;
+}
+
+function trimmedMean(values: number[]): number {
+  const sorted = [...values].sort((a, b) => a - b);
+  const trim = values.length >= 8 ? Math.floor(values.length * 0.12) : 0;
+  const kept = sorted.slice(trim, sorted.length - trim || sorted.length);
+  return kept.reduce((sum, value) => sum + value, 0) / kept.length;
 }
