@@ -14,6 +14,7 @@ import {
 
 export type PhotoColorMode = ColorMatchMode;
 export type PhotoFitMode = "contain" | "stretch" | "crop" | "manual";
+export type PhotoImageKind = "auto" | "photo" | "lineArt";
 
 export type BackgroundRemovalOptions = {
   mode: "none" | "transparentOnly" | "auto" | "whiteBackground" | "checkerboard" | "pickedColor";
@@ -36,6 +37,7 @@ export type PhotoPatternOptions = {
   manualScale: number;
   offsetX: number;
   offsetY: number;
+  imageKind: PhotoImageKind;
 };
 
 export type PhotoPatternMeta = {
@@ -48,6 +50,7 @@ export type PhotoPatternMeta = {
   blankCells: number;
   beadCells: number;
   fitMode: PhotoFitMode;
+  detectedKind: Exclude<PhotoImageKind, "auto">;
 };
 
 export type PhotoPatternResult = {
@@ -83,7 +86,8 @@ export const defaultPhotoPatternOptions: PhotoPatternOptions = {
   fitMode: "contain",
   manualScale: 1,
   offsetX: 0,
-  offsetY: 0
+  offsetY: 0,
+  imageKind: "auto"
 };
 
 export const defaultBackgroundRemovalOptions: BackgroundRemovalOptions = {
@@ -154,7 +158,8 @@ export async function imageToPattern(
   ctx.drawImage(image, 0, 0);
   const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
   const placement = calculatePhotoPlacement(imageData.width, imageData.height, width, height, photoOptions);
-  const rawSamples = sampleImageToCells(imageData, width, height, placement);
+  const detectedKind = photoOptions.imageKind === "auto" ? detectImageKind(imageData) : photoOptions.imageKind;
+  const rawSamples = sampleImageToCells(imageData, width, height, placement, detectedKind, backgroundOptions);
   const backgroundMask = buildCellBackgroundMask(rawSamples, width, height, backgroundOptions);
   const cellSamples = rawSamples.map((sample, index): CellSample => {
     const row = Math.floor(index / width);
@@ -167,7 +172,7 @@ export async function imageToPattern(
       rgb,
       adjustedRgb: adjustForMode(rgb, photoOptions.colorMode),
       alpha: sample.alpha,
-      empty: outsidePlacedImage || backgroundMask[index]
+      empty: outsidePlacedImage || sample.alpha <= 0 || backgroundMask[index]
     };
   });
   const paletteForImage = selectPaletteForImage(cellSamples, palette, photoOptions);
@@ -214,7 +219,8 @@ export async function imageToPattern(
       offsetY: placement.offsetY,
       blankCells: width * height - beadCells,
       beadCells,
-      fitMode: placement.fitMode
+      fitMode: placement.fitMode,
+      detectedKind
     }
   };
 }
@@ -260,7 +266,14 @@ export function loadImage(src: string): Promise<HTMLImageElement> {
   });
 }
 
-function sampleImageToCells(imageData: ImageData, width: number, height: number, placement: Placement): SampledColor[] {
+function sampleImageToCells(
+  imageData: ImageData,
+  width: number,
+  height: number,
+  placement: Placement,
+  imageKind: Exclude<PhotoImageKind, "auto">,
+  backgroundOptions: BackgroundRemovalOptions
+): SampledColor[] {
   return Array.from({ length: width * height }, (_, index) => {
     const row = Math.floor(index / width);
     const col = index % width;
@@ -271,7 +284,9 @@ function sampleImageToCells(imageData: ImageData, width: number, height: number,
     const cellH = placement.cropHeight / placement.patternHeight;
     const sourceX = placement.cropX + localCol * cellW;
     const sourceY = placement.cropY + localRow * cellH;
-    return sampleCell(imageData, sourceX, sourceY, cellW, cellH);
+    return imageKind === "lineArt"
+      ? sampleCellForLineArtMode(imageData, sourceX, sourceY, cellW, cellH, backgroundOptions)
+      : sampleCellForPhotoMode(imageData, sourceX, sourceY, cellW, cellH);
   });
 }
 
@@ -279,7 +294,7 @@ function cellInPlacedImage(row: number, col: number, placement: Placement): bool
   return row >= placement.offsetY && row < placement.offsetY + placement.patternHeight && col >= placement.offsetX && col < placement.offsetX + placement.patternWidth;
 }
 
-function sampleCell(imageData: ImageData, x: number, y: number, w: number, h: number): SampledColor {
+function sampleCellForPhotoMode(imageData: ImageData, x: number, y: number, w: number, h: number): SampledColor {
   const ratio = 0.64;
   const sx = x + (w * (1 - ratio)) / 2;
   const sy = y + (h * (1 - ratio)) / 2;
@@ -295,6 +310,40 @@ function sampleCell(imageData: ImageData, x: number, y: number, w: number, h: nu
   const visible = samples.filter((sample) => sample.alpha > 20);
   if (!visible.length) return { r: 255, g: 255, b: 255, alpha: 0 };
   return dominantColor(visible);
+}
+
+function sampleCellForLineArtMode(imageData: ImageData, x: number, y: number, w: number, h: number, backgroundOptions: BackgroundRemovalOptions): SampledColor {
+  const steps = 9;
+  const samples: SampledColor[] = [];
+  for (let py = 0; py < steps; py += 1) {
+    for (let px = 0; px < steps; px += 1) {
+      samples.push(pixelAt(imageData, x + (px + 0.5) * (w / steps), y + (py + 0.5) * (h / steps)));
+    }
+  }
+  const visible = samples.filter((sample) => sample.alpha > backgroundOptions.alphaThreshold);
+  if (!visible.length) return { r: 255, g: 255, b: 255, alpha: 0 };
+
+  const foreground = visible.filter((sample) => !isLineArtBackground(sample, backgroundOptions));
+  const foregroundRatio = foreground.length / samples.length;
+  const strongForeground = foreground.filter((sample) => {
+    const hsl = rgbToHsl(sample);
+    return hsl.s > 0.18 || hsl.l < 0.38;
+  }).length;
+  if (foregroundRatio < 0.035 && strongForeground < 2) return { r: 255, g: 255, b: 255, alpha: 0 };
+
+  return representativeLineArtColor(foreground);
+}
+
+function representativeLineArtColor(samples: SampledColor[]): SampledColor {
+  const scored = samples
+    .map((sample) => {
+      const hsl = rgbToHsl(sample);
+      const darkness = 1 - hsl.l;
+      return { sample, score: hsl.s * 1.55 + darkness * 0.75 + sample.alpha / 255 * 0.2 };
+    })
+    .sort((a, b) => b.score - a.score);
+  const strong = scored.slice(0, Math.max(3, Math.ceil(scored.length * 0.58))).map((item) => item.sample);
+  return dominantColor(strong);
 }
 
 function dominantColor(samples: SampledColor[]): SampledColor {
@@ -460,6 +509,51 @@ function neighborCells(grid: PatternGrid, row: number, col: number) {
     }
   }
   return cells;
+}
+
+export function detectImageKind(imageData: ImageData): Exclude<PhotoImageKind, "auto"> {
+  const stride = Math.max(1, Math.floor(Math.sqrt((imageData.width * imageData.height) / 9000)));
+  let total = 0;
+  let transparent = 0;
+  let brightBackground = 0;
+  let saturated = 0;
+  let dark = 0;
+  const bins = new Set<string>();
+
+  for (let y = 0; y < imageData.height; y += stride) {
+    for (let x = 0; x < imageData.width; x += stride) {
+      const pixel = pixelAt(imageData, x, y);
+      total += 1;
+      if (pixel.alpha <= 20) {
+        transparent += 1;
+        continue;
+      }
+      const hsl = rgbToHsl(pixel);
+      if (isLikelyWhiteOrPaper(pixel)) brightBackground += 1;
+      if (hsl.s > 0.18) saturated += 1;
+      if (hsl.l < 0.28) dark += 1;
+      bins.add(`${Math.round(pixel.r / 28)},${Math.round(pixel.g / 28)},${Math.round(pixel.b / 28)}`);
+    }
+  }
+
+  const backgroundRatio = (transparent + brightBackground) / Math.max(1, total);
+  const inkRatio = (saturated + dark) / Math.max(1, total);
+  const lowColorVariety = bins.size <= 90;
+  const hasLargeFlatBackground = backgroundRatio >= 0.34;
+  const hasLogoInkAmount = inkRatio >= 0.025 && inkRatio <= 0.55;
+  return hasLargeFlatBackground && hasLogoInkAmount && lowColorVariety ? "lineArt" : "photo";
+}
+
+function isLineArtBackground(sample: SampledColor, options: BackgroundRemovalOptions): boolean {
+  if (sample.alpha <= options.alphaThreshold) return true;
+  if (options.mode === "none") return false;
+  if (options.mode === "pickedColor" && options.backgroundSampleColor && isNearRgb(sample, hexToRgb(options.backgroundSampleColor), options.backgroundTolerance)) return true;
+  return isLikelyWhiteOrPaper(sample) || isLikelyCheckerboardPixel(sample, options.checkerboardTolerance);
+}
+
+function isLikelyWhiteOrPaper(rgb: RGB): boolean {
+  const hsl = rgbToHsl(rgb);
+  return hsl.l >= 0.86 && hsl.s <= 0.22;
 }
 
 function pixelAt(imageData: ImageData, x: number, y: number): SampledColor {
