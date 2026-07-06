@@ -1,4 +1,4 @@
-import type { BeadColor, RGB } from "../types/bead";
+﻿import type { BeadColor, RGB } from "../types/bead";
 
 export function hexToRgb(hex: string): RGB {
   const clean = hex.replace("#", "");
@@ -56,6 +56,50 @@ export function rgbToLab(rgb: RGB): Lab {
 
 export function deltaE76(a: Lab, b: Lab): number {
   return Math.hypot(a.l - b.l, a.a - b.a, a.b - b.b);
+}
+export function deltaE2000(a: Lab, b: Lab): number {
+  const deg2rad = Math.PI / 180;
+  const rad2deg = 180 / Math.PI;
+  const avgLp = (a.l + b.l) / 2;
+  const c1 = Math.hypot(a.a, a.b);
+  const c2 = Math.hypot(b.a, b.b);
+  const avgC = (c1 + c2) / 2;
+  const g = 0.5 * (1 - Math.sqrt(Math.pow(avgC, 7) / (Math.pow(avgC, 7) + Math.pow(25, 7))));
+  const a1p = (1 + g) * a.a;
+  const a2p = (1 + g) * b.a;
+  const c1p = Math.hypot(a1p, a.b);
+  const c2p = Math.hypot(a2p, b.b);
+  const avgCp = (c1p + c2p) / 2;
+  const h1p = normalizeHue(Math.atan2(a.b, a1p) * rad2deg);
+  const h2p = normalizeHue(Math.atan2(b.b, a2p) * rad2deg);
+  const dLp = b.l - a.l;
+  const dCp = c2p - c1p;
+  let dhp = h2p - h1p;
+  if (c1p * c2p === 0) dhp = 0;
+  else if (dhp > 180) dhp -= 360;
+  else if (dhp < -180) dhp += 360;
+  const dHp = 2 * Math.sqrt(c1p * c2p) * Math.sin((dhp / 2) * deg2rad);
+  let avgHp = h1p + h2p;
+  if (c1p * c2p === 0) avgHp = h1p + h2p;
+  else if (Math.abs(h1p - h2p) > 180) avgHp = h1p + h2p < 360 ? (h1p + h2p + 360) / 2 : (h1p + h2p - 360) / 2;
+  else avgHp = (h1p + h2p) / 2;
+  const t = 1 - 0.17 * Math.cos((avgHp - 30) * deg2rad) + 0.24 * Math.cos(2 * avgHp * deg2rad) + 0.32 * Math.cos((3 * avgHp + 6) * deg2rad) - 0.2 * Math.cos((4 * avgHp - 63) * deg2rad);
+  const deltaTheta = 30 * Math.exp(-Math.pow((avgHp - 275) / 25, 2));
+  const rc = 2 * Math.sqrt(Math.pow(avgCp, 7) / (Math.pow(avgCp, 7) + Math.pow(25, 7)));
+  const sl = 1 + (0.015 * Math.pow(avgLp - 50, 2)) / Math.sqrt(20 + Math.pow(avgLp - 50, 2));
+  const sc = 1 + 0.045 * avgCp;
+  const sh = 1 + 0.015 * avgCp * t;
+  const rt = -Math.sin(2 * deltaTheta * deg2rad) * rc;
+  return Math.sqrt(
+    Math.pow(dLp / sl, 2) +
+    Math.pow(dCp / sc, 2) +
+    Math.pow(dHp / sh, 2) +
+    rt * (dCp / sc) * (dHp / sh)
+  );
+}
+
+function normalizeHue(value: number): number {
+  return ((value % 360) + 360) % 360;
 }
 
 export function rgbToOklab(rgb: RGB): Oklab {
@@ -127,6 +171,7 @@ export function findClosestBeadColorWithDebug(rgb: RGB, palette: BeadColor[], mo
     const targetOklab = rgbToOklab(targetRgb);
     const distance = colorDistance(rgb, targetRgb);
     const deltaE = deltaE76(sourceLab, targetLab);
+    const deltaE2k = deltaE2000(sourceLab, targetLab);
     const okDistance = oklabDistance(sourceOklab, targetOklab);
     const weights = modeWeights(mode);
     const huePenalty = sourceSaturation > 0.13 && saturation > 0.1 ? hueDistance(sourceHsl.h, targetHsl.h) * weights.hue : 0;
@@ -135,7 +180,7 @@ export function findClosestBeadColorWithDebug(rgb: RGB, palette: BeadColor[], mo
     const saturationPenalty = Math.abs(sourceSaturation - saturation) * weights.saturation;
     const lightnessPenalty = Math.abs(sourceHsl.l - targetHsl.l) * weights.lightness;
     const familyPenalty = colorFamilyPenalty(sourceHsl, targetHsl) * weights.family;
-    const adjustedDistance = okDistance * 0.78 + deltaE * 0.42 + huePenalty + grayPenalty + colorPenalty + saturationPenalty + lightnessPenalty + familyPenalty;
+    const adjustedDistance = okDistance * 0.7 + deltaE2k * 1.15 + deltaE * 0.18 + huePenalty + grayPenalty + colorPenalty + saturationPenalty + lightnessPenalty + familyPenalty;
     return {
       color,
       code: color.code,
@@ -212,3 +257,5 @@ export function textColorForBackground(hex: string): string {
   const { r, g, b } = hexToRgb(hex);
   return r * 0.299 + g * 0.587 + b * 0.114 > 150 ? "#111111" : "#ffffff";
 }
+
+

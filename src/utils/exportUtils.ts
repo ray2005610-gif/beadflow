@@ -86,10 +86,9 @@ export function exportPatternPng(name: string, grid: PatternGrid, options: Patte
         ctx.fillStyle = (c.row + c.col) % 2 === 0 ? "#fffdf8" : "#f4eadf";
         ctx.fillRect(x, y, cell, cell);
       }
-      const major10 = c.row % 10 === 0 || c.col % 10 === 0;
       const major5 = c.row % 5 === 0 || c.col % 5 === 0;
-      ctx.strokeStyle = major10 ? "#7d6f63" : major5 ? "#bba892" : "#e3d5c5";
-      ctx.lineWidth = major10 ? 1.3 : major5 ? 0.9 : 0.45;
+      ctx.strokeStyle = major5 ? "#7A6A5F" : "#CFC3B5";
+      ctx.lineWidth = major5 ? 1.5 : 0.45;
       ctx.strokeRect(x, y, cell, cell);
     }
   }
@@ -153,3 +152,5 @@ function roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: numbe
   ctx.arcTo(x, y, x + w, y, r);
   ctx.closePath();
 }
+
+

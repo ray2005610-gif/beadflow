@@ -6,7 +6,6 @@ import {
   defaultBackgroundRemovalOptions,
   imageToPattern,
   type BackgroundRemovalOptions,
-  type PhotoColorMode,
   type PhotoFitMode,
   type PhotoPatternMeta,
   type PhotoPatternResult
@@ -14,13 +13,6 @@ import {
 import { BoardPresetSelector } from "./BoardPresetSelector";
 
 type PreviewMode = "compare" | "original" | "bead";
-
-const colorModeLabels: Record<PhotoColorMode, string> = {
-  natural: "自然接近",
-  vivid: "鮮豔模式",
-  soft: "柔和模式",
-  contrast: "高對比模式"
-};
 
 const fitModeLabels: Record<PhotoFitMode, string> = {
   contain: "保持原比例",
@@ -37,15 +29,20 @@ export function PhotoToPatternPage({ onProjectReady }: { onProjectReady: (projec
   const [manualScale, setManualScale] = useState(1);
   const [offsetX, setOffsetX] = useState(0);
   const [offsetY, setOffsetY] = useState(0);
-  const [maxColors, setMaxColors] = useState(48);
-  const [colorMode, setColorMode] = useState<PhotoColorMode>("natural");
   const [previewMode, setPreviewMode] = useState<PreviewMode>("compare");
   const [working, setWorking] = useState(false);
   const [previewing, setPreviewing] = useState(false);
   const [previewResult, setPreviewResult] = useState<PhotoPatternResult | null>(null);
   const [backgroundOptions, setBackgroundOptions] = useState<BackgroundRemovalOptions>(defaultBackgroundRemovalOptions);
 
-  const photoOptions = useMemo(() => ({ colorMode, maxColors, fitMode, manualScale, offsetX, offsetY }), [colorMode, maxColors, fitMode, manualScale, offsetX, offsetY]);
+  const photoOptions = useMemo(() => ({
+    colorMode: "natural" as const,
+    maxColors: 0,
+    fitMode,
+    manualScale,
+    offsetX,
+    offsetY
+  }), [fitMode, manualScale, offsetX, offsetY]);
 
   const upload = (file: File | null) => {
     if (!file) return;
@@ -91,7 +88,7 @@ export function PhotoToPatternPage({ onProjectReady }: { onProjectReady: (projec
         createdAt: now,
         updatedAt: now,
         status: "draft",
-        tags: [fitModeLabels[fitMode], colorModeLabels[colorMode], `${result.meta.patternWidth}x${result.meta.patternHeight}`]
+        tags: [fitModeLabels[fitMode], `${result.meta.patternWidth}x${result.meta.patternHeight}`]
       });
     } finally {
       setWorking(false);
@@ -105,7 +102,7 @@ export function PhotoToPatternPage({ onProjectReady }: { onProjectReady: (projec
       <section className="main-stage">
         <div className="panel">
           <h2>照片轉拼豆</h2>
-          <p>上傳照片或插畫後，BeadFlow 會依照底板範圍保留原圖比例，並用感知色差配對 MARD 色號。</p>
+          <p>上傳照片或插畫後，BeadFlow 會保留圖案比例並用自然感知色差配對 MARD 色號。</p>
           <input type="file" accept="image/png,image/jpeg,image/webp" onChange={(event) => upload(event.target.files?.[0] ?? null)} />
         </div>
         {imageDataUrl && (
@@ -146,27 +143,6 @@ export function PhotoToPatternPage({ onProjectReady }: { onProjectReady: (projec
             </div>
           )}
           <PhotoMeta meta={meta} width={width} height={height} />
-        </div>
-        <div className="panel">
-          <h3>配色設定</h3>
-          <label>
-            配色模式
-            <select value={colorMode} onChange={(event) => setColorMode(event.target.value as PhotoColorMode)}>
-              <option value="natural">自然接近</option>
-              <option value="vivid">鮮豔模式</option>
-              <option value="soft">柔和模式</option>
-              <option value="contrast">高對比模式</option>
-            </select>
-          </label>
-          <label>
-            最大顏色數
-            <select value={maxColors} onChange={(event) => setMaxColors(Number(event.target.value))}>
-              <option value={24}>24 色</option>
-              <option value={48}>48 色</option>
-              <option value={96}>96 色</option>
-              <option value={0}>不限制</option>
-            </select>
-          </label>
         </div>
         <div className="panel">
           <h3>背景處理</h3>

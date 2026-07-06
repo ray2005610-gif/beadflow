@@ -1,4 +1,4 @@
-﻿import { useMemo, useState } from "react";
+﻿import { useMemo, useState, type ReactNode } from "react";
 import type { InventoryItem } from "../types/inventory";
 import type { PatternProject, PatternStatus } from "../types/project";
 import type { ActiveTool } from "./DrawingToolbar";
@@ -139,24 +139,45 @@ export function PatternEditor({
         {!paletteCollapsed && <PalettePanel selectedCode={brushColorCode} recentColors={recentColors} onSelect={onBrushColorChange} />}
       </aside>
       <aside className="right-rail">
-        <ProjectDetailPanel project={project} onRename={onRename} onStatusChange={onStatusChange} />
-        <CostEstimatePanel project={project} colorCount={stats.length} />
-        <ColorStatsPanel
-          stats={stats}
-          inventory={inventory}
-          selectedColorCode={selectedColorCode}
-          onlyUnfinished={onlyUnfinished}
-          onSelect={onSelectedColorChange}
-          onBrush={onBrushColorChange}
-          onCompleteColor={onCompleteColor}
-          onClearCompleteColor={onClearCompleteColor}
-          onPrev={onPrevColor}
-          onNext={onNextColor}
-          onToggleOnlyUnfinished={onToggleOnlyUnfinished}
-        />
-        <InventoryPanel inventory={inventory} stats={stats} onChange={onInventoryChange} onConsume={onConsumeInventory} />
+        <AccordionSection title="圖紙資訊" defaultOpen>
+          <ProjectDetailPanel project={project} onRename={onRename} onStatusChange={onStatusChange} />
+        </AccordionSection>
+        <AccordionSection title="商業成本" defaultOpen>
+          <CostEstimatePanel project={project} colorCount={stats.length} />
+        </AccordionSection>
+        <AccordionSection title="色號統計" defaultOpen>
+          <ColorStatsPanel
+            stats={stats}
+            inventory={inventory}
+            selectedColorCode={selectedColorCode}
+            onlyUnfinished={onlyUnfinished}
+            onSelect={onSelectedColorChange}
+            onBrush={onBrushColorChange}
+            onCompleteColor={onCompleteColor}
+            onClearCompleteColor={onClearCompleteColor}
+            onPrev={onPrevColor}
+            onNext={onNextColor}
+            onToggleOnlyUnfinished={onToggleOnlyUnfinished}
+          />
+        </AccordionSection>
+        <AccordionSection title="庫存管理">
+          <InventoryPanel inventory={inventory} stats={stats} onChange={onInventoryChange} onConsume={onConsumeInventory} />
+        </AccordionSection>
       </aside>
     </main>
+  );
+}
+
+function AccordionSection({ title, defaultOpen = false, children }: { title: string; defaultOpen?: boolean; children: ReactNode }) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <section className="panel accordion-panel">
+      <button className="accordion-trigger" type="button" onClick={() => setOpen((value) => !value)} aria-expanded={open}>
+        <span>{title}</span>
+        <span aria-hidden="true">{open ? "收合" : "展開"}</span>
+      </button>
+      {open && <div className="accordion-content">{children}</div>}
+    </section>
   );
 }
 
@@ -168,8 +189,7 @@ function CostEstimatePanel({ project, colorCount }: { project: PatternProject; c
   const blankCells = boardCells - beadCount;
   const materialCost = beadCount * costPerBead;
   return (
-    <div className="panel cost-panel">
-      <h3>商業成本預估</h3>
+    <div className="cost-panel">
       <dl className="meta-grid compact-meta">
         <div><dt>底板尺寸</dt><dd>{project.size.width} × {project.size.height}</dd></div>
         <div><dt>實際豆數</dt><dd>{beadCount.toLocaleString("zh-TW")} 顆</dd></div>

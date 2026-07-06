@@ -304,7 +304,7 @@ function dominantColor(samples: SampledColor[]): SampledColor {
     b: median(samples.map((sample) => sample.b))
   };
   const ranked = samples
-    .map((sample) => ({ sample, distance: colorDistance(sample, med) }))
+    .map((sample) => ({ sample, distance: sampleDistanceToMedian(sample, med) }))
     .sort((a, b) => a.distance - b.distance);
   const kept = ranked.slice(0, Math.max(5, Math.ceil(ranked.length * 0.7))).map((item) => item.sample);
   return {
@@ -315,6 +315,12 @@ function dominantColor(samples: SampledColor[]): SampledColor {
   };
 }
 
+function sampleDistanceToMedian(sample: SampledColor, med: RGB): number {
+  const sampleLab = rgbToOklab(sample);
+  const medianLab = rgbToOklab(med);
+  const perceptual = Math.hypot((sampleLab.l - medianLab.l) * 1.4, sampleLab.a - medianLab.a, sampleLab.b - medianLab.b) * 100;
+  return perceptual + colorDistance(sample, med) * 0.18;
+}
 function adjustForMode(rgb: RGB, mode: PhotoColorMode): RGB {
   const hsl = rgbToHsl(rgb);
   if (mode === "vivid") return hslToRgb({ ...hsl, s: clamp01(hsl.s * 1.18), l: clamp01(hsl.l * 1.02) });
@@ -519,3 +525,4 @@ function trimmedMean(values: number[]): number {
 function clamp01(value: number): number {
   return Math.max(0, Math.min(1, value));
 }
+
