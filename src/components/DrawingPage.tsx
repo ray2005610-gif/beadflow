@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type { PatternProject } from "../types/project";
-import { visiblePalette } from "../data/recognitionPalette";
 import { createBlankPattern } from "../utils/imageToPattern";
+import { EMPTY_COLOR } from "../data/emptyColor";
 import { BoardPresetSelector } from "./BoardPresetSelector";
 
 export function DrawingPage({ onProjectReady }: { onProjectReady: (project: PatternProject) => void }) {
@@ -16,7 +16,7 @@ export function DrawingPage({ onProjectReady }: { onProjectReady: (project: Patt
       name,
       sourceType: "manual_drawing",
       size: { width, height },
-      grid: createBlankPattern(width, height, visiblePalette.find((color) => color.code === "H2") ?? visiblePalette[0]),
+      grid: createBlankPattern(width, height, EMPTY_COLOR),
       createdAt: now,
       updatedAt: now,
       status: "draft",

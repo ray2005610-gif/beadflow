@@ -1,5 +1,6 @@
 import { visiblePalette } from "../data/recognitionPalette";
 import type { BeadColor } from "../types/bead";
+import { EMPTY_COLOR } from "../data/emptyColor";
 
 const text = {
   title: "\u8272\u5361",
@@ -38,6 +39,12 @@ export function PalettePanel({
         }}
       />
       {recentColors.length > 0 && <ColorStrip title={text.recent} codes={recentColors.slice(0, 12)} selectedCode={selectedCode} onSelect={onSelect} />}
+      <section>
+        <h4>清除格子</h4>
+        <div className="swatches compact">
+          <SwatchButton color={EMPTY_COLOR} active={selectedCode === EMPTY_COLOR.code} onSelect={onSelect} compact />
+        </div>
+      </section>
       {groups.map((group) => (
         <section key={group}>
           <h4>{group} {text.series}</h4>
@@ -101,7 +108,7 @@ function SwatchButton({
       title={color.code + " " + color.name + (label ? " (" + label + ", " + text.manualOnly + ")" : "")}
       onClick={() => onSelect(color.code)}
     >
-      <span style={{ background: color.hex }} />
+      <span className={color.code === EMPTY_COLOR.code ? "checkerboard-swatch" : ""} style={color.code === EMPTY_COLOR.code ? undefined : { background: color.hex }} />
       <b>{color.code}</b>
       {label && <em>{label}</em>}
     </button>

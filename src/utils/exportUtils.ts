@@ -1,6 +1,7 @@
 ﻿import type { PatternGrid } from "../types/pattern";
 import { textColorForBackground } from "./colorUtils";
 import { calculateColorStats, totalCells } from "./patternStats";
+import { isEmptyOrTransparentCell } from "../data/emptyColor";
 
 export type PatternExportOptions = {
   showDone: boolean;
@@ -70,7 +71,7 @@ export function exportPatternPng(name: string, grid: PatternGrid, options: Patte
     for (const c of row) {
       const x = startX + coord + c.col * cell;
       const y = startY + coord + c.row * cell;
-      if (!c.empty && c.colorCode) {
+      if (!isEmptyOrTransparentCell(c)) {
         ctx.fillStyle = c.hex;
         ctx.fillRect(x, y, cell, cell);
         if (options.showSymbols && cell >= 13) {
@@ -135,7 +136,7 @@ export function exportPatternPng(name: string, grid: PatternGrid, options: Patte
 }
 
 function actualPatternBounds(grid: PatternGrid) {
-  const cells = grid.flat().filter((cell) => !cell.empty && cell.colorCode);
+  const cells = grid.flat().filter((cell) => !isEmptyOrTransparentCell(cell));
   if (!cells.length) return { width: 0, height: 0 };
   const minRow = Math.min(...cells.map((cell) => cell.row));
   const maxRow = Math.max(...cells.map((cell) => cell.row));

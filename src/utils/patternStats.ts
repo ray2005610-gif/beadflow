@@ -1,10 +1,11 @@
 import type { ColorStat, PatternGrid } from "../types/pattern";
+import { isEmptyOrTransparentCell } from "../data/emptyColor";
 
 export function calculateColorStats(grid: PatternGrid): ColorStat[] {
   const map = new Map<string, ColorStat>();
   for (const row of grid) {
     for (const cell of row) {
-      if (cell.empty || !cell.colorCode) continue;
+      if (isEmptyOrTransparentCell(cell)) continue;
       const current = map.get(cell.colorCode) ?? {
         code: cell.colorCode,
         name: cell.colorName,
@@ -26,12 +27,12 @@ export function calculateColorStats(grid: PatternGrid): ColorStat[] {
 }
 
 export function totalCells(grid: PatternGrid): number {
-  return grid.reduce((sum, row) => sum + row.filter((cell) => !cell.empty && cell.colorCode).length, 0);
+  return grid.reduce((sum, row) => sum + row.filter((cell) => !isEmptyOrTransparentCell(cell)).length, 0);
 }
 
 export function completePercent(grid: PatternGrid): number {
   const total = totalCells(grid);
   if (!total) return 0;
-  const done = grid.flat().filter((cell) => !cell.empty && cell.colorCode && cell.done).length;
+  const done = grid.flat().filter((cell) => !isEmptyOrTransparentCell(cell) && cell.done).length;
   return Math.round((done / total) * 100);
 }

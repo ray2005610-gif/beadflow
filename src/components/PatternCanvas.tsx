@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { PointerEvent } from "react";
 import type { PatternGrid } from "../types/pattern";
+import { isEmptyOrTransparentCell } from "../data/emptyColor";
 import type { ActiveTool } from "./DrawingToolbar";
 import { canvasToWorld, clamp } from "../utils/canvasMath";
 import { textColorForBackground } from "../utils/colorUtils";
@@ -196,7 +197,7 @@ function drawGrid(
     for (const c of row) {
       const x = coord + c.col * cell;
       const y = coord + c.row * cell;
-      const isEmpty = c.empty || !c.colorCode;
+      const isEmpty = isEmptyOrTransparentCell(c);
       const isSelected = Boolean(options.selectedColorCode && c.colorCode === options.selectedColorCode);
       const highlight = !options.selectedColorCode || isSelected;
       const hiddenByDone = options.onlyUnfinished && c.done;

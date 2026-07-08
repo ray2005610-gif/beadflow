@@ -28,3 +28,14 @@ export type GridRecognitionOptions = {
   centerSampleRatio: number;
   confidenceThreshold: number;
 };
+
+export type ChartLocalPaletteEntry = {
+  id: string;
+  code: string;
+  sampledHex: string;
+  officialHex?: string;
+  countFromLegend?: number;
+  source: "legend";
+  confidence: number;
+  enabled: boolean;
+};

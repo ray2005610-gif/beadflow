@@ -1,21 +1,25 @@
 import { useState } from "react";
-import type { GridCalibration } from "../types/calibration";
+import type { ChartLocalPaletteEntry, GridCalibration } from "../types/calibration";
 import type { PatternProject } from "../types/project";
 import { recognitionPalette } from "../data/recognitionPalette";
-import { recognizeGridPatternFromImage, defaultRecognitionOptions } from "../utils/gridRecognition";
+import { extractLegendPalette, recognizeGridPatternFromImage, defaultRecognitionOptions } from "../utils/gridRecognition";
 import { GridCalibrationCanvas } from "./GridCalibrationCanvas";
 import { CalibrationPanel } from "./CalibrationPanel";
+import { LegendPalettePanel } from "./LegendPalettePanel";
 
 export function GridImportPage({ onProjectReady }: { onProjectReady: (project: PatternProject) => void }) {
   const [imageDataUrl, setImageDataUrl] = useState("");
   const [calibration, setCalibration] = useState<GridCalibration | null>(null);
   const [working, setWorking] = useState(false);
+  const [detectingLegend, setDetectingLegend] = useState(false);
+  const [chartLocalPalette, setChartLocalPalette] = useState<ChartLocalPaletteEntry[]>([]);
 
   const upload = (file: File | null) => {
     if (!file) return;
     const reader = new FileReader();
     reader.onload = () => {
       setCalibration(null);
+      setChartLocalPalette([]);
       setImageDataUrl(String(reader.result));
     };
     reader.readAsDataURL(file);
@@ -25,7 +29,13 @@ export function GridImportPage({ onProjectReady }: { onProjectReady: (project: P
     if (!imageDataUrl || !calibration) return;
     setWorking(true);
     try {
-      const grid = await recognizeGridPatternFromImage(imageDataUrl, calibration, recognitionPalette, defaultRecognitionOptions);
+      const grid = await recognizeGridPatternFromImage(
+        imageDataUrl,
+        calibration,
+        recognitionPalette,
+        defaultRecognitionOptions,
+        chartLocalPalette
+      );
       const now = new Date().toISOString();
       onProjectReady({
         id: crypto.randomUUID(),
@@ -44,6 +54,16 @@ export function GridImportPage({ onProjectReady }: { onProjectReady: (project: P
     }
   };
 
+  const detectLegend = async () => {
+    if (!imageDataUrl || !calibration) return;
+    setDetectingLegend(true);
+    try {
+      setChartLocalPalette(await extractLegendPalette(imageDataUrl, calibration));
+    } finally {
+      setDetectingLegend(false);
+    }
+  };
+
   return (
     <main className="workspace two-col">
       <section className="main-stage">
@@ -56,6 +76,14 @@ export function GridImportPage({ onProjectReady }: { onProjectReady: (project: P
       </section>
       <aside className="side-rail">
         <CalibrationPanel calibration={calibration} onChange={setCalibration} onRecognize={recognize} />
+        {calibration && (
+          <LegendPalettePanel
+            entries={chartLocalPalette}
+            detecting={detectingLegend}
+            onDetect={detectLegend}
+            onChange={setChartLocalPalette}
+          />
+        )}
         {working && <div className="panel">辨識中...</div>}
       </aside>
     </main>

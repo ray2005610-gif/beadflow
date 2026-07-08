@@ -2,6 +2,7 @@
 import { recognitionPalette } from "../data/recognitionPalette";
 import type { PatternGrid } from "../types/pattern";
 import type { PatternProject } from "../types/project";
+import { isEmptyOrTransparentCell } from "../data/emptyColor";
 import {
   defaultBackgroundRemovalOptions,
   imageToPattern,
@@ -198,7 +199,7 @@ function PatternPreviewCanvas({ grid }: { grid: PatternGrid | null }) {
       for (const item of row) {
         const x = item.col * cell;
         const y = item.row * cell;
-        if (item.empty || !item.colorCode) {
+        if (isEmptyOrTransparentCell(item)) {
           ctx.fillStyle = (item.row + item.col) % 2 === 0 ? "#fffdf8" : "#f3eadf";
           ctx.fillRect(x, y, cell, cell);
           continue;

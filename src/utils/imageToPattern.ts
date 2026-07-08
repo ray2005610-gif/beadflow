@@ -10,6 +10,7 @@ import {
   rgbToOklab,
   type ColorMatchMode
 } from "./colorUtils";
+import { EMPTY_COLOR, isEmptyOrTransparentCell } from "../data/emptyColor";
 
 export type PhotoColorMode = ColorMatchMode;
 export type PhotoFitMode = "contain" | "stretch" | "crop" | "manual";
@@ -119,6 +120,11 @@ export const defaultBackgroundRemovalOptions: BackgroundRemovalOptions = {
 };
 
 export function createBlankPattern(width: number, height: number, color: BeadColor): PatternGrid {
+  if (color.code === EMPTY_COLOR.code) {
+    return Array.from({ length: height }, (_, row) =>
+      Array.from({ length: width }, (_, col) => createEmptyCell(row, col))
+    );
+  }
   return Array.from({ length: height }, (_, row) =>
     Array.from({ length: width }, (_, col) => ({ row, col, colorCode: color.code, colorName: color.name, hex: color.hex, symbol: color.symbol, done: false, empty: false }))
   );
@@ -128,10 +134,10 @@ export function createEmptyCell(row: number, col: number, rawRgb?: RGB, alpha?: 
   return {
     row,
     col,
-    colorCode: "",
-    colorName: "空白",
-    hex: "transparent",
-    symbol: "",
+    colorCode: EMPTY_COLOR.code,
+    colorName: EMPTY_COLOR.name,
+    hex: EMPTY_COLOR.hex,
+    symbol: EMPTY_COLOR.symbol,
     done: false,
     empty: true,
     rawRgb,
@@ -227,7 +233,7 @@ export async function convertImageToBeadPatternV2(
     })
   );
   const finalGrid = detectedKind === "photo" ? smoothIsolatedCells(grid, paletteForImage) : preserveLineArtGrid(grid);
-  const beadCells = finalGrid.flat().filter((cell) => !cell.empty && cell.colorCode).length;
+  const beadCells = finalGrid.flat().filter((cell) => !isEmptyOrTransparentCell(cell)).length;
   return {
     grid: finalGrid,
     meta: {
@@ -520,8 +526,8 @@ function preserveLineArtGrid(grid: PatternGrid): PatternGrid {
 
 function smoothIsolatedCells(grid: PatternGrid, palette: BeadColor[]): PatternGrid {
   return grid.map((row, rowIndex) => row.map((cell, colIndex) => {
-    if (cell.empty || !cell.colorCode) return cell;
-    const neighbors = neighborCells(grid, rowIndex, colIndex).filter((item) => !item.empty && item.colorCode);
+    if (isEmptyOrTransparentCell(cell)) return cell;
+    const neighbors = neighborCells(grid, rowIndex, colIndex).filter((item) => !isEmptyOrTransparentCell(item));
     const sameCount = neighbors.filter((item) => item.colorCode === cell.colorCode).length;
     if (sameCount >= 2 || neighbors.length < 5) return cell;
     const counts = new Map<string, number>();

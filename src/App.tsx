@@ -18,6 +18,7 @@ import { PatternEditor } from "./components/PatternEditor";
 import { ProjectLibrary } from "./components/ProjectLibrary";
 import type { ActiveTool } from "./components/DrawingToolbar";
 import { calculateColorStats } from "./utils/patternStats";
+import { EMPTY_COLOR, isEmptyOrTransparentCell } from "./data/emptyColor";
 
 const editOnlyTools: ActiveTool[] = ["paint", "eraser", "eyedropper", "fill"];
 
@@ -56,7 +57,7 @@ export default function App() {
   };
 
   const selectBrush = (code: string) => {
-    if (!visiblePalette.some((color) => color.code === code)) return;
+    if (code !== EMPTY_COLOR.code && !visiblePalette.some((color) => color.code === code)) return;
     setBrushColorCode(code);
     setRecentColors((items) => [code, ...items.filter((item) => item !== code)].slice(0, 12));
   };
@@ -85,15 +86,17 @@ export default function App() {
     if (!project) return;
     const canUseEditTools = project.sourceType === "manual_drawing" || correctionMode;
     if (!canUseEditTools && editOnlyTools.includes(tool)) return;
-    const brush = visiblePalette.find((c) => c.code === brushColorCode) ?? visiblePalette[0];
+    const brush = brushColorCode === EMPTY_COLOR.code
+      ? EMPTY_COLOR
+      : visiblePalette.find((c) => c.code === brushColorCode) ?? visiblePalette[0];
     if (!brush) return;
     const clicked = project.grid[row][col];
     if (tool === "inspect") {
-      setSelectedColorCode(clicked.empty || !clicked.colorCode ? null : clicked.colorCode);
+      setSelectedColorCode(isEmptyOrTransparentCell(clicked) ? null : clicked.colorCode);
       return;
     }
     if (tool === "eyedropper") {
-      if (!clicked.empty && clicked.colorCode) selectBrush(clicked.colorCode);
+      if (!isEmptyOrTransparentCell(clicked)) selectBrush(clicked.colorCode);
       setActiveTool("paint");
       return;
     }
@@ -180,8 +183,8 @@ export default function App() {
             onConsumeInventory={consumeCurrent}
             onRename={(name) => updateProject({ name })}
             onStatusChange={(status: PatternStatus) => updateProject({ status })}
-            onCompleteColor={(code) => setGrid(project.grid.map((row) => row.map((cell) => !cell.empty && cell.colorCode === code ? { ...cell, done: true } : cell)))}
-            onClearCompleteColor={(code) => setGrid(project.grid.map((row) => row.map((cell) => !cell.empty && cell.colorCode === code ? { ...cell, done: false } : cell)))}
+            onCompleteColor={(code) => setGrid(project.grid.map((row) => row.map((cell) => !isEmptyOrTransparentCell(cell) && cell.colorCode === code ? { ...cell, done: true } : cell)))}
+            onClearCompleteColor={(code) => setGrid(project.grid.map((row) => row.map((cell) => !isEmptyOrTransparentCell(cell) && cell.colorCode === code ? { ...cell, done: false } : cell)))}
             onPrevColor={() => moveSelected(-1)}
             onNextColor={() => moveSelected(1)}
             onToggleGrid={() => setShowGrid((v) => !v)}
@@ -213,6 +216,9 @@ function initialInventory(): InventoryItem[] {
 }
 
 function colorCell(cell: PatternCell, color: BeadColor): PatternCell {
+  if (color.code === EMPTY_COLOR.code) {
+    return createEmptyCell(cell.row, cell.col, cell.rawRgb, cell.alpha, cell.sourceRow, cell.sourceCol);
+  }
   return {
     ...cell,
     colorCode: color.code,
@@ -242,8 +248,8 @@ function floodFill(grid: PatternGrid, row: number, col: number, color: BeadColor
 }
 
 function sameFillTarget(cell: PatternCell, target: PatternCell): boolean {
-  if (target.empty || !target.colorCode) return Boolean(cell.empty || !cell.colorCode);
-  return !cell.empty && cell.colorCode === target.colorCode;
+  if (isEmptyOrTransparentCell(target)) return isEmptyOrTransparentCell(cell);
+  return !isEmptyOrTransparentCell(cell) && cell.colorCode === target.colorCode;
 }
 
 function mirrorGrid(grid: PatternGrid, axis: MirrorAxis): PatternGrid {
@@ -263,7 +269,7 @@ function sanitizeProjectPalette(project: PatternProject): PatternProject {
   const visibleCodes = new Set(visiblePalette.map((color) => color.code));
   let changed = false;
   const grid = project.grid.map((row) => row.map((cell) => {
-    if (cell.empty || !cell.colorCode || visibleCodes.has(cell.colorCode)) return cell;
+    if (isEmptyOrTransparentCell(cell) || visibleCodes.has(cell.colorCode)) return cell;
     const rgb = cell.rawRgb ?? safeHexToRgb(cell.hex);
     if (!rgb) {
       changed = true;
