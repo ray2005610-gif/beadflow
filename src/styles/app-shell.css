@@ -253,25 +253,74 @@
   object-fit: cover;
 }
 
-.bf-contact-email {
+.bf-contact-email,
+.bf-feedback-box {
   display: grid;
-  gap: 6px;
+  gap: 10px;
   padding: 16px;
   border: 1px solid #e3d5c5;
   border-radius: 14px;
   background: #fff8ee;
 }
 
-.bf-contact-email span {
+.bf-contact-email span,
+.bf-feedback-box span {
   color: var(--color-muted);
   font-size: 13px;
   font-weight: 750;
+}
+
+.bf-feedback-box p {
+  margin: 0;
+  color: #6f5f51;
+  line-height: 1.7;
 }
 
 .bf-contact-email strong {
   color: #6b452a;
   font-size: clamp(20px, 4vw, 28px);
   overflow-wrap: anywhere;
+}
+
+.bf-faq-card {
+  display: grid;
+  gap: 12px;
+  margin-top: 18px;
+  padding: 24px;
+}
+
+.bf-faq-card h2 {
+  margin: 0;
+}
+
+.bf-faq-list {
+  display: grid;
+  gap: 10px;
+}
+
+.bf-faq-item {
+  border: 1px solid #e3d5c5;
+  border-radius: 14px;
+  background: #fff8ee;
+  overflow: hidden;
+}
+
+.bf-faq-item summary {
+  cursor: pointer;
+  padding: 14px 16px;
+  color: #4a4038;
+  font-weight: 850;
+}
+
+.bf-faq-item summary:hover {
+  background: #f1dec9;
+}
+
+.bf-faq-item p {
+  margin: 0;
+  padding: 0 16px 16px;
+  color: #6f5f51;
+  line-height: 1.75;
 }
 
 @media (max-width: 1180px) {
