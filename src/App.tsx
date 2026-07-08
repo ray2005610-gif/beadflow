@@ -9,23 +9,25 @@ import { storage } from "./utils/storageUtils";
 import { exportPatternPng } from "./utils/exportUtils";
 import { createEmptyCell } from "./utils/imageToPattern";
 import { findClosestBeadColorWithDebug, hexToRgb } from "./utils/colorUtils";
-import { Layout } from "./components/Layout";
-import { ModeSelector, type AppMode } from "./components/ModeSelector";
-import { GridImportPage } from "./components/GridImportPage";
-import { DrawingPage } from "./components/DrawingPage";
-import { PhotoToPatternPage } from "./components/PhotoToPatternPage";
+import { AppShell } from "./components/AppShell";
 import { PatternEditor } from "./components/PatternEditor";
-import { ProjectLibrary } from "./components/ProjectLibrary";
 import type { ActiveTool } from "./components/DrawingToolbar";
 import { calculateColorStats } from "./utils/patternStats";
 import { EMPTY_COLOR, isEmptyOrTransparentCell } from "./data/emptyColor";
+import type { AppPage } from "./types/navigation";
+import { HomePage } from "./pages/HomePage";
+import { GridRecognitionPage } from "./pages/GridRecognitionPage";
+import { ManualPatternPage } from "./pages/ManualPatternPage";
+import { PhotoToPatternPage } from "./pages/PhotoToPatternPage";
+import { TutorialPage } from "./pages/TutorialPage";
+import { ContactPage } from "./pages/ContactPage";
 
 const editOnlyTools: ActiveTool[] = ["paint", "eraser", "eyedropper", "fill"];
 
 type MirrorAxis = "horizontal" | "vertical";
 
 export default function App() {
-  const [mode, setMode] = useState<AppMode>("grid");
+  const [page, setPage] = useState<AppPage>("home");
   const [project, setProject] = useState<PatternProject | null>(null);
   const [projects, setProjects] = useState<PatternProject[]>(() => storage.getProjects().map(sanitizeProjectPalette));
   const [inventory, setInventory] = useState<InventoryItem[]>(() => initialInventory());
@@ -47,8 +49,20 @@ export default function App() {
   useEffect(() => storage.saveTransactions(transactions), [transactions]);
   useEffect(() => storage.saveRecentColors(recentColors), [recentColors]);
 
+  const navigate = (nextPage: AppPage) => {
+    setPage(nextPage);
+    setProject(null);
+    setMirrorOriginalGrid(null);
+    setCorrectionMode(false);
+    setActiveTool("inspect");
+    setSelectedColorCode(null);
+    setOnlyUnfinished(false);
+  };
+
   const openProject = (nextProject: PatternProject | null) => {
-    setProject(nextProject ? sanitizeProjectPalette(nextProject) : null);
+    const sanitized = nextProject ? sanitizeProjectPalette(nextProject) : null;
+    setProject(sanitized);
+    if (sanitized) setPage(pageFromSource(sanitized.sourceType));
     setMirrorOriginalGrid(null);
     setCorrectionMode(false);
     setActiveTool(nextProject?.sourceType === "manual_drawing" ? "paint" : "inspect");
@@ -143,8 +157,7 @@ export default function App() {
   };
 
   return (
-    <Layout>
-      <ModeSelector mode={mode} onChange={(next) => { setMode(next); openProject(null); }} />
+    <AppShell activePage={page} onNavigate={navigate}>
       {project ? (
         <>
           <div className="editor-topline">
@@ -197,16 +210,43 @@ export default function App() {
         </>
       ) : (
         <>
-          {mode === "grid" && <GridImportPage onProjectReady={openProject} />}
-          {mode === "drawing" && <DrawingPage onProjectReady={openProject} />}
-          {mode === "photo" && <PhotoToPatternPage onProjectReady={openProject} />}
-          <main className="workspace narrow">
-            <ProjectLibrary projects={projects} onOpen={openProject} onDelete={deleteProject} />
-          </main>
+          {page === "home" && <HomePage onNavigate={navigate} />}
+          {page === "grid" && (
+            <GridRecognitionPage
+              projects={projects}
+              onProjectReady={openProject}
+              onOpenProject={openProject}
+              onDeleteProject={deleteProject}
+            />
+          )}
+          {page === "drawing" && (
+            <ManualPatternPage
+              projects={projects}
+              onProjectReady={openProject}
+              onOpenProject={openProject}
+              onDeleteProject={deleteProject}
+            />
+          )}
+          {page === "photo" && (
+            <PhotoToPatternPage
+              projects={projects}
+              onProjectReady={openProject}
+              onOpenProject={openProject}
+              onDeleteProject={deleteProject}
+            />
+          )}
+          {page === "tutorial" && <TutorialPage />}
+          {page === "contact" && <ContactPage />}
         </>
       )}
-    </Layout>
+    </AppShell>
   );
+}
+
+function pageFromSource(sourceType: PatternProject["sourceType"]): AppPage {
+  if (sourceType === "manual_drawing") return "drawing";
+  if (sourceType === "photo_to_pattern") return "photo";
+  return "grid";
 }
 
 function initialInventory(): InventoryItem[] {
