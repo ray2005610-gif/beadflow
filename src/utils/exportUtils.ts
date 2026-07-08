@@ -50,6 +50,7 @@ export function exportPatternPng(name: string, grid: PatternGrid, options: Patte
     `實際圖案尺寸：${actual.width} × ${actual.height}`,
     `實際豆數：${beadCount.toLocaleString("zh-TW")} 顆`,
     `使用顏色：${stats.length} 色`,
+    "色卡：MARD",
     `預估材料成本：${cost.toLocaleString("zh-TW")} 元`,
     options.mirrored ? "輸出：鏡射" : "輸出：正常"
   ].join("　");
@@ -87,8 +88,8 @@ export function exportPatternPng(name: string, grid: PatternGrid, options: Patte
         ctx.fillRect(x, y, cell, cell);
       }
       const major5 = c.row % 5 === 0 || c.col % 5 === 0;
-      ctx.strokeStyle = major5 ? "#7A6A5F" : "#CFC3B5";
-      ctx.lineWidth = major5 ? 1.5 : 0.45;
+      ctx.strokeStyle = major5 ? "#6f6258" : "#cfc3b5";
+      ctx.lineWidth = major5 ? 2.4 : 1;
       ctx.strokeRect(x, y, cell, cell);
     }
   }

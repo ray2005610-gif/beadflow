@@ -23,6 +23,10 @@ export type BeadColor = {
   isStandard?: boolean;
   isExtended?: boolean;
   defaultUseInMatching?: boolean;
+  defaultUseInRecognition?: boolean;
+  defaultUseInAutoMatching?: boolean;
+  canUseManually?: boolean;
+  specialLabel?: string;
   priorityPenalty?: number;
   source?: string;
   sourceUrl?: string;

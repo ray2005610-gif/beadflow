@@ -219,14 +219,15 @@ function drawGrid(
       }
       ctx.globalAlpha = 1;
       if (options.showGrid) {
-        ctx.strokeStyle = isSelected ? "#111827" : c.row % 10 === 0 || c.col % 10 === 0 ? "#4b5563" : c.row % 5 === 0 || c.col % 5 === 0 ? "#9ca3af" : "#d1d5db";
-        ctx.lineWidth = isSelected ? 1.8 : c.row % 10 === 0 || c.col % 10 === 0 ? 1.2 : 0.5;
+        const major5 = c.row % 5 === 0 || c.col % 5 === 0;
+        ctx.strokeStyle = isSelected ? "#3f332a" : major5 ? "#6f6258" : "#cfc3b5";
+        ctx.lineWidth = isSelected ? 2.4 : major5 ? 2 : 1;
         ctx.strokeRect(x, y, cell, cell);
       }
     }
   }
   if (options.showCoordinates) {
-    ctx.fillStyle = "#374151";
+    ctx.fillStyle = "#5d5047";
     for (let col = 0; col < grid[0].length; col += 5) ctx.fillText(String(col + 1), coord + col * cell + cell / 2, 12);
     for (let row = 0; row < grid.length; row += 5) ctx.fillText(String(row + 1), 12, coord + row * cell + cell / 2);
   }

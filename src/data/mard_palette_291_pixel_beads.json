@@ -19,7 +19,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "A1",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -41,7 +45,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "A2",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -63,7 +71,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "A3",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -85,7 +97,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "A4",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -107,7 +123,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "A5",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -129,7 +149,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "A6",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -151,7 +175,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "A7",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -173,7 +201,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "A8",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -195,7 +227,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "A9",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -217,7 +253,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "A10",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -239,7 +279,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "A11",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -261,7 +305,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "A12",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -283,7 +331,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "A13",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -305,7 +357,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "A14",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -327,7 +383,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "A15",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -349,7 +409,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "A16",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -371,7 +435,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "A17",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -393,7 +461,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "A18",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -415,7 +487,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "A19",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -437,7 +513,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "A20",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -459,7 +539,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "A21",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -481,7 +565,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "A22",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -503,7 +591,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "A23",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -525,7 +617,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "A24",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -547,7 +643,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "A25",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -569,7 +669,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "A26",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -591,7 +695,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "B1",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -613,7 +721,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "B2",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -635,7 +747,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "B3",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -657,7 +773,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "B4",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -679,7 +799,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "B5",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -701,7 +825,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "B6",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -723,7 +851,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "B7",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -745,7 +877,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "B8",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -767,7 +903,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "B9",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -789,7 +929,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "B10",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -811,7 +955,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "B11",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -833,7 +981,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "B12",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -855,7 +1007,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "B13",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -877,7 +1033,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "B14",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -899,7 +1059,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "B15",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -921,7 +1085,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "B16",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -943,7 +1111,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "B17",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -965,7 +1137,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "B18",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -987,7 +1163,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "B19",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -1009,7 +1189,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "B20",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -1031,7 +1215,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "B21",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -1053,7 +1241,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "B22",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -1075,7 +1267,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "B23",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -1097,7 +1293,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "B24",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -1119,7 +1319,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "B25",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -1141,7 +1345,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "B26",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -1163,7 +1371,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "B27",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -1185,7 +1397,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "B28",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -1207,7 +1423,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "B29",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -1229,7 +1449,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "B30",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -1251,7 +1475,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "B31",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -1273,7 +1501,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "B32",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -1295,7 +1527,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "C1",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -1317,7 +1553,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "C2",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -1339,7 +1579,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "C3",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -1361,7 +1605,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "C4",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -1383,7 +1631,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "C5",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -1405,7 +1657,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "C6",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -1427,7 +1683,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "C7",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -1449,7 +1709,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "C8",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -1471,7 +1735,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "C9",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -1493,7 +1761,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "C10",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -1515,7 +1787,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "C11",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -1537,7 +1813,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "C12",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -1559,7 +1839,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "C13",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -1581,7 +1865,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "C14",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -1603,7 +1891,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "C15",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -1625,7 +1917,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "C16",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -1647,7 +1943,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "C17",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -1669,7 +1969,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "C18",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -1691,7 +1995,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "C19",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -1713,7 +2021,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "C20",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -1735,7 +2047,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "C21",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -1757,7 +2073,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "C22",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -1779,7 +2099,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "C23",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -1801,7 +2125,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "C24",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -1823,7 +2151,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "C25",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -1845,7 +2177,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "C26",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -1867,7 +2203,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "C27",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -1889,7 +2229,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "C28",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -1911,7 +2255,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "C29",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -1933,7 +2281,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "D1",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -1955,7 +2307,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "D2",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -1977,7 +2333,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "D3",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -1999,7 +2359,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "D4",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -2021,7 +2385,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "D5",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -2043,7 +2411,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "D6",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -2065,7 +2437,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "D7",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -2087,7 +2463,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "D8",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -2109,7 +2489,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "D9",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -2131,7 +2515,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "D10",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -2153,7 +2541,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "D11",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -2175,7 +2567,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "D12",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -2197,7 +2593,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "D13",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -2219,7 +2619,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "D14",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -2241,7 +2645,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "D15",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -2263,7 +2671,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "D16",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -2285,7 +2697,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "D17",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -2307,7 +2723,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "D18",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -2329,7 +2749,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "D19",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -2351,7 +2775,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "D20",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -2373,7 +2801,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "D21",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -2395,7 +2827,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "D22",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -2417,7 +2853,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "D23",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -2439,7 +2879,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "D24",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -2461,7 +2905,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "D25",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -2483,7 +2931,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "D26",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -2505,7 +2957,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "E1",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -2527,7 +2983,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "E2",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -2549,7 +3009,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "E3",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -2571,7 +3035,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "E4",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -2593,7 +3061,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "E5",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -2615,7 +3087,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "E6",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -2637,7 +3113,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "E7",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -2659,7 +3139,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "E8",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -2681,7 +3165,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "E9",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -2703,7 +3191,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "E10",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -2725,7 +3217,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "E11",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -2747,7 +3243,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "E12",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -2769,7 +3269,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "E13",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -2791,7 +3295,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "E14",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -2813,7 +3321,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "E15",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -2835,7 +3347,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "E16",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -2857,7 +3373,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "E17",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -2879,7 +3399,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "E18",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -2901,7 +3425,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "E19",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -2923,7 +3451,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "E20",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -2945,7 +3477,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "E21",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -2967,7 +3503,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "E22",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -2989,7 +3529,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "E23",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -3011,7 +3555,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "E24",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -3033,7 +3581,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "F1",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -3055,7 +3607,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "F2",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -3077,7 +3633,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "F3",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -3099,7 +3659,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "F4",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -3121,7 +3685,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "F5",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -3143,7 +3711,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "F6",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -3165,7 +3737,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "F7",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -3187,7 +3763,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "F8",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -3209,7 +3789,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "F9",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -3231,7 +3815,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "F10",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -3253,7 +3841,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "F11",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -3275,7 +3867,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "F12",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -3297,7 +3893,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "F13",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -3319,7 +3919,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "F14",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -3341,7 +3945,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "F15",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -3363,7 +3971,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "F16",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -3385,7 +3997,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "F17",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -3407,7 +4023,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "F18",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -3429,7 +4049,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "F19",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -3451,7 +4075,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "F20",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -3473,7 +4101,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "F21",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -3495,7 +4127,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "F22",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -3517,7 +4153,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "F23",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -3539,7 +4179,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "F24",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -3561,7 +4205,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "F25",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -3583,7 +4231,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "G1",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -3605,7 +4257,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "G2",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -3627,7 +4283,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "G3",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -3649,7 +4309,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "G4",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -3671,7 +4335,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "G5",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -3693,7 +4361,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "G6",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -3715,7 +4387,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "G7",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -3737,7 +4413,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "G8",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -3759,7 +4439,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "G9",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -3781,7 +4465,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "G10",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -3803,7 +4491,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "G11",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -3825,7 +4517,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "G12",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -3847,7 +4543,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "G13",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -3869,7 +4569,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "G14",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -3891,7 +4595,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "G15",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -3913,7 +4621,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "G16",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -3935,7 +4647,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "G17",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -3957,7 +4673,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "G18",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -3979,7 +4699,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "G19",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -4001,7 +4725,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "G20",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -4023,7 +4751,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "G21",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -4045,7 +4777,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "H1",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -4067,7 +4803,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "H2",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -4089,7 +4829,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "H3",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -4111,7 +4855,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "H4",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -4133,7 +4881,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "H5",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -4155,7 +4907,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "H6",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -4177,7 +4933,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "H7",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -4199,7 +4959,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "H8",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -4221,7 +4985,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "H9",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -4243,7 +5011,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "H10",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -4265,7 +5037,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "H11",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -4287,7 +5063,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "H12",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -4309,7 +5089,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "H13",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -4331,7 +5115,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "H14",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -4353,7 +5141,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "H15",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -4375,7 +5167,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "H16",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -4397,7 +5193,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "H17",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -4419,7 +5219,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "H18",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -4441,7 +5245,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "H19",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -4463,7 +5271,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "H20",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -4485,7 +5297,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "H21",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -4507,7 +5323,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "H22",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -4529,7 +5349,11 @@
     "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": ""
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "H23",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -4539,19 +5363,23 @@
     "nameEn": "",
     "hex": "#BCC6B8",
     "series": "M",
-    "finish": "pearl",
+    "finish": "solid",
     "isTransparent": false,
-    "isPearl": true,
+    "isPearl": false,
     "isNeon": false,
     "isGlitter": false,
-    "isSpecial": true,
-    "isStandard": false,
+    "isSpecial": false,
+    "isStandard": true,
     "isExtended": false,
-    "defaultUseInMatching": false,
-    "priorityPenalty": 10,
+    "defaultUseInMatching": true,
+    "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "M 系列珠光色，預設不參與自動配色。"
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "M1",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -4561,19 +5389,23 @@
     "nameEn": "",
     "hex": "#8AA386",
     "series": "M",
-    "finish": "pearl",
+    "finish": "solid",
     "isTransparent": false,
-    "isPearl": true,
+    "isPearl": false,
     "isNeon": false,
     "isGlitter": false,
-    "isSpecial": true,
-    "isStandard": false,
+    "isSpecial": false,
+    "isStandard": true,
     "isExtended": false,
-    "defaultUseInMatching": false,
-    "priorityPenalty": 10,
+    "defaultUseInMatching": true,
+    "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "M 系列珠光色，預設不參與自動配色。"
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "M2",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -4583,19 +5415,23 @@
     "nameEn": "",
     "hex": "#697D80",
     "series": "M",
-    "finish": "pearl",
+    "finish": "solid",
     "isTransparent": false,
-    "isPearl": true,
+    "isPearl": false,
     "isNeon": false,
     "isGlitter": false,
-    "isSpecial": true,
-    "isStandard": false,
+    "isSpecial": false,
+    "isStandard": true,
     "isExtended": false,
-    "defaultUseInMatching": false,
-    "priorityPenalty": 10,
+    "defaultUseInMatching": true,
+    "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "M 系列珠光色，預設不參與自動配色。"
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "M3",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -4605,19 +5441,23 @@
     "nameEn": "",
     "hex": "#E3D2BC",
     "series": "M",
-    "finish": "pearl",
+    "finish": "solid",
     "isTransparent": false,
-    "isPearl": true,
+    "isPearl": false,
     "isNeon": false,
     "isGlitter": false,
-    "isSpecial": true,
-    "isStandard": false,
+    "isSpecial": false,
+    "isStandard": true,
     "isExtended": false,
-    "defaultUseInMatching": false,
-    "priorityPenalty": 10,
+    "defaultUseInMatching": true,
+    "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "M 系列珠光色，預設不參與自動配色。"
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "M4",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -4627,19 +5467,23 @@
     "nameEn": "",
     "hex": "#D0CCAA",
     "series": "M",
-    "finish": "pearl",
+    "finish": "solid",
     "isTransparent": false,
-    "isPearl": true,
+    "isPearl": false,
     "isNeon": false,
     "isGlitter": false,
-    "isSpecial": true,
-    "isStandard": false,
+    "isSpecial": false,
+    "isStandard": true,
     "isExtended": false,
-    "defaultUseInMatching": false,
-    "priorityPenalty": 10,
+    "defaultUseInMatching": true,
+    "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "M 系列珠光色，預設不參與自動配色。"
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "M5",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -4649,19 +5493,23 @@
     "nameEn": "",
     "hex": "#B0A782",
     "series": "M",
-    "finish": "pearl",
+    "finish": "solid",
     "isTransparent": false,
-    "isPearl": true,
+    "isPearl": false,
     "isNeon": false,
     "isGlitter": false,
-    "isSpecial": true,
-    "isStandard": false,
+    "isSpecial": false,
+    "isStandard": true,
     "isExtended": false,
-    "defaultUseInMatching": false,
-    "priorityPenalty": 10,
+    "defaultUseInMatching": true,
+    "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "M 系列珠光色，預設不參與自動配色。"
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "M6",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -4671,19 +5519,23 @@
     "nameEn": "",
     "hex": "#B4A497",
     "series": "M",
-    "finish": "pearl",
+    "finish": "solid",
     "isTransparent": false,
-    "isPearl": true,
+    "isPearl": false,
     "isNeon": false,
     "isGlitter": false,
-    "isSpecial": true,
-    "isStandard": false,
+    "isSpecial": false,
+    "isStandard": true,
     "isExtended": false,
-    "defaultUseInMatching": false,
-    "priorityPenalty": 10,
+    "defaultUseInMatching": true,
+    "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "M 系列珠光色，預設不參與自動配色。"
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "M7",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -4693,19 +5545,23 @@
     "nameEn": "",
     "hex": "#B38281",
     "series": "M",
-    "finish": "pearl",
+    "finish": "solid",
     "isTransparent": false,
-    "isPearl": true,
+    "isPearl": false,
     "isNeon": false,
     "isGlitter": false,
-    "isSpecial": true,
-    "isStandard": false,
+    "isSpecial": false,
+    "isStandard": true,
     "isExtended": false,
-    "defaultUseInMatching": false,
-    "priorityPenalty": 10,
+    "defaultUseInMatching": true,
+    "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "M 系列珠光色，預設不參與自動配色。"
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "M8",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -4715,19 +5571,23 @@
     "nameEn": "",
     "hex": "#A58767",
     "series": "M",
-    "finish": "pearl",
+    "finish": "solid",
     "isTransparent": false,
-    "isPearl": true,
+    "isPearl": false,
     "isNeon": false,
     "isGlitter": false,
-    "isSpecial": true,
-    "isStandard": false,
+    "isSpecial": false,
+    "isStandard": true,
     "isExtended": false,
-    "defaultUseInMatching": false,
-    "priorityPenalty": 10,
+    "defaultUseInMatching": true,
+    "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "M 系列珠光色，預設不參與自動配色。"
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "M9",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -4737,19 +5597,23 @@
     "nameEn": "",
     "hex": "#C5B2BC",
     "series": "M",
-    "finish": "pearl",
+    "finish": "solid",
     "isTransparent": false,
-    "isPearl": true,
+    "isPearl": false,
     "isNeon": false,
     "isGlitter": false,
-    "isSpecial": true,
-    "isStandard": false,
+    "isSpecial": false,
+    "isStandard": true,
     "isExtended": false,
-    "defaultUseInMatching": false,
-    "priorityPenalty": 10,
+    "defaultUseInMatching": true,
+    "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "M 系列珠光色，預設不參與自動配色。"
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "M10",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -4759,19 +5623,23 @@
     "nameEn": "",
     "hex": "#9F7594",
     "series": "M",
-    "finish": "pearl",
+    "finish": "solid",
     "isTransparent": false,
-    "isPearl": true,
+    "isPearl": false,
     "isNeon": false,
     "isGlitter": false,
-    "isSpecial": true,
-    "isStandard": false,
+    "isSpecial": false,
+    "isStandard": true,
     "isExtended": false,
-    "defaultUseInMatching": false,
-    "priorityPenalty": 10,
+    "defaultUseInMatching": true,
+    "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "M 系列珠光色，預設不參與自動配色。"
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "M11",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -4781,19 +5649,23 @@
     "nameEn": "",
     "hex": "#644749",
     "series": "M",
-    "finish": "pearl",
+    "finish": "solid",
     "isTransparent": false,
-    "isPearl": true,
+    "isPearl": false,
     "isNeon": false,
     "isGlitter": false,
-    "isSpecial": true,
-    "isStandard": false,
+    "isSpecial": false,
+    "isStandard": true,
     "isExtended": false,
-    "defaultUseInMatching": false,
-    "priorityPenalty": 10,
+    "defaultUseInMatching": true,
+    "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "M 系列珠光色，預設不參與自動配色。"
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "M12",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -4803,19 +5675,23 @@
     "nameEn": "",
     "hex": "#D19066",
     "series": "M",
-    "finish": "pearl",
+    "finish": "solid",
     "isTransparent": false,
-    "isPearl": true,
+    "isPearl": false,
     "isNeon": false,
     "isGlitter": false,
-    "isSpecial": true,
-    "isStandard": false,
+    "isSpecial": false,
+    "isStandard": true,
     "isExtended": false,
-    "defaultUseInMatching": false,
-    "priorityPenalty": 10,
+    "defaultUseInMatching": true,
+    "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "M 系列珠光色，預設不參與自動配色。"
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "M13",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -4825,19 +5701,23 @@
     "nameEn": "",
     "hex": "#C77362",
     "series": "M",
-    "finish": "pearl",
+    "finish": "solid",
     "isTransparent": false,
-    "isPearl": true,
+    "isPearl": false,
     "isNeon": false,
     "isGlitter": false,
-    "isSpecial": true,
-    "isStandard": false,
+    "isSpecial": false,
+    "isStandard": true,
     "isExtended": false,
-    "defaultUseInMatching": false,
-    "priorityPenalty": 10,
+    "defaultUseInMatching": true,
+    "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "M 系列珠光色，預設不參與自動配色。"
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "M14",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -4847,19 +5727,23 @@
     "nameEn": "",
     "hex": "#757D78",
     "series": "M",
-    "finish": "pearl",
+    "finish": "solid",
     "isTransparent": false,
-    "isPearl": true,
+    "isPearl": false,
     "isNeon": false,
     "isGlitter": false,
-    "isSpecial": true,
-    "isStandard": false,
+    "isSpecial": false,
+    "isStandard": true,
     "isExtended": false,
-    "defaultUseInMatching": false,
-    "priorityPenalty": 10,
+    "defaultUseInMatching": true,
+    "priorityPenalty": 0,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "M 系列珠光色，預設不參與自動配色。"
+    "sourceNote": "A-M standard color; used for grid recognition and photo auto matching.",
+    "symbol": "M15",
+    "canUseManually": true,
+    "defaultUseInRecognition": true,
+    "defaultUseInAutoMatching": true
   },
   {
     "brand": "MARD",
@@ -4876,12 +5760,17 @@
     "isGlitter": false,
     "isSpecial": true,
     "isStandard": false,
-    "isExtended": false,
+    "isExtended": true,
     "defaultUseInMatching": false,
-    "priorityPenalty": 10,
+    "priorityPenalty": 1000,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "P 系列珠光色，預設不參與自動配色。"
+    "sourceNote": "P series pearl/special colors are manual-only and excluded from automatic recognition.",
+    "symbol": "P1",
+    "canUseManually": true,
+    "defaultUseInRecognition": false,
+    "defaultUseInAutoMatching": false,
+    "specialLabel": "珠光"
   },
   {
     "brand": "MARD",
@@ -4898,12 +5787,17 @@
     "isGlitter": false,
     "isSpecial": true,
     "isStandard": false,
-    "isExtended": false,
+    "isExtended": true,
     "defaultUseInMatching": false,
-    "priorityPenalty": 10,
+    "priorityPenalty": 1000,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "P 系列珠光色，預設不參與自動配色。"
+    "sourceNote": "P series pearl/special colors are manual-only and excluded from automatic recognition.",
+    "symbol": "P2",
+    "canUseManually": true,
+    "defaultUseInRecognition": false,
+    "defaultUseInAutoMatching": false,
+    "specialLabel": "珠光"
   },
   {
     "brand": "MARD",
@@ -4920,12 +5814,17 @@
     "isGlitter": false,
     "isSpecial": true,
     "isStandard": false,
-    "isExtended": false,
+    "isExtended": true,
     "defaultUseInMatching": false,
-    "priorityPenalty": 10,
+    "priorityPenalty": 1000,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "P 系列珠光色，預設不參與自動配色。"
+    "sourceNote": "P series pearl/special colors are manual-only and excluded from automatic recognition.",
+    "symbol": "P3",
+    "canUseManually": true,
+    "defaultUseInRecognition": false,
+    "defaultUseInAutoMatching": false,
+    "specialLabel": "珠光"
   },
   {
     "brand": "MARD",
@@ -4942,12 +5841,17 @@
     "isGlitter": false,
     "isSpecial": true,
     "isStandard": false,
-    "isExtended": false,
+    "isExtended": true,
     "defaultUseInMatching": false,
-    "priorityPenalty": 10,
+    "priorityPenalty": 1000,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "P 系列珠光色，預設不參與自動配色。"
+    "sourceNote": "P series pearl/special colors are manual-only and excluded from automatic recognition.",
+    "symbol": "P4",
+    "canUseManually": true,
+    "defaultUseInRecognition": false,
+    "defaultUseInAutoMatching": false,
+    "specialLabel": "珠光"
   },
   {
     "brand": "MARD",
@@ -4964,12 +5868,17 @@
     "isGlitter": false,
     "isSpecial": true,
     "isStandard": false,
-    "isExtended": false,
+    "isExtended": true,
     "defaultUseInMatching": false,
-    "priorityPenalty": 10,
+    "priorityPenalty": 1000,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "P 系列珠光色，預設不參與自動配色。"
+    "sourceNote": "P series pearl/special colors are manual-only and excluded from automatic recognition.",
+    "symbol": "P5",
+    "canUseManually": true,
+    "defaultUseInRecognition": false,
+    "defaultUseInAutoMatching": false,
+    "specialLabel": "珠光"
   },
   {
     "brand": "MARD",
@@ -4986,12 +5895,17 @@
     "isGlitter": false,
     "isSpecial": true,
     "isStandard": false,
-    "isExtended": false,
+    "isExtended": true,
     "defaultUseInMatching": false,
-    "priorityPenalty": 10,
+    "priorityPenalty": 1000,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "P 系列珠光色，預設不參與自動配色。"
+    "sourceNote": "P series pearl/special colors are manual-only and excluded from automatic recognition.",
+    "symbol": "P6",
+    "canUseManually": true,
+    "defaultUseInRecognition": false,
+    "defaultUseInAutoMatching": false,
+    "specialLabel": "珠光"
   },
   {
     "brand": "MARD",
@@ -5008,12 +5922,17 @@
     "isGlitter": false,
     "isSpecial": true,
     "isStandard": false,
-    "isExtended": false,
+    "isExtended": true,
     "defaultUseInMatching": false,
-    "priorityPenalty": 10,
+    "priorityPenalty": 1000,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "P 系列珠光色，預設不參與自動配色。"
+    "sourceNote": "P series pearl/special colors are manual-only and excluded from automatic recognition.",
+    "symbol": "P7",
+    "canUseManually": true,
+    "defaultUseInRecognition": false,
+    "defaultUseInAutoMatching": false,
+    "specialLabel": "珠光"
   },
   {
     "brand": "MARD",
@@ -5030,12 +5949,17 @@
     "isGlitter": false,
     "isSpecial": true,
     "isStandard": false,
-    "isExtended": false,
+    "isExtended": true,
     "defaultUseInMatching": false,
-    "priorityPenalty": 10,
+    "priorityPenalty": 1000,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "P 系列珠光色，預設不參與自動配色。"
+    "sourceNote": "P series pearl/special colors are manual-only and excluded from automatic recognition.",
+    "symbol": "P8",
+    "canUseManually": true,
+    "defaultUseInRecognition": false,
+    "defaultUseInAutoMatching": false,
+    "specialLabel": "珠光"
   },
   {
     "brand": "MARD",
@@ -5052,12 +5976,17 @@
     "isGlitter": false,
     "isSpecial": true,
     "isStandard": false,
-    "isExtended": false,
+    "isExtended": true,
     "defaultUseInMatching": false,
-    "priorityPenalty": 10,
+    "priorityPenalty": 1000,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "P 系列珠光色，預設不參與自動配色。"
+    "sourceNote": "P series pearl/special colors are manual-only and excluded from automatic recognition.",
+    "symbol": "P9",
+    "canUseManually": true,
+    "defaultUseInRecognition": false,
+    "defaultUseInAutoMatching": false,
+    "specialLabel": "珠光"
   },
   {
     "brand": "MARD",
@@ -5074,12 +6003,17 @@
     "isGlitter": false,
     "isSpecial": true,
     "isStandard": false,
-    "isExtended": false,
+    "isExtended": true,
     "defaultUseInMatching": false,
-    "priorityPenalty": 10,
+    "priorityPenalty": 1000,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "P 系列珠光色，預設不參與自動配色。"
+    "sourceNote": "P series pearl/special colors are manual-only and excluded from automatic recognition.",
+    "symbol": "P10",
+    "canUseManually": true,
+    "defaultUseInRecognition": false,
+    "defaultUseInAutoMatching": false,
+    "specialLabel": "珠光"
   },
   {
     "brand": "MARD",
@@ -5096,12 +6030,17 @@
     "isGlitter": false,
     "isSpecial": true,
     "isStandard": false,
-    "isExtended": false,
+    "isExtended": true,
     "defaultUseInMatching": false,
-    "priorityPenalty": 10,
+    "priorityPenalty": 1000,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "P 系列珠光色，預設不參與自動配色。"
+    "sourceNote": "P series pearl/special colors are manual-only and excluded from automatic recognition.",
+    "symbol": "P11",
+    "canUseManually": true,
+    "defaultUseInRecognition": false,
+    "defaultUseInAutoMatching": false,
+    "specialLabel": "珠光"
   },
   {
     "brand": "MARD",
@@ -5118,12 +6057,17 @@
     "isGlitter": false,
     "isSpecial": true,
     "isStandard": false,
-    "isExtended": false,
+    "isExtended": true,
     "defaultUseInMatching": false,
-    "priorityPenalty": 10,
+    "priorityPenalty": 1000,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "P 系列珠光色，預設不參與自動配色。"
+    "sourceNote": "P series pearl/special colors are manual-only and excluded from automatic recognition.",
+    "symbol": "P12",
+    "canUseManually": true,
+    "defaultUseInRecognition": false,
+    "defaultUseInAutoMatching": false,
+    "specialLabel": "珠光"
   },
   {
     "brand": "MARD",
@@ -5140,12 +6084,17 @@
     "isGlitter": false,
     "isSpecial": true,
     "isStandard": false,
-    "isExtended": false,
+    "isExtended": true,
     "defaultUseInMatching": false,
-    "priorityPenalty": 10,
+    "priorityPenalty": 1000,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "P 系列珠光色，預設不參與自動配色。"
+    "sourceNote": "P series pearl/special colors are manual-only and excluded from automatic recognition.",
+    "symbol": "P13",
+    "canUseManually": true,
+    "defaultUseInRecognition": false,
+    "defaultUseInAutoMatching": false,
+    "specialLabel": "珠光"
   },
   {
     "brand": "MARD",
@@ -5162,12 +6111,17 @@
     "isGlitter": false,
     "isSpecial": true,
     "isStandard": false,
-    "isExtended": false,
+    "isExtended": true,
     "defaultUseInMatching": false,
-    "priorityPenalty": 10,
+    "priorityPenalty": 1000,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "P 系列珠光色，預設不參與自動配色。"
+    "sourceNote": "P series pearl/special colors are manual-only and excluded from automatic recognition.",
+    "symbol": "P14",
+    "canUseManually": true,
+    "defaultUseInRecognition": false,
+    "defaultUseInAutoMatching": false,
+    "specialLabel": "珠光"
   },
   {
     "brand": "MARD",
@@ -5184,12 +6138,17 @@
     "isGlitter": false,
     "isSpecial": true,
     "isStandard": false,
-    "isExtended": false,
+    "isExtended": true,
     "defaultUseInMatching": false,
-    "priorityPenalty": 10,
+    "priorityPenalty": 1000,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "P 系列珠光色，預設不參與自動配色。"
+    "sourceNote": "P series pearl/special colors are manual-only and excluded from automatic recognition.",
+    "symbol": "P15",
+    "canUseManually": true,
+    "defaultUseInRecognition": false,
+    "defaultUseInAutoMatching": false,
+    "specialLabel": "珠光"
   },
   {
     "brand": "MARD",
@@ -5206,12 +6165,17 @@
     "isGlitter": false,
     "isSpecial": true,
     "isStandard": false,
-    "isExtended": false,
+    "isExtended": true,
     "defaultUseInMatching": false,
-    "priorityPenalty": 10,
+    "priorityPenalty": 1000,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "P 系列珠光色，預設不參與自動配色。"
+    "sourceNote": "P series pearl/special colors are manual-only and excluded from automatic recognition.",
+    "symbol": "P16",
+    "canUseManually": true,
+    "defaultUseInRecognition": false,
+    "defaultUseInAutoMatching": false,
+    "specialLabel": "珠光"
   },
   {
     "brand": "MARD",
@@ -5228,12 +6192,17 @@
     "isGlitter": false,
     "isSpecial": true,
     "isStandard": false,
-    "isExtended": false,
+    "isExtended": true,
     "defaultUseInMatching": false,
-    "priorityPenalty": 10,
+    "priorityPenalty": 1000,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "P 系列珠光色，預設不參與自動配色。"
+    "sourceNote": "P series pearl/special colors are manual-only and excluded from automatic recognition.",
+    "symbol": "P17",
+    "canUseManually": true,
+    "defaultUseInRecognition": false,
+    "defaultUseInAutoMatching": false,
+    "specialLabel": "珠光"
   },
   {
     "brand": "MARD",
@@ -5250,12 +6219,17 @@
     "isGlitter": false,
     "isSpecial": true,
     "isStandard": false,
-    "isExtended": false,
+    "isExtended": true,
     "defaultUseInMatching": false,
-    "priorityPenalty": 10,
+    "priorityPenalty": 1000,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "P 系列珠光色，預設不參與自動配色。"
+    "sourceNote": "P series pearl/special colors are manual-only and excluded from automatic recognition.",
+    "symbol": "P18",
+    "canUseManually": true,
+    "defaultUseInRecognition": false,
+    "defaultUseInAutoMatching": false,
+    "specialLabel": "珠光"
   },
   {
     "brand": "MARD",
@@ -5272,12 +6246,17 @@
     "isGlitter": false,
     "isSpecial": true,
     "isStandard": false,
-    "isExtended": false,
+    "isExtended": true,
     "defaultUseInMatching": false,
-    "priorityPenalty": 10,
+    "priorityPenalty": 1000,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "P 系列珠光色，預設不參與自動配色。"
+    "sourceNote": "P series pearl/special colors are manual-only and excluded from automatic recognition.",
+    "symbol": "P19",
+    "canUseManually": true,
+    "defaultUseInRecognition": false,
+    "defaultUseInAutoMatching": false,
+    "specialLabel": "珠光"
   },
   {
     "brand": "MARD",
@@ -5294,12 +6273,17 @@
     "isGlitter": false,
     "isSpecial": true,
     "isStandard": false,
-    "isExtended": false,
+    "isExtended": true,
     "defaultUseInMatching": false,
-    "priorityPenalty": 10,
+    "priorityPenalty": 1000,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "P 系列珠光色，預設不參與自動配色。"
+    "sourceNote": "P series pearl/special colors are manual-only and excluded from automatic recognition.",
+    "symbol": "P20",
+    "canUseManually": true,
+    "defaultUseInRecognition": false,
+    "defaultUseInAutoMatching": false,
+    "specialLabel": "珠光"
   },
   {
     "brand": "MARD",
@@ -5316,12 +6300,17 @@
     "isGlitter": false,
     "isSpecial": true,
     "isStandard": false,
-    "isExtended": false,
+    "isExtended": true,
     "defaultUseInMatching": false,
-    "priorityPenalty": 10,
+    "priorityPenalty": 1000,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "P 系列珠光色，預設不參與自動配色。"
+    "sourceNote": "P series pearl/special colors are manual-only and excluded from automatic recognition.",
+    "symbol": "P21",
+    "canUseManually": true,
+    "defaultUseInRecognition": false,
+    "defaultUseInAutoMatching": false,
+    "specialLabel": "珠光"
   },
   {
     "brand": "MARD",
@@ -5338,12 +6327,17 @@
     "isGlitter": false,
     "isSpecial": true,
     "isStandard": false,
-    "isExtended": false,
+    "isExtended": true,
     "defaultUseInMatching": false,
-    "priorityPenalty": 10,
+    "priorityPenalty": 1000,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "P 系列珠光色，預設不參與自動配色。"
+    "sourceNote": "P series pearl/special colors are manual-only and excluded from automatic recognition.",
+    "symbol": "P22",
+    "canUseManually": true,
+    "defaultUseInRecognition": false,
+    "defaultUseInAutoMatching": false,
+    "specialLabel": "珠光"
   },
   {
     "brand": "MARD",
@@ -5360,12 +6354,17 @@
     "isGlitter": false,
     "isSpecial": true,
     "isStandard": false,
-    "isExtended": false,
+    "isExtended": true,
     "defaultUseInMatching": false,
-    "priorityPenalty": 10,
+    "priorityPenalty": 1000,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "P 系列珠光色，預設不參與自動配色。"
+    "sourceNote": "P series pearl/special colors are manual-only and excluded from automatic recognition.",
+    "symbol": "P23",
+    "canUseManually": true,
+    "defaultUseInRecognition": false,
+    "defaultUseInAutoMatching": false,
+    "specialLabel": "珠光"
   },
   {
     "brand": "MARD",
@@ -5375,19 +6374,24 @@
     "nameEn": "",
     "hex": "#F2A5E8",
     "series": "Q",
-    "finish": "solid",
+    "finish": "neon",
     "isTransparent": false,
     "isPearl": false,
-    "isNeon": false,
+    "isNeon": true,
     "isGlitter": false,
-    "isSpecial": false,
+    "isSpecial": true,
     "isStandard": false,
     "isExtended": true,
-    "defaultUseInMatching": true,
-    "priorityPenalty": 4,
+    "defaultUseInMatching": false,
+    "priorityPenalty": 1000,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "延伸色，參與自動配色但比標準色有較高 penalty。"
+    "sourceNote": "Q series neon colors are manual-only and excluded from automatic recognition.",
+    "symbol": "Q1",
+    "canUseManually": true,
+    "defaultUseInRecognition": false,
+    "defaultUseInAutoMatching": false,
+    "specialLabel": "螢光"
   },
   {
     "brand": "MARD",
@@ -5397,19 +6401,24 @@
     "nameEn": "",
     "hex": "#E9EC91",
     "series": "Q",
-    "finish": "solid",
+    "finish": "neon",
     "isTransparent": false,
     "isPearl": false,
-    "isNeon": false,
+    "isNeon": true,
     "isGlitter": false,
-    "isSpecial": false,
+    "isSpecial": true,
     "isStandard": false,
     "isExtended": true,
-    "defaultUseInMatching": true,
-    "priorityPenalty": 4,
+    "defaultUseInMatching": false,
+    "priorityPenalty": 1000,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "延伸色，參與自動配色但比標準色有較高 penalty。"
+    "sourceNote": "Q series neon colors are manual-only and excluded from automatic recognition.",
+    "symbol": "Q2",
+    "canUseManually": true,
+    "defaultUseInRecognition": false,
+    "defaultUseInAutoMatching": false,
+    "specialLabel": "螢光"
   },
   {
     "brand": "MARD",
@@ -5419,19 +6428,24 @@
     "nameEn": "",
     "hex": "#FFFF00",
     "series": "Q",
-    "finish": "solid",
+    "finish": "neon",
     "isTransparent": false,
     "isPearl": false,
-    "isNeon": false,
+    "isNeon": true,
     "isGlitter": false,
-    "isSpecial": false,
+    "isSpecial": true,
     "isStandard": false,
     "isExtended": true,
-    "defaultUseInMatching": true,
-    "priorityPenalty": 4,
+    "defaultUseInMatching": false,
+    "priorityPenalty": 1000,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "延伸色，參與自動配色但比標準色有較高 penalty。"
+    "sourceNote": "Q series neon colors are manual-only and excluded from automatic recognition.",
+    "symbol": "Q3",
+    "canUseManually": true,
+    "defaultUseInRecognition": false,
+    "defaultUseInAutoMatching": false,
+    "specialLabel": "螢光"
   },
   {
     "brand": "MARD",
@@ -5441,19 +6455,24 @@
     "nameEn": "",
     "hex": "#FFEBFA",
     "series": "Q",
-    "finish": "solid",
+    "finish": "neon",
     "isTransparent": false,
     "isPearl": false,
-    "isNeon": false,
+    "isNeon": true,
     "isGlitter": false,
-    "isSpecial": false,
+    "isSpecial": true,
     "isStandard": false,
     "isExtended": true,
-    "defaultUseInMatching": true,
-    "priorityPenalty": 4,
+    "defaultUseInMatching": false,
+    "priorityPenalty": 1000,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "延伸色，參與自動配色但比標準色有較高 penalty。"
+    "sourceNote": "Q series neon colors are manual-only and excluded from automatic recognition.",
+    "symbol": "Q4",
+    "canUseManually": true,
+    "defaultUseInRecognition": false,
+    "defaultUseInAutoMatching": false,
+    "specialLabel": "螢光"
   },
   {
     "brand": "MARD",
@@ -5463,19 +6482,24 @@
     "nameEn": "",
     "hex": "#76CEDE",
     "series": "Q",
-    "finish": "solid",
+    "finish": "neon",
     "isTransparent": false,
     "isPearl": false,
-    "isNeon": false,
+    "isNeon": true,
     "isGlitter": false,
-    "isSpecial": false,
+    "isSpecial": true,
     "isStandard": false,
     "isExtended": true,
-    "defaultUseInMatching": true,
-    "priorityPenalty": 4,
+    "defaultUseInMatching": false,
+    "priorityPenalty": 1000,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "延伸色，參與自動配色但比標準色有較高 penalty。"
+    "sourceNote": "Q series neon colors are manual-only and excluded from automatic recognition.",
+    "symbol": "Q5",
+    "canUseManually": true,
+    "defaultUseInRecognition": false,
+    "defaultUseInAutoMatching": false,
+    "specialLabel": "螢光"
   },
   {
     "brand": "MARD",
@@ -5485,19 +6509,24 @@
     "nameEn": "",
     "hex": "#D50D21",
     "series": "R",
-    "finish": "solid",
-    "isTransparent": false,
+    "finish": "transparent",
+    "isTransparent": true,
     "isPearl": false,
     "isNeon": false,
     "isGlitter": false,
-    "isSpecial": false,
+    "isSpecial": true,
     "isStandard": false,
     "isExtended": true,
-    "defaultUseInMatching": true,
-    "priorityPenalty": 4,
+    "defaultUseInMatching": false,
+    "priorityPenalty": 1000,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "延伸色，參與自動配色但比標準色有較高 penalty。"
+    "sourceNote": "R series jelly colors are manual-only and excluded from automatic recognition.",
+    "symbol": "R1",
+    "canUseManually": true,
+    "defaultUseInRecognition": false,
+    "defaultUseInAutoMatching": false,
+    "specialLabel": "果凍"
   },
   {
     "brand": "MARD",
@@ -5507,19 +6536,24 @@
     "nameEn": "",
     "hex": "#F92F83",
     "series": "R",
-    "finish": "solid",
-    "isTransparent": false,
+    "finish": "transparent",
+    "isTransparent": true,
     "isPearl": false,
     "isNeon": false,
     "isGlitter": false,
-    "isSpecial": false,
+    "isSpecial": true,
     "isStandard": false,
     "isExtended": true,
-    "defaultUseInMatching": true,
-    "priorityPenalty": 4,
+    "defaultUseInMatching": false,
+    "priorityPenalty": 1000,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "延伸色，參與自動配色但比標準色有較高 penalty。"
+    "sourceNote": "R series jelly colors are manual-only and excluded from automatic recognition.",
+    "symbol": "R2",
+    "canUseManually": true,
+    "defaultUseInRecognition": false,
+    "defaultUseInAutoMatching": false,
+    "specialLabel": "果凍"
   },
   {
     "brand": "MARD",
@@ -5529,19 +6563,24 @@
     "nameEn": "",
     "hex": "#FD8324",
     "series": "R",
-    "finish": "solid",
-    "isTransparent": false,
+    "finish": "transparent",
+    "isTransparent": true,
     "isPearl": false,
     "isNeon": false,
     "isGlitter": false,
-    "isSpecial": false,
+    "isSpecial": true,
     "isStandard": false,
     "isExtended": true,
-    "defaultUseInMatching": true,
-    "priorityPenalty": 4,
+    "defaultUseInMatching": false,
+    "priorityPenalty": 1000,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "延伸色，參與自動配色但比標準色有較高 penalty。"
+    "sourceNote": "R series jelly colors are manual-only and excluded from automatic recognition.",
+    "symbol": "R3",
+    "canUseManually": true,
+    "defaultUseInRecognition": false,
+    "defaultUseInAutoMatching": false,
+    "specialLabel": "果凍"
   },
   {
     "brand": "MARD",
@@ -5551,19 +6590,24 @@
     "nameEn": "",
     "hex": "#F8EC31",
     "series": "R",
-    "finish": "solid",
-    "isTransparent": false,
+    "finish": "transparent",
+    "isTransparent": true,
     "isPearl": false,
     "isNeon": false,
     "isGlitter": false,
-    "isSpecial": false,
+    "isSpecial": true,
     "isStandard": false,
     "isExtended": true,
-    "defaultUseInMatching": true,
-    "priorityPenalty": 4,
+    "defaultUseInMatching": false,
+    "priorityPenalty": 1000,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "延伸色，參與自動配色但比標準色有較高 penalty。"
+    "sourceNote": "R series jelly colors are manual-only and excluded from automatic recognition.",
+    "symbol": "R4",
+    "canUseManually": true,
+    "defaultUseInRecognition": false,
+    "defaultUseInAutoMatching": false,
+    "specialLabel": "果凍"
   },
   {
     "brand": "MARD",
@@ -5573,19 +6617,24 @@
     "nameEn": "",
     "hex": "#35C75B",
     "series": "R",
-    "finish": "solid",
-    "isTransparent": false,
+    "finish": "transparent",
+    "isTransparent": true,
     "isPearl": false,
     "isNeon": false,
     "isGlitter": false,
-    "isSpecial": false,
+    "isSpecial": true,
     "isStandard": false,
     "isExtended": true,
-    "defaultUseInMatching": true,
-    "priorityPenalty": 4,
+    "defaultUseInMatching": false,
+    "priorityPenalty": 1000,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "延伸色，參與自動配色但比標準色有較高 penalty。"
+    "sourceNote": "R series jelly colors are manual-only and excluded from automatic recognition.",
+    "symbol": "R5",
+    "canUseManually": true,
+    "defaultUseInRecognition": false,
+    "defaultUseInAutoMatching": false,
+    "specialLabel": "果凍"
   },
   {
     "brand": "MARD",
@@ -5595,19 +6644,24 @@
     "nameEn": "",
     "hex": "#238891",
     "series": "R",
-    "finish": "solid",
-    "isTransparent": false,
+    "finish": "transparent",
+    "isTransparent": true,
     "isPearl": false,
     "isNeon": false,
     "isGlitter": false,
-    "isSpecial": false,
+    "isSpecial": true,
     "isStandard": false,
     "isExtended": true,
-    "defaultUseInMatching": true,
-    "priorityPenalty": 4,
+    "defaultUseInMatching": false,
+    "priorityPenalty": 1000,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "延伸色，參與自動配色但比標準色有較高 penalty。"
+    "sourceNote": "R series jelly colors are manual-only and excluded from automatic recognition.",
+    "symbol": "R6",
+    "canUseManually": true,
+    "defaultUseInRecognition": false,
+    "defaultUseInAutoMatching": false,
+    "specialLabel": "果凍"
   },
   {
     "brand": "MARD",
@@ -5617,19 +6671,24 @@
     "nameEn": "",
     "hex": "#19779D",
     "series": "R",
-    "finish": "solid",
-    "isTransparent": false,
+    "finish": "transparent",
+    "isTransparent": true,
     "isPearl": false,
     "isNeon": false,
     "isGlitter": false,
-    "isSpecial": false,
+    "isSpecial": true,
     "isStandard": false,
     "isExtended": true,
-    "defaultUseInMatching": true,
-    "priorityPenalty": 4,
+    "defaultUseInMatching": false,
+    "priorityPenalty": 1000,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "延伸色，參與自動配色但比標準色有較高 penalty。"
+    "sourceNote": "R series jelly colors are manual-only and excluded from automatic recognition.",
+    "symbol": "R7",
+    "canUseManually": true,
+    "defaultUseInRecognition": false,
+    "defaultUseInAutoMatching": false,
+    "specialLabel": "果凍"
   },
   {
     "brand": "MARD",
@@ -5639,19 +6698,24 @@
     "nameEn": "",
     "hex": "#1A60C3",
     "series": "R",
-    "finish": "solid",
-    "isTransparent": false,
+    "finish": "transparent",
+    "isTransparent": true,
     "isPearl": false,
     "isNeon": false,
     "isGlitter": false,
-    "isSpecial": false,
+    "isSpecial": true,
     "isStandard": false,
     "isExtended": true,
-    "defaultUseInMatching": true,
-    "priorityPenalty": 4,
+    "defaultUseInMatching": false,
+    "priorityPenalty": 1000,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "延伸色，參與自動配色但比標準色有較高 penalty。"
+    "sourceNote": "R series jelly colors are manual-only and excluded from automatic recognition.",
+    "symbol": "R8",
+    "canUseManually": true,
+    "defaultUseInRecognition": false,
+    "defaultUseInAutoMatching": false,
+    "specialLabel": "果凍"
   },
   {
     "brand": "MARD",
@@ -5661,19 +6725,24 @@
     "nameEn": "",
     "hex": "#9A56B4",
     "series": "R",
-    "finish": "solid",
-    "isTransparent": false,
+    "finish": "transparent",
+    "isTransparent": true,
     "isPearl": false,
     "isNeon": false,
     "isGlitter": false,
-    "isSpecial": false,
+    "isSpecial": true,
     "isStandard": false,
     "isExtended": true,
-    "defaultUseInMatching": true,
-    "priorityPenalty": 4,
+    "defaultUseInMatching": false,
+    "priorityPenalty": 1000,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "延伸色，參與自動配色但比標準色有較高 penalty。"
+    "sourceNote": "R series jelly colors are manual-only and excluded from automatic recognition.",
+    "symbol": "R9",
+    "canUseManually": true,
+    "defaultUseInRecognition": false,
+    "defaultUseInAutoMatching": false,
+    "specialLabel": "果凍"
   },
   {
     "brand": "MARD",
@@ -5683,19 +6752,24 @@
     "nameEn": "",
     "hex": "#FFDB4C",
     "series": "R",
-    "finish": "solid",
-    "isTransparent": false,
+    "finish": "transparent",
+    "isTransparent": true,
     "isPearl": false,
     "isNeon": false,
     "isGlitter": false,
-    "isSpecial": false,
+    "isSpecial": true,
     "isStandard": false,
     "isExtended": true,
-    "defaultUseInMatching": true,
-    "priorityPenalty": 4,
+    "defaultUseInMatching": false,
+    "priorityPenalty": 1000,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "延伸色，參與自動配色但比標準色有較高 penalty。"
+    "sourceNote": "R series jelly colors are manual-only and excluded from automatic recognition.",
+    "symbol": "R10",
+    "canUseManually": true,
+    "defaultUseInRecognition": false,
+    "defaultUseInAutoMatching": false,
+    "specialLabel": "果凍"
   },
   {
     "brand": "MARD",
@@ -5705,19 +6779,24 @@
     "nameEn": "",
     "hex": "#FFEBFA",
     "series": "R",
-    "finish": "solid",
-    "isTransparent": false,
+    "finish": "transparent",
+    "isTransparent": true,
     "isPearl": false,
     "isNeon": false,
     "isGlitter": false,
-    "isSpecial": false,
+    "isSpecial": true,
     "isStandard": false,
     "isExtended": true,
-    "defaultUseInMatching": true,
-    "priorityPenalty": 4,
+    "defaultUseInMatching": false,
+    "priorityPenalty": 1000,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "延伸色，參與自動配色但比標準色有較高 penalty。"
+    "sourceNote": "R series jelly colors are manual-only and excluded from automatic recognition.",
+    "symbol": "R11",
+    "canUseManually": true,
+    "defaultUseInRecognition": false,
+    "defaultUseInAutoMatching": false,
+    "specialLabel": "果凍"
   },
   {
     "brand": "MARD",
@@ -5727,19 +6806,24 @@
     "nameEn": "",
     "hex": "#D8D5CE",
     "series": "R",
-    "finish": "solid",
-    "isTransparent": false,
+    "finish": "transparent",
+    "isTransparent": true,
     "isPearl": false,
     "isNeon": false,
     "isGlitter": false,
-    "isSpecial": false,
+    "isSpecial": true,
     "isStandard": false,
     "isExtended": true,
-    "defaultUseInMatching": true,
-    "priorityPenalty": 4,
+    "defaultUseInMatching": false,
+    "priorityPenalty": 1000,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "延伸色，參與自動配色但比標準色有較高 penalty。"
+    "sourceNote": "R series jelly colors are manual-only and excluded from automatic recognition.",
+    "symbol": "R12",
+    "canUseManually": true,
+    "defaultUseInRecognition": false,
+    "defaultUseInAutoMatching": false,
+    "specialLabel": "果凍"
   },
   {
     "brand": "MARD",
@@ -5749,19 +6833,24 @@
     "nameEn": "",
     "hex": "#55514C",
     "series": "R",
-    "finish": "solid",
-    "isTransparent": false,
+    "finish": "transparent",
+    "isTransparent": true,
     "isPearl": false,
     "isNeon": false,
     "isGlitter": false,
-    "isSpecial": false,
+    "isSpecial": true,
     "isStandard": false,
     "isExtended": true,
-    "defaultUseInMatching": true,
-    "priorityPenalty": 4,
+    "defaultUseInMatching": false,
+    "priorityPenalty": 1000,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "延伸色，參與自動配色但比標準色有較高 penalty。"
+    "sourceNote": "R series jelly colors are manual-only and excluded from automatic recognition.",
+    "symbol": "R13",
+    "canUseManually": true,
+    "defaultUseInRecognition": false,
+    "defaultUseInAutoMatching": false,
+    "specialLabel": "果凍"
   },
   {
     "brand": "MARD",
@@ -5771,19 +6860,24 @@
     "nameEn": "",
     "hex": "#9FE4DF",
     "series": "R",
-    "finish": "solid",
-    "isTransparent": false,
+    "finish": "transparent",
+    "isTransparent": true,
     "isPearl": false,
     "isNeon": false,
     "isGlitter": false,
-    "isSpecial": false,
+    "isSpecial": true,
     "isStandard": false,
     "isExtended": true,
-    "defaultUseInMatching": true,
-    "priorityPenalty": 4,
+    "defaultUseInMatching": false,
+    "priorityPenalty": 1000,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "延伸色，參與自動配色但比標準色有較高 penalty。"
+    "sourceNote": "R series jelly colors are manual-only and excluded from automatic recognition.",
+    "symbol": "R14",
+    "canUseManually": true,
+    "defaultUseInRecognition": false,
+    "defaultUseInAutoMatching": false,
+    "specialLabel": "果凍"
   },
   {
     "brand": "MARD",
@@ -5793,19 +6887,24 @@
     "nameEn": "",
     "hex": "#77CEE9",
     "series": "R",
-    "finish": "solid",
-    "isTransparent": false,
+    "finish": "transparent",
+    "isTransparent": true,
     "isPearl": false,
     "isNeon": false,
     "isGlitter": false,
-    "isSpecial": false,
+    "isSpecial": true,
     "isStandard": false,
     "isExtended": true,
-    "defaultUseInMatching": true,
-    "priorityPenalty": 4,
+    "defaultUseInMatching": false,
+    "priorityPenalty": 1000,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "延伸色，參與自動配色但比標準色有較高 penalty。"
+    "sourceNote": "R series jelly colors are manual-only and excluded from automatic recognition.",
+    "symbol": "R15",
+    "canUseManually": true,
+    "defaultUseInRecognition": false,
+    "defaultUseInAutoMatching": false,
+    "specialLabel": "果凍"
   },
   {
     "brand": "MARD",
@@ -5815,19 +6914,24 @@
     "nameEn": "",
     "hex": "#3ECFCA",
     "series": "R",
-    "finish": "solid",
-    "isTransparent": false,
+    "finish": "transparent",
+    "isTransparent": true,
     "isPearl": false,
     "isNeon": false,
     "isGlitter": false,
-    "isSpecial": false,
+    "isSpecial": true,
     "isStandard": false,
     "isExtended": true,
-    "defaultUseInMatching": true,
-    "priorityPenalty": 4,
+    "defaultUseInMatching": false,
+    "priorityPenalty": 1000,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "延伸色，參與自動配色但比標準色有較高 penalty。"
+    "sourceNote": "R series jelly colors are manual-only and excluded from automatic recognition.",
+    "symbol": "R16",
+    "canUseManually": true,
+    "defaultUseInRecognition": false,
+    "defaultUseInAutoMatching": false,
+    "specialLabel": "果凍"
   },
   {
     "brand": "MARD",
@@ -5837,19 +6941,24 @@
     "nameEn": "",
     "hex": "#4A867A",
     "series": "R",
-    "finish": "solid",
-    "isTransparent": false,
+    "finish": "transparent",
+    "isTransparent": true,
     "isPearl": false,
     "isNeon": false,
     "isGlitter": false,
-    "isSpecial": false,
+    "isSpecial": true,
     "isStandard": false,
     "isExtended": true,
-    "defaultUseInMatching": true,
-    "priorityPenalty": 4,
+    "defaultUseInMatching": false,
+    "priorityPenalty": 1000,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "延伸色，參與自動配色但比標準色有較高 penalty。"
+    "sourceNote": "R series jelly colors are manual-only and excluded from automatic recognition.",
+    "symbol": "R17",
+    "canUseManually": true,
+    "defaultUseInRecognition": false,
+    "defaultUseInAutoMatching": false,
+    "specialLabel": "果凍"
   },
   {
     "brand": "MARD",
@@ -5859,19 +6968,24 @@
     "nameEn": "",
     "hex": "#7FCD9D",
     "series": "R",
-    "finish": "solid",
-    "isTransparent": false,
+    "finish": "transparent",
+    "isTransparent": true,
     "isPearl": false,
     "isNeon": false,
     "isGlitter": false,
-    "isSpecial": false,
+    "isSpecial": true,
     "isStandard": false,
     "isExtended": true,
-    "defaultUseInMatching": true,
-    "priorityPenalty": 4,
+    "defaultUseInMatching": false,
+    "priorityPenalty": 1000,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "延伸色，參與自動配色但比標準色有較高 penalty。"
+    "sourceNote": "R series jelly colors are manual-only and excluded from automatic recognition.",
+    "symbol": "R18",
+    "canUseManually": true,
+    "defaultUseInRecognition": false,
+    "defaultUseInAutoMatching": false,
+    "specialLabel": "果凍"
   },
   {
     "brand": "MARD",
@@ -5881,19 +6995,24 @@
     "nameEn": "",
     "hex": "#CDE55D",
     "series": "R",
-    "finish": "solid",
-    "isTransparent": false,
+    "finish": "transparent",
+    "isTransparent": true,
     "isPearl": false,
     "isNeon": false,
     "isGlitter": false,
-    "isSpecial": false,
+    "isSpecial": true,
     "isStandard": false,
     "isExtended": true,
-    "defaultUseInMatching": true,
-    "priorityPenalty": 4,
+    "defaultUseInMatching": false,
+    "priorityPenalty": 1000,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "延伸色，參與自動配色但比標準色有較高 penalty。"
+    "sourceNote": "R series jelly colors are manual-only and excluded from automatic recognition.",
+    "symbol": "R19",
+    "canUseManually": true,
+    "defaultUseInRecognition": false,
+    "defaultUseInAutoMatching": false,
+    "specialLabel": "果凍"
   },
   {
     "brand": "MARD",
@@ -5903,19 +7022,24 @@
     "nameEn": "",
     "hex": "#E8C7B4",
     "series": "R",
-    "finish": "solid",
-    "isTransparent": false,
+    "finish": "transparent",
+    "isTransparent": true,
     "isPearl": false,
     "isNeon": false,
     "isGlitter": false,
-    "isSpecial": false,
+    "isSpecial": true,
     "isStandard": false,
     "isExtended": true,
-    "defaultUseInMatching": true,
-    "priorityPenalty": 4,
+    "defaultUseInMatching": false,
+    "priorityPenalty": 1000,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "延伸色，參與自動配色但比標準色有較高 penalty。"
+    "sourceNote": "R series jelly colors are manual-only and excluded from automatic recognition.",
+    "symbol": "R20",
+    "canUseManually": true,
+    "defaultUseInRecognition": false,
+    "defaultUseInAutoMatching": false,
+    "specialLabel": "果凍"
   },
   {
     "brand": "MARD",
@@ -5925,19 +7049,24 @@
     "nameEn": "",
     "hex": "#AD6F3C",
     "series": "R",
-    "finish": "solid",
-    "isTransparent": false,
+    "finish": "transparent",
+    "isTransparent": true,
     "isPearl": false,
     "isNeon": false,
     "isGlitter": false,
-    "isSpecial": false,
+    "isSpecial": true,
     "isStandard": false,
     "isExtended": true,
-    "defaultUseInMatching": true,
-    "priorityPenalty": 4,
+    "defaultUseInMatching": false,
+    "priorityPenalty": 1000,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "延伸色，參與自動配色但比標準色有較高 penalty。"
+    "sourceNote": "R series jelly colors are manual-only and excluded from automatic recognition.",
+    "symbol": "R21",
+    "canUseManually": true,
+    "defaultUseInRecognition": false,
+    "defaultUseInAutoMatching": false,
+    "specialLabel": "果凍"
   },
   {
     "brand": "MARD",
@@ -5947,19 +7076,24 @@
     "nameEn": "",
     "hex": "#6C372F",
     "series": "R",
-    "finish": "solid",
-    "isTransparent": false,
+    "finish": "transparent",
+    "isTransparent": true,
     "isPearl": false,
     "isNeon": false,
     "isGlitter": false,
-    "isSpecial": false,
+    "isSpecial": true,
     "isStandard": false,
     "isExtended": true,
-    "defaultUseInMatching": true,
-    "priorityPenalty": 4,
+    "defaultUseInMatching": false,
+    "priorityPenalty": 1000,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "延伸色，參與自動配色但比標準色有較高 penalty。"
+    "sourceNote": "R series jelly colors are manual-only and excluded from automatic recognition.",
+    "symbol": "R22",
+    "canUseManually": true,
+    "defaultUseInRecognition": false,
+    "defaultUseInAutoMatching": false,
+    "specialLabel": "果凍"
   },
   {
     "brand": "MARD",
@@ -5969,19 +7103,24 @@
     "nameEn": "",
     "hex": "#FEB872",
     "series": "R",
-    "finish": "solid",
-    "isTransparent": false,
+    "finish": "transparent",
+    "isTransparent": true,
     "isPearl": false,
     "isNeon": false,
     "isGlitter": false,
-    "isSpecial": false,
+    "isSpecial": true,
     "isStandard": false,
     "isExtended": true,
-    "defaultUseInMatching": true,
-    "priorityPenalty": 4,
+    "defaultUseInMatching": false,
+    "priorityPenalty": 1000,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "延伸色，參與自動配色但比標準色有較高 penalty。"
+    "sourceNote": "R series jelly colors are manual-only and excluded from automatic recognition.",
+    "symbol": "R23",
+    "canUseManually": true,
+    "defaultUseInRecognition": false,
+    "defaultUseInAutoMatching": false,
+    "specialLabel": "果凍"
   },
   {
     "brand": "MARD",
@@ -5991,19 +7130,24 @@
     "nameEn": "",
     "hex": "#F3C1C0",
     "series": "R",
-    "finish": "solid",
-    "isTransparent": false,
+    "finish": "transparent",
+    "isTransparent": true,
     "isPearl": false,
     "isNeon": false,
     "isGlitter": false,
-    "isSpecial": false,
+    "isSpecial": true,
     "isStandard": false,
     "isExtended": true,
-    "defaultUseInMatching": true,
-    "priorityPenalty": 4,
+    "defaultUseInMatching": false,
+    "priorityPenalty": 1000,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "延伸色，參與自動配色但比標準色有較高 penalty。"
+    "sourceNote": "R series jelly colors are manual-only and excluded from automatic recognition.",
+    "symbol": "R24",
+    "canUseManually": true,
+    "defaultUseInRecognition": false,
+    "defaultUseInAutoMatching": false,
+    "specialLabel": "果凍"
   },
   {
     "brand": "MARD",
@@ -6013,19 +7157,24 @@
     "nameEn": "",
     "hex": "#C9675E",
     "series": "R",
-    "finish": "solid",
-    "isTransparent": false,
+    "finish": "transparent",
+    "isTransparent": true,
     "isPearl": false,
     "isNeon": false,
     "isGlitter": false,
-    "isSpecial": false,
+    "isSpecial": true,
     "isStandard": false,
     "isExtended": true,
-    "defaultUseInMatching": true,
-    "priorityPenalty": 4,
+    "defaultUseInMatching": false,
+    "priorityPenalty": 1000,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "延伸色，參與自動配色但比標準色有較高 penalty。"
+    "sourceNote": "R series jelly colors are manual-only and excluded from automatic recognition.",
+    "symbol": "R25",
+    "canUseManually": true,
+    "defaultUseInRecognition": false,
+    "defaultUseInAutoMatching": false,
+    "specialLabel": "果凍"
   },
   {
     "brand": "MARD",
@@ -6035,19 +7184,24 @@
     "nameEn": "",
     "hex": "#D293BE",
     "series": "R",
-    "finish": "solid",
-    "isTransparent": false,
+    "finish": "transparent",
+    "isTransparent": true,
     "isPearl": false,
     "isNeon": false,
     "isGlitter": false,
-    "isSpecial": false,
+    "isSpecial": true,
     "isStandard": false,
     "isExtended": true,
-    "defaultUseInMatching": true,
-    "priorityPenalty": 4,
+    "defaultUseInMatching": false,
+    "priorityPenalty": 1000,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "延伸色，參與自動配色但比標準色有較高 penalty。"
+    "sourceNote": "R series jelly colors are manual-only and excluded from automatic recognition.",
+    "symbol": "R26",
+    "canUseManually": true,
+    "defaultUseInRecognition": false,
+    "defaultUseInAutoMatching": false,
+    "specialLabel": "果凍"
   },
   {
     "brand": "MARD",
@@ -6057,19 +7211,24 @@
     "nameEn": "",
     "hex": "#EA8CB1",
     "series": "R",
-    "finish": "solid",
-    "isTransparent": false,
+    "finish": "transparent",
+    "isTransparent": true,
     "isPearl": false,
     "isNeon": false,
     "isGlitter": false,
-    "isSpecial": false,
+    "isSpecial": true,
     "isStandard": false,
     "isExtended": true,
-    "defaultUseInMatching": true,
-    "priorityPenalty": 4,
+    "defaultUseInMatching": false,
+    "priorityPenalty": 1000,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "延伸色，參與自動配色但比標準色有較高 penalty。"
+    "sourceNote": "R series jelly colors are manual-only and excluded from automatic recognition.",
+    "symbol": "R27",
+    "canUseManually": true,
+    "defaultUseInRecognition": false,
+    "defaultUseInAutoMatching": false,
+    "specialLabel": "果凍"
   },
   {
     "brand": "MARD",
@@ -6079,19 +7238,24 @@
     "nameEn": "",
     "hex": "#9C87D6",
     "series": "R",
-    "finish": "solid",
-    "isTransparent": false,
+    "finish": "transparent",
+    "isTransparent": true,
     "isPearl": false,
     "isNeon": false,
     "isGlitter": false,
-    "isSpecial": false,
+    "isSpecial": true,
     "isStandard": false,
     "isExtended": true,
-    "defaultUseInMatching": true,
-    "priorityPenalty": 4,
+    "defaultUseInMatching": false,
+    "priorityPenalty": 1000,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "延伸色，參與自動配色但比標準色有較高 penalty。"
+    "sourceNote": "R series jelly colors are manual-only and excluded from automatic recognition.",
+    "symbol": "R28",
+    "canUseManually": true,
+    "defaultUseInRecognition": false,
+    "defaultUseInAutoMatching": false,
+    "specialLabel": "果凍"
   },
   {
     "brand": "MARD",
@@ -6108,12 +7272,17 @@
     "isGlitter": false,
     "isSpecial": true,
     "isStandard": false,
-    "isExtended": false,
+    "isExtended": true,
     "defaultUseInMatching": false,
-    "priorityPenalty": 12,
+    "priorityPenalty": 1000,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "透明色，預設不參與自動配色。"
+    "sourceNote": "Transparent color is manual-only and excluded from automatic recognition.",
+    "symbol": "T1",
+    "canUseManually": true,
+    "defaultUseInRecognition": false,
+    "defaultUseInAutoMatching": false,
+    "specialLabel": "透明"
   },
   {
     "brand": "MARD",
@@ -6123,19 +7292,24 @@
     "nameEn": "",
     "hex": "#FD6FB4",
     "series": "Y",
-    "finish": "solid",
+    "finish": "special",
     "isTransparent": false,
     "isPearl": false,
     "isNeon": false,
     "isGlitter": false,
-    "isSpecial": false,
+    "isSpecial": true,
     "isStandard": false,
     "isExtended": true,
-    "defaultUseInMatching": true,
-    "priorityPenalty": 4,
+    "defaultUseInMatching": false,
+    "priorityPenalty": 1000,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "延伸色，參與自動配色但比標準色有較高 penalty。"
+    "sourceNote": "Y series glow colors are manual-only and excluded from automatic recognition.",
+    "symbol": "Y1",
+    "canUseManually": true,
+    "defaultUseInRecognition": false,
+    "defaultUseInAutoMatching": false,
+    "specialLabel": "夜光"
   },
   {
     "brand": "MARD",
@@ -6145,19 +7319,24 @@
     "nameEn": "",
     "hex": "#FEB481",
     "series": "Y",
-    "finish": "solid",
+    "finish": "special",
     "isTransparent": false,
     "isPearl": false,
     "isNeon": false,
     "isGlitter": false,
-    "isSpecial": false,
+    "isSpecial": true,
     "isStandard": false,
     "isExtended": true,
-    "defaultUseInMatching": true,
-    "priorityPenalty": 4,
+    "defaultUseInMatching": false,
+    "priorityPenalty": 1000,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "延伸色，參與自動配色但比標準色有較高 penalty。"
+    "sourceNote": "Y series glow colors are manual-only and excluded from automatic recognition.",
+    "symbol": "Y2",
+    "canUseManually": true,
+    "defaultUseInRecognition": false,
+    "defaultUseInAutoMatching": false,
+    "specialLabel": "夜光"
   },
   {
     "brand": "MARD",
@@ -6167,19 +7346,24 @@
     "nameEn": "",
     "hex": "#D7FAA0",
     "series": "Y",
-    "finish": "solid",
+    "finish": "special",
     "isTransparent": false,
     "isPearl": false,
     "isNeon": false,
     "isGlitter": false,
-    "isSpecial": false,
+    "isSpecial": true,
     "isStandard": false,
     "isExtended": true,
-    "defaultUseInMatching": true,
-    "priorityPenalty": 4,
+    "defaultUseInMatching": false,
+    "priorityPenalty": 1000,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "延伸色，參與自動配色但比標準色有較高 penalty。"
+    "sourceNote": "Y series glow colors are manual-only and excluded from automatic recognition.",
+    "symbol": "Y3",
+    "canUseManually": true,
+    "defaultUseInRecognition": false,
+    "defaultUseInAutoMatching": false,
+    "specialLabel": "夜光"
   },
   {
     "brand": "MARD",
@@ -6189,19 +7373,24 @@
     "nameEn": "",
     "hex": "#8BDBFA",
     "series": "Y",
-    "finish": "solid",
+    "finish": "special",
     "isTransparent": false,
     "isPearl": false,
     "isNeon": false,
     "isGlitter": false,
-    "isSpecial": false,
+    "isSpecial": true,
     "isStandard": false,
     "isExtended": true,
-    "defaultUseInMatching": true,
-    "priorityPenalty": 4,
+    "defaultUseInMatching": false,
+    "priorityPenalty": 1000,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "延伸色，參與自動配色但比標準色有較高 penalty。"
+    "sourceNote": "Y series glow colors are manual-only and excluded from automatic recognition.",
+    "symbol": "Y4",
+    "canUseManually": true,
+    "defaultUseInRecognition": false,
+    "defaultUseInAutoMatching": false,
+    "specialLabel": "夜光"
   },
   {
     "brand": "MARD",
@@ -6211,19 +7400,24 @@
     "nameEn": "",
     "hex": "#E987EA",
     "series": "Y",
-    "finish": "solid",
+    "finish": "special",
     "isTransparent": false,
     "isPearl": false,
     "isNeon": false,
     "isGlitter": false,
-    "isSpecial": false,
+    "isSpecial": true,
     "isStandard": false,
     "isExtended": true,
-    "defaultUseInMatching": true,
-    "priorityPenalty": 4,
+    "defaultUseInMatching": false,
+    "priorityPenalty": 1000,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "延伸色，參與自動配色但比標準色有較高 penalty。"
+    "sourceNote": "Y series glow colors are manual-only and excluded from automatic recognition.",
+    "symbol": "Y5",
+    "canUseManually": true,
+    "defaultUseInRecognition": false,
+    "defaultUseInAutoMatching": false,
+    "specialLabel": "夜光"
   },
   {
     "brand": "MARD",
@@ -6233,19 +7427,24 @@
     "nameEn": "",
     "hex": "#DAABB3",
     "series": "ZG",
-    "finish": "solid",
+    "finish": "special",
     "isTransparent": false,
     "isPearl": false,
     "isNeon": false,
     "isGlitter": false,
-    "isSpecial": false,
+    "isSpecial": true,
     "isStandard": false,
     "isExtended": true,
-    "defaultUseInMatching": true,
-    "priorityPenalty": 4,
+    "defaultUseInMatching": false,
+    "priorityPenalty": 1000,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "延伸色，參與自動配色但比標準色有較高 penalty。"
+    "sourceNote": "ZG series morandi special colors are manual-only and excluded from automatic recognition.",
+    "symbol": "ZG1",
+    "canUseManually": true,
+    "defaultUseInRecognition": false,
+    "defaultUseInAutoMatching": false,
+    "specialLabel": "莫蘭迪"
   },
   {
     "brand": "MARD",
@@ -6255,19 +7454,24 @@
     "nameEn": "",
     "hex": "#D6AA87",
     "series": "ZG",
-    "finish": "solid",
+    "finish": "special",
     "isTransparent": false,
     "isPearl": false,
     "isNeon": false,
     "isGlitter": false,
-    "isSpecial": false,
+    "isSpecial": true,
     "isStandard": false,
     "isExtended": true,
-    "defaultUseInMatching": true,
-    "priorityPenalty": 4,
+    "defaultUseInMatching": false,
+    "priorityPenalty": 1000,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "延伸色，參與自動配色但比標準色有較高 penalty。"
+    "sourceNote": "ZG series morandi special colors are manual-only and excluded from automatic recognition.",
+    "symbol": "ZG2",
+    "canUseManually": true,
+    "defaultUseInRecognition": false,
+    "defaultUseInAutoMatching": false,
+    "specialLabel": "莫蘭迪"
   },
   {
     "brand": "MARD",
@@ -6277,19 +7481,24 @@
     "nameEn": "",
     "hex": "#C1BD8D",
     "series": "ZG",
-    "finish": "solid",
+    "finish": "special",
     "isTransparent": false,
     "isPearl": false,
     "isNeon": false,
     "isGlitter": false,
-    "isSpecial": false,
+    "isSpecial": true,
     "isStandard": false,
     "isExtended": true,
-    "defaultUseInMatching": true,
-    "priorityPenalty": 4,
+    "defaultUseInMatching": false,
+    "priorityPenalty": 1000,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "延伸色，參與自動配色但比標準色有較高 penalty。"
+    "sourceNote": "ZG series morandi special colors are manual-only and excluded from automatic recognition.",
+    "symbol": "ZG3",
+    "canUseManually": true,
+    "defaultUseInRecognition": false,
+    "defaultUseInAutoMatching": false,
+    "specialLabel": "莫蘭迪"
   },
   {
     "brand": "MARD",
@@ -6299,19 +7508,24 @@
     "nameEn": "",
     "hex": "#96869F",
     "series": "ZG",
-    "finish": "solid",
+    "finish": "special",
     "isTransparent": false,
     "isPearl": false,
     "isNeon": false,
     "isGlitter": false,
-    "isSpecial": false,
+    "isSpecial": true,
     "isStandard": false,
     "isExtended": true,
-    "defaultUseInMatching": true,
-    "priorityPenalty": 4,
+    "defaultUseInMatching": false,
+    "priorityPenalty": 1000,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "延伸色，參與自動配色但比標準色有較高 penalty。"
+    "sourceNote": "ZG series morandi special colors are manual-only and excluded from automatic recognition.",
+    "symbol": "ZG4",
+    "canUseManually": true,
+    "defaultUseInRecognition": false,
+    "defaultUseInAutoMatching": false,
+    "specialLabel": "莫蘭迪"
   },
   {
     "brand": "MARD",
@@ -6321,19 +7535,24 @@
     "nameEn": "",
     "hex": "#8490A6",
     "series": "ZG",
-    "finish": "solid",
+    "finish": "special",
     "isTransparent": false,
     "isPearl": false,
     "isNeon": false,
     "isGlitter": false,
-    "isSpecial": false,
+    "isSpecial": true,
     "isStandard": false,
     "isExtended": true,
-    "defaultUseInMatching": true,
-    "priorityPenalty": 4,
+    "defaultUseInMatching": false,
+    "priorityPenalty": 1000,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "延伸色，參與自動配色但比標準色有較高 penalty。"
+    "sourceNote": "ZG series morandi special colors are manual-only and excluded from automatic recognition.",
+    "symbol": "ZG5",
+    "canUseManually": true,
+    "defaultUseInRecognition": false,
+    "defaultUseInAutoMatching": false,
+    "specialLabel": "莫蘭迪"
   },
   {
     "brand": "MARD",
@@ -6343,19 +7562,24 @@
     "nameEn": "",
     "hex": "#94BFE2",
     "series": "ZG",
-    "finish": "solid",
+    "finish": "special",
     "isTransparent": false,
     "isPearl": false,
     "isNeon": false,
     "isGlitter": false,
-    "isSpecial": false,
+    "isSpecial": true,
     "isStandard": false,
     "isExtended": true,
-    "defaultUseInMatching": true,
-    "priorityPenalty": 4,
+    "defaultUseInMatching": false,
+    "priorityPenalty": 1000,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "延伸色，參與自動配色但比標準色有較高 penalty。"
+    "sourceNote": "ZG series morandi special colors are manual-only and excluded from automatic recognition.",
+    "symbol": "ZG6",
+    "canUseManually": true,
+    "defaultUseInRecognition": false,
+    "defaultUseInAutoMatching": false,
+    "specialLabel": "莫蘭迪"
   },
   {
     "brand": "MARD",
@@ -6365,19 +7589,24 @@
     "nameEn": "",
     "hex": "#E2A9D2",
     "series": "ZG",
-    "finish": "solid",
+    "finish": "special",
     "isTransparent": false,
     "isPearl": false,
     "isNeon": false,
     "isGlitter": false,
-    "isSpecial": false,
+    "isSpecial": true,
     "isStandard": false,
     "isExtended": true,
-    "defaultUseInMatching": true,
-    "priorityPenalty": 4,
+    "defaultUseInMatching": false,
+    "priorityPenalty": 1000,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "延伸色，參與自動配色但比標準色有較高 penalty。"
+    "sourceNote": "ZG series morandi special colors are manual-only and excluded from automatic recognition.",
+    "symbol": "ZG7",
+    "canUseManually": true,
+    "defaultUseInRecognition": false,
+    "defaultUseInAutoMatching": false,
+    "specialLabel": "莫蘭迪"
   },
   {
     "brand": "MARD",
@@ -6387,18 +7616,23 @@
     "nameEn": "",
     "hex": "#AB91C0",
     "series": "ZG",
-    "finish": "solid",
+    "finish": "special",
     "isTransparent": false,
     "isPearl": false,
     "isNeon": false,
     "isGlitter": false,
-    "isSpecial": false,
+    "isSpecial": true,
     "isStandard": false,
     "isExtended": true,
-    "defaultUseInMatching": true,
-    "priorityPenalty": 4,
+    "defaultUseInMatching": false,
+    "priorityPenalty": 1000,
     "source": "pixel-beads",
     "sourceUrl": "https://www.pixel-beads.com/zh/mard-bead-color-chart",
-    "sourceNote": "延伸色，參與自動配色但比標準色有較高 penalty。"
+    "sourceNote": "ZG series morandi special colors are manual-only and excluded from automatic recognition.",
+    "symbol": "ZG8",
+    "canUseManually": true,
+    "defaultUseInRecognition": false,
+    "defaultUseInAutoMatching": false,
+    "specialLabel": "莫蘭迪"
   }
 ]

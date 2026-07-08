@@ -1,4 +1,4 @@
-﻿import { useMemo, useState, type ReactNode } from "react";
+﻿import { useId, useMemo, useState, type ReactNode } from "react";
 import type { InventoryItem } from "../types/inventory";
 import type { PatternProject, PatternStatus } from "../types/project";
 import type { ActiveTool } from "./DrawingToolbar";
@@ -170,13 +170,22 @@ export function PatternEditor({
 
 function AccordionSection({ title, defaultOpen = false, children }: { title: string; defaultOpen?: boolean; children: ReactNode }) {
   const [open, setOpen] = useState(defaultOpen);
+  const buttonId = useId();
+  const panelId = useId();
   return (
     <section className="panel accordion-panel">
-      <button className="accordion-trigger" type="button" onClick={() => setOpen((value) => !value)} aria-expanded={open}>
+      <button
+        id={buttonId}
+        className="accordion-trigger"
+        type="button"
+        onClick={() => setOpen((value) => !value)}
+        aria-expanded={open}
+        aria-controls={panelId}
+      >
         <span>{title}</span>
         <span aria-hidden="true">{open ? "收合" : "展開"}</span>
       </button>
-      {open && <div className="accordion-content">{children}</div>}
+      {open && <div id={panelId} className="accordion-content" role="region" aria-labelledby={buttonId}>{children}</div>}
     </section>
   );
 }
@@ -209,3 +218,5 @@ function CostEstimatePanel({ project, colorCount }: { project: PatternProject; c
     </div>
   );
 }
+
+
