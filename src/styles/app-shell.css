@@ -182,6 +182,10 @@
   padding: 28px;
 }
 
+.bf-contact-card {
+  max-width: 900px;
+}
+
 .bf-button {
   display: inline-flex;
   gap: 8px;
@@ -221,65 +225,126 @@
 
 .bf-tutorial-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 16px;
-  margin-top: 18px;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 460px), 1fr));
+  gap: 24px;
+  margin-top: 24px;
 }
 
 .bf-tutorial-card {
   display: grid;
   gap: 14px;
-  padding: 16px;
+  align-content: start;
+  padding: 18px;
 }
 
-.bf-tutorial-placeholder {
-  position: relative;
+.bf-tutorial-card h2 {
+  margin: 0;
+  color: #4a4038;
+  font-size: 20px;
+}
+
+.bf-tutorial-image-button,
+.bf-tutorial-image-fallback {
   display: grid;
   place-items: center;
-  aspect-ratio: 4 / 3;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  padding: 0;
   overflow: hidden;
-  border: 1px dashed #d8c7b5;
-  border-radius: 14px;
+  border: 1px solid #e3d5c5;
+  border-radius: 16px;
   background: #fff8ee;
+}
+
+.bf-tutorial-image-button {
+  cursor: zoom-in;
+}
+
+.bf-tutorial-image-button:hover {
+  border-color: #c9a27e;
+  background: #fff8ee;
+  box-shadow: 0 14px 28px rgba(91, 63, 37, 0.12);
+  transform: translateY(-2px);
+}
+
+.bf-tutorial-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.bf-tutorial-image-fallback {
+  border-style: dashed;
   color: #8a7767;
   font-weight: 800;
 }
 
-.bf-tutorial-placeholder img {
-  position: absolute;
+.bf-lightbox {
+  position: fixed;
   inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  z-index: 80;
+  display: grid;
+  place-items: center;
+  padding: 28px;
+  background: rgba(63, 51, 42, 0.72);
+  backdrop-filter: blur(8px);
 }
 
-.bf-contact-email,
-.bf-feedback-box {
+.bf-lightbox-content {
   display: grid;
-  gap: 10px;
+  gap: 12px;
+  width: min(1440px, 96vw);
+  max-height: 94vh;
   padding: 16px;
   border: 1px solid #e3d5c5;
-  border-radius: 14px;
+  border-radius: 18px;
+  background: #fffdf8;
+  box-shadow: 0 28px 80px rgba(42, 29, 19, 0.32);
+}
+
+.bf-lightbox-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.bf-lightbox-header h2 {
+  margin: 0;
+  color: #3f332a;
+  font-size: 20px;
+}
+
+.bf-lightbox-content > img {
+  display: block;
+  width: 100%;
+  max-height: calc(94vh - 84px);
+  object-fit: contain;
+  border-radius: 12px;
+}
+
+.bf-feedback-box {
+  display: grid;
+  gap: 20px;
+  width: 100%;
+  margin-top: 10px;
+  padding: 30px;
+  border: 1px solid #e3d5c5;
+  border-radius: 18px;
   background: #fff8ee;
 }
 
-.bf-contact-email span,
-.bf-feedback-box span {
-  color: var(--color-muted);
-  font-size: 13px;
-  font-weight: 750;
-}
-
-.bf-feedback-box p {
+.bf-feedback-box h2 {
   margin: 0;
-  color: #6f5f51;
-  line-height: 1.7;
+  color: #4a4038;
+  font-size: clamp(22px, 3vw, 30px);
 }
 
-.bf-contact-email strong {
-  color: #6b452a;
-  font-size: clamp(20px, 4vw, 28px);
-  overflow-wrap: anywhere;
+.bf-feedback-box .bf-button {
+  width: min(100%, 360px);
+  min-height: 52px;
+  font-size: 17px;
 }
 
 .bf-faq-card {
@@ -354,5 +419,22 @@
 
   .bf-tutorial-grid {
     grid-template-columns: 1fr;
+  }
+
+  .bf-lightbox {
+    padding: 12px;
+  }
+
+  .bf-lightbox-content {
+    width: 100%;
+    padding: 12px;
+  }
+
+  .bf-feedback-box {
+    padding: 22px;
+  }
+
+  .bf-feedback-box .bf-button {
+    width: 100%;
   }
 }

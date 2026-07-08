@@ -1,4 +1,4 @@
-import { ArrowRight, Grid3X3, Image, Paintbrush } from "lucide-react";
+import { Grid3X3, Image, Paintbrush } from "lucide-react";
 import type { AppPage } from "../types/navigation";
 import { BeadHeroModel } from "../components/BeadHeroModel";
 
@@ -39,17 +39,6 @@ export function HomePage({ onNavigate }: { onNavigate: (page: AppPage) => void }
           <p className="bf-hero-text">
             把圖片、格線圖紙與手繪設計轉成清楚可用的拼豆圖紙，支援色號統計、成本預估、鏡射與匯出。
           </p>
-          <div className="bf-hero-actions">
-            <button className="bf-button bf-button-primary" type="button" onClick={() => onNavigate("grid")}>
-              開始辨識圖紙 <ArrowRight size={18} />
-            </button>
-            <button className="bf-button bf-button-secondary" type="button" onClick={() => onNavigate("photo")}>
-              照片轉拼豆
-            </button>
-            <button className="bf-button bf-button-ghost" type="button" onClick={() => onNavigate("drawing")}>
-              手動畫圖紙
-            </button>
-          </div>
         </div>
         <BeadHeroModel />
       </section>

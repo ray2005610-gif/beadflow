@@ -77,26 +77,29 @@
   line-height: 1.8;
 }
 
-.bf-hero-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 4px;
-}
-
 .bf-model-card {
   position: relative;
   z-index: 1;
   min-height: 460px;
-  overflow: hidden;
-  border: 1px solid rgba(227, 213, 197, 0.24);
-  border-radius: 28px;
-  background:
-    radial-gradient(circle at 50% 40%, rgba(255, 253, 248, 0.9), rgba(241, 222, 201, 0.28) 48%, rgba(255, 248, 238, 0.12) 100%);
+  overflow: visible;
+  border: 0;
+  background: transparent;
   box-shadow: none;
 }
 
+.bf-model-card::before {
+  content: "";
+  position: absolute;
+  inset: 9% 4%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(232, 210, 184, 0.48), rgba(255, 253, 248, 0) 68%);
+  filter: blur(8px);
+  pointer-events: none;
+}
+
 .bf-model-stage {
+  position: relative;
+  z-index: 2;
   width: 100%;
   height: 460px;
 }
@@ -107,14 +110,91 @@
   height: 100%;
 }
 
-.bf-model-fallback {
+.bf-bead-decoration {
   position: absolute;
   inset: 0;
-  display: grid;
-  place-items: center;
-  color: rgba(123, 106, 93, 0.58);
-  font-weight: 850;
+  z-index: 1;
+  opacity: 1;
   pointer-events: none;
+  transition: opacity 220ms ease;
+}
+
+.bf-model-card.model-loaded .bf-bead-decoration {
+  opacity: 0;
+}
+
+.bf-bead-dot {
+  position: absolute;
+  display: block;
+  width: 72px;
+  aspect-ratio: 1;
+  border: 15px solid #d8b892;
+  border-radius: 50%;
+  background: rgba(255, 253, 248, 0.5);
+  box-shadow:
+    inset 0 4px 8px rgba(255, 255, 255, 0.72),
+    0 16px 28px rgba(104, 74, 48, 0.13);
+  animation: bf-bead-float 4.8s ease-in-out infinite;
+}
+
+.bf-bead-dot-large {
+  top: 20%;
+  left: 34%;
+  width: 132px;
+  border-width: 28px;
+  border-color: #c9a27e;
+}
+
+.bf-bead-dot-medium {
+  top: 51%;
+  left: 57%;
+  width: 92px;
+  border-width: 20px;
+  border-color: #b98c62;
+  animation-delay: -1.2s;
+}
+
+.bf-bead-dot-small {
+  top: 16%;
+  left: 68%;
+  width: 58px;
+  border-width: 13px;
+  border-color: #e3d5c5;
+  animation-delay: -2.4s;
+}
+
+.bf-bead-dot-accent {
+  top: 61%;
+  left: 24%;
+  width: 66px;
+  border-width: 14px;
+  border-color: #a99e91;
+  animation-delay: -3.1s;
+}
+
+.bf-bead-dot-soft {
+  top: 42%;
+  left: 76%;
+  width: 44px;
+  border-width: 10px;
+  border-color: #f1dec9;
+  animation-delay: -0.7s;
+}
+
+@keyframes bf-bead-float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-14px) rotate(5deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bf-bead-dot {
+    animation: none;
+  }
 }
 
 .bf-feature-grid {
@@ -186,17 +266,17 @@
     border-radius: 20px;
   }
 
-  .bf-hero-actions,
-  .bf-hero-actions .bf-button {
-    width: 100%;
-  }
-
   .bf-model-card {
     min-height: 250px;
   }
 
   .bf-model-stage {
     height: 250px;
+  }
+
+  .bf-bead-decoration {
+    transform: scale(0.72);
+    transform-origin: center;
   }
 
   .bf-feature-grid {

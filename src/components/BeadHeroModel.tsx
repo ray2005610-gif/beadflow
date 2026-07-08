@@ -6,7 +6,6 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 export function BeadHeroModel() {
   const hostRef = useRef<HTMLDivElement | null>(null);
   const [loaded, setLoaded] = useState(false);
-  const [failed, setFailed] = useState(false);
 
   useEffect(() => {
     const host = hostRef.current;
@@ -52,19 +51,38 @@ export function BeadHeroModel() {
       (gltf) => {
         if (disposed) return;
         const model = gltf.scene;
+        const generator = gltf.parser.json.asset?.generator;
+        const isPlaceholderPart =
+          generator === "SOLIDWORKSGLTF" &&
+          Boolean(model.getObjectByName("零件1"));
+
+        if (isPlaceholderPart) {
+          console.warn("GLB loaded, but the current CAD placeholder is not suitable for the homepage. Using bead decoration.");
+          return;
+        }
+
         const box = new THREE.Box3().setFromObject(model);
         const size = box.getSize(new THREE.Vector3());
         const center = box.getCenter(new THREE.Vector3());
         const maxSize = Math.max(size.x, size.y, size.z) || 1;
         model.position.sub(center);
         model.scale.setScalar(2.95 / maxSize);
+        model.rotation.set(-0.45, 0, 0.18);
+        model.traverse((object) => {
+          if (object instanceof THREE.Mesh) {
+            object.material = new THREE.MeshStandardMaterial({
+              color: 0xc9a27e,
+              roughness: 0.48,
+              metalness: 0.03
+            });
+          }
+        });
         group.add(model);
         setLoaded(true);
       },
       undefined,
       (error) => {
         console.error("GLB model failed to load: /models/bead.glb", error);
-        setFailed(true);
       }
     );
 
@@ -92,10 +110,15 @@ export function BeadHeroModel() {
   }, []);
 
   return (
-    <div className="bf-model-card" aria-label="3D 拼豆展示">
+    <div className={`bf-model-card${loaded ? " model-loaded" : ""}`} aria-label="3D 拼豆展示">
+      <div className="bf-bead-decoration" aria-hidden="true">
+        <span className="bf-bead-dot bf-bead-dot-large" />
+        <span className="bf-bead-dot bf-bead-dot-medium" />
+        <span className="bf-bead-dot bf-bead-dot-small" />
+        <span className="bf-bead-dot bf-bead-dot-accent" />
+        <span className="bf-bead-dot bf-bead-dot-soft" />
+      </div>
       <div ref={hostRef} className="bf-model-stage" />
-      {!loaded && !failed && <div className="bf-model-fallback">3D 模型載入中</div>}
-      {failed && <div className="bf-model-fallback">3D 模型暫時無法顯示</div>}
     </div>
   );
 }

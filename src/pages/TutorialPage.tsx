@@ -1,15 +1,18 @@
+import { useEffect, useState } from "react";
+import { X } from "lucide-react";
+
 const tutorialImages = [
   {
     title: "辨識格線圖紙教學",
-    src: "/tutorials/grid-recognition.png"
-  },
-  {
-    title: "照片轉拼豆教學",
-    src: "/tutorials/photo-to-pattern.png"
+    src: "/tutorials/grid-recognition-guide.png"
   },
   {
     title: "手動畫圖紙教學",
-    src: "/tutorials/manual-drawing.png"
+    src: "/tutorials/manual-drawing-guide.png"
+  },
+  {
+    title: "照片轉拼豆教學",
+    src: "/tutorials/photo-to-pattern-guide.png"
   }
 ];
 
@@ -29,6 +32,24 @@ const faqItems = [
 ];
 
 export function TutorialPage() {
+  const [failedImages, setFailedImages] = useState<Record<string, boolean>>({});
+  const [previewImage, setPreviewImage] = useState<(typeof tutorialImages)[number] | null>(null);
+
+  useEffect(() => {
+    if (!previewImage) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setPreviewImage(null);
+    };
+
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.body.style.overflow = "";
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [previewImage]);
+
   return (
     <main className="bf-page">
       <section className="bf-card bf-intro-card">
@@ -39,11 +60,24 @@ export function TutorialPage() {
       <section className="bf-tutorial-grid">
         {tutorialImages.map((item) => (
           <article className="bf-card bf-tutorial-card" key={item.src}>
-            <div className="bf-tutorial-placeholder">
-              <img src={item.src} alt={item.title} onError={(event) => { event.currentTarget.style.display = "none"; }} />
-              <span>教學圖片準備中</span>
-            </div>
             <h2>{item.title}</h2>
+            {failedImages[item.src] ? (
+              <div className="bf-tutorial-image-fallback">教學圖片準備中</div>
+            ) : (
+              <button
+                className="bf-tutorial-image-button"
+                type="button"
+                onClick={() => setPreviewImage(item)}
+                aria-label={`放大檢視${item.title}`}
+              >
+                <img
+                  className="bf-tutorial-image"
+                  src={item.src}
+                  alt={item.title}
+                  onError={() => setFailedImages((current) => ({ ...current, [item.src]: true }))}
+                />
+              </button>
+            )}
           </article>
         ))}
       </section>
@@ -59,6 +93,19 @@ export function TutorialPage() {
           ))}
         </div>
       </section>
+      {previewImage && (
+        <div className="bf-lightbox" role="dialog" aria-modal="true" aria-label={previewImage.title} onClick={() => setPreviewImage(null)}>
+          <div className="bf-lightbox-content" onClick={(event) => event.stopPropagation()}>
+            <div className="bf-lightbox-header">
+              <h2>{previewImage.title}</h2>
+              <button className="bf-icon-button" type="button" onClick={() => setPreviewImage(null)} aria-label="關閉圖片">
+                <X size={22} />
+              </button>
+            </div>
+            <img src={previewImage.src} alt={previewImage.title} />
+          </div>
+        </div>
+      )}
     </main>
   );
 }
