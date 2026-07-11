@@ -60,6 +60,7 @@ export function PatternCanvas({
   onSelectedCellChange: (cell: SelectedCell) => void;
   onToggleBoardComplete: (boardId: string) => void;
 }) {
+  const viewportRef = useRef<HTMLDivElement | null>(null);
   const contentRef = useRef<HTMLCanvasElement | null>(null);
   const topRulerRef = useRef<HTMLCanvasElement | null>(null);
   const leftRulerRef = useRef<HTMLCanvasElement | null>(null);
@@ -70,21 +71,36 @@ export function PatternCanvas({
   const lastPaintKey = useRef("");
   const moved = useRef(false);
   const rafCell = useRef<number | null>(null);
-  const [viewport, setViewport] = useState({ width: 1, height: 1 });
+  const hasFittedViewport = useRef(false);
+  const [viewport, setViewport] = useState({ width: 0, height: 0 });
   const [transform, setTransform] = useState<ViewTransform>({ scale: 1, offsetX: 24, offsetY: 24 });
   const [selectedCell, setSelectedCell] = useState<SelectedCell>(null);
   const selectedCellData = selectedCell ? grid[selectedCell.row]?.[selectedCell.col] : null;
   const completedSet = useMemo(() => new Set(completedBoardIds), [completedBoardIds]);
 
   useEffect(() => {
-    const canvas = contentRef.current;
-    if (!canvas) return;
+    const viewportElement = viewportRef.current;
+    if (!viewportElement) return;
     const observer = new ResizeObserver((entries) => {
       const rect = entries[0]?.contentRect;
-      if (rect) setViewport({ width: Math.max(1, rect.width), height: Math.max(1, rect.height) });
+      if (!rect || rect.width <= 0 || rect.height <= 0) return;
+      setViewport({ width: rect.width, height: rect.height });
     });
-    observer.observe(canvas);
-    return () => observer.disconnect();
+    observer.observe(viewportElement);
+    const onResize = () => {
+      const rect = viewportElement.getBoundingClientRect();
+      if (rect.width > 0 && rect.height > 0) setViewport({ width: rect.width, height: rect.height });
+    };
+    window.addEventListener("resize", onResize);
+    window.addEventListener("orientationchange", onResize);
+    window.visualViewport?.addEventListener("resize", onResize);
+    requestAnimationFrame(() => requestAnimationFrame(onResize));
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", onResize);
+      window.removeEventListener("orientationchange", onResize);
+      window.visualViewport?.removeEventListener("resize", onResize);
+    };
   }, []);
 
   useEffect(() => {
@@ -92,13 +108,20 @@ export function PatternCanvas({
   }, [boardCompletionMode, boardLayout, completedSet, craftMode, focusedBoardId, grid, onlyUnfinished, renderMode, selectedCell, selectedColorCode, showCoordinates, showGrid, showSymbols, transform, viewport]);
 
   useEffect(() => {
+    if (viewport.width <= 0 || viewport.height <= 0) return;
     if (!focusedBoardId) {
       fitToBounds(0, 0, grid[0]?.length ?? 1, grid.length || 1);
       return;
     }
     const tile = boardLayout.tiles.find((item) => item.id === focusedBoardId);
     if (tile) fitToBounds(tile.startCol, tile.startRow, tile.endCol - tile.startCol, tile.endRow - tile.startRow);
-  }, [focusedBoardId, fitRequestKey]);
+  }, [boardLayout, focusedBoardId, fitRequestKey, viewport.width, viewport.height]);
+
+  useEffect(() => {
+    if (hasFittedViewport.current || viewport.width <= 0 || viewport.height <= 0 || !grid.length || !grid[0]?.length) return;
+    hasFittedViewport.current = true;
+    fitToBounds(0, 0, grid[0].length, grid.length);
+  }, [grid, viewport.width, viewport.height]);
 
   useEffect(() => {
     setSelected(null);
@@ -110,6 +133,7 @@ export function PatternCanvas({
   };
 
   const fitToBounds = (startCol: number, startRow: number, width: number, height: number) => {
+    if (viewport.width <= 0 || viewport.height <= 0 || width <= 0 || height <= 0) return;
     const availableWidth = Math.max(1, viewport.width - 32);
     const availableHeight = Math.max(1, viewport.height - 32);
     const nextScale = clamp(Math.min(availableWidth / (width * CELL_SIZE), availableHeight / (height * CELL_SIZE)), 0.25, 5);
@@ -146,7 +170,7 @@ export function PatternCanvas({
 
   const zoomAtCenter = (nextScale: number) => {
     const canvas = contentRef.current;
-    if (!canvas) return;
+    if (!canvas || transform.scale <= 0 || !Number.isFinite(transform.scale)) return;
     const rect = canvas.getBoundingClientRect();
     const screenCenter = { x: rect.width / 2, y: rect.height / 2 };
     const worldCenter = {
@@ -168,7 +192,7 @@ export function PatternCanvas({
 
   const drawPatternCanvas = () => {
     const canvas = contentRef.current;
-    if (!canvas) return;
+    if (!canvas || viewport.width <= 0 || viewport.height <= 0) return;
     const ctx = setupCanvas(canvas, viewport.width, viewport.height);
     if (!ctx) return;
     ctx.fillStyle = "#f7f1e8";
@@ -245,7 +269,7 @@ export function PatternCanvas({
 
   const drawTopRuler = () => {
     const canvas = topRulerRef.current;
-    if (!canvas) return;
+    if (!canvas || viewport.width <= 0) return;
     const ctx = setupCanvas(canvas, viewport.width, RULER_SIZE);
     if (!ctx) return;
     ctx.fillStyle = "#fffdf8";
@@ -273,7 +297,7 @@ export function PatternCanvas({
 
   const drawLeftRuler = () => {
     const canvas = leftRulerRef.current;
-    if (!canvas) return;
+    if (!canvas || viewport.height <= 0) return;
     const ctx = setupCanvas(canvas, RULER_SIZE, viewport.height);
     if (!ctx) return;
     ctx.fillStyle = "#fffdf8";
@@ -387,7 +411,7 @@ export function PatternCanvas({
         <div className="pattern-corner" />
         <canvas ref={topRulerRef} className="bf-coordinate-ruler top-ruler-canvas" aria-hidden="true" />
         <canvas ref={leftRulerRef} className="bf-coordinate-ruler left-ruler-canvas" aria-hidden="true" />
-        <div className="bf-pattern-viewport">
+        <div ref={viewportRef} className="bf-pattern-viewport">
           <canvas
             ref={contentRef}
             className="pattern-canvas pattern-content-canvas"

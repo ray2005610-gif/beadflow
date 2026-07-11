@@ -276,8 +276,11 @@ function computePatternFit(imageWidth: number, imageHeight: number, boardWidth: 
   }
   const containScale = Math.min(boardWidth / imageWidth, boardHeight / imageHeight);
   const manualScale = fitMode === "manual" ? Math.max(0.1, Math.min(3, options.manualScale ?? 1)) : 1;
-  const scaledWidth = Math.max(1, Math.min(boardWidth, Math.round(imageWidth * containScale * manualScale)));
-  const scaledHeight = Math.max(1, Math.min(boardHeight, Math.round(imageHeight * containScale * manualScale)));
+  const targetWidth = imageWidth * containScale * manualScale;
+  const targetHeight = imageHeight * containScale * manualScale;
+  const fitWithinBoard = Math.min(1, boardWidth / targetWidth, boardHeight / targetHeight);
+  const scaledWidth = Math.max(1, Math.round(targetWidth * fitWithinBoard));
+  const scaledHeight = Math.max(1, Math.round(targetHeight * fitWithinBoard));
   const centeredX = Math.round((boardWidth - scaledWidth) / 2);
   const centeredY = Math.round((boardHeight - scaledHeight) / 2);
   const offsetX = Math.max(0, Math.min(boardWidth - scaledWidth, centeredX + Math.round(options.offsetX ?? 0)));
