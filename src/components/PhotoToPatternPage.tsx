@@ -11,6 +11,7 @@ import {
   type PhotoPatternMeta,
   type PhotoPatternResult
 } from "../utils/imageToPattern";
+import { reducePatternPalette, type PhotoColorLimit } from "../utils/photoPaletteReduction";
 import { BoardPresetSelector } from "./BoardPresetSelector";
 
 type PreviewMode = "compare" | "original" | "bead";
@@ -35,6 +36,7 @@ export function PhotoToPatternPage({ onProjectReady }: { onProjectReady: (projec
   const [previewing, setPreviewing] = useState(false);
   const [previewResult, setPreviewResult] = useState<PhotoPatternResult | null>(null);
   const [backgroundOptions, setBackgroundOptions] = useState<BackgroundRemovalOptions>(defaultBackgroundRemovalOptions);
+  const [colorLimit, setColorLimit] = useState<PhotoColorLimit>(0);
 
   const photoOptions = useMemo(() => ({
     colorMode: "natural" as const,
@@ -78,7 +80,7 @@ export function PhotoToPatternPage({ onProjectReady }: { onProjectReady: (projec
     if (!imageDataUrl) return;
     setWorking(true);
     try {
-      const result = previewResult ?? await imageToPattern(imageDataUrl, width, height, recognitionPalette, backgroundOptions, photoOptions);
+      const result = displayResult ?? previewResult ?? await imageToPattern(imageDataUrl, width, height, recognitionPalette, backgroundOptions, photoOptions);
       const now = new Date().toISOString();
       onProjectReady({
         id: crypto.randomUUID(),
@@ -97,7 +99,15 @@ export function PhotoToPatternPage({ onProjectReady }: { onProjectReady: (projec
     }
   };
 
-  const meta = previewResult?.meta;
+  const displayResult = useMemo<PhotoPatternResult | null>(() => {
+    if (!previewResult || colorLimit === 0) return previewResult;
+    return {
+      ...previewResult,
+      grid: reducePatternPalette(previewResult.grid, recognitionPalette, colorLimit)
+    };
+  }, [colorLimit, previewResult]);
+
+  const meta = displayResult?.meta;
 
   return (
     <main className="workspace photo-workspace">
@@ -119,7 +129,7 @@ export function PhotoToPatternPage({ onProjectReady }: { onProjectReady: (projec
             </div>
             <div className={`photo-compare ${previewMode}`}>
               {previewMode !== "bead" && <figure><img className="photo-preview" src={imageDataUrl} alt="原圖預覽" /><figcaption>原圖</figcaption></figure>}
-              {previewMode !== "original" && <figure><PatternPreviewCanvas grid={previewResult?.grid ?? null} /><figcaption>{previewing ? "拼豆預覽更新中" : "拼豆預覽"}</figcaption></figure>}
+              {previewMode !== "original" && <figure><PatternPreviewCanvas grid={displayResult?.grid ?? null} /><figcaption>{previewing ? "拼豆預覽更新中" : "拼豆預覽"}</figcaption></figure>}
             </div>
           </div>
         )}
@@ -161,6 +171,20 @@ export function PhotoToPatternPage({ onProjectReady }: { onProjectReady: (projec
             指定背景色
             <input type="color" value={backgroundOptions.backgroundSampleColor ?? "#ffffff"} onChange={(event) => setBackgroundOptions((value) => ({ ...value, backgroundSampleColor: event.target.value, removeNearBackgroundColor: true, mode: "pickedColor" }))} />
           </label>
+        </div>
+        <div className="panel">
+          <h3>色彩數量</h3>
+          <label>
+            色彩數量
+            <select value={colorLimit} onChange={(event) => setColorLimit(Number(event.target.value) as PhotoColorLimit)}>
+              <option value={0}>不限制</option>
+              <option value={24}>24 色</option>
+              <option value={48}>48 色</option>
+              <option value={72}>72 色</option>
+              <option value={96}>96 色</option>
+            </select>
+          </label>
+          <p className="muted-note">只影響照片轉拼豆，會從 MARD A～M 標準色中挑選最適合目前圖片的顏色。不限制時保留原始轉換結果。</p>
         </div>
         <button className="primary wide" onClick={convert} disabled={!imageDataUrl || working || previewing}>{working ? "轉換中..." : "產生可編輯圖紙"}</button>
       </aside>
