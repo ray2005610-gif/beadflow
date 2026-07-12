@@ -2,7 +2,7 @@ import { Menu } from "lucide-react";
 import type { AppPage } from "../types/navigation";
 import { navItems } from "../types/navigation";
 
-export const APP_VERSION_TEXT = "版本 2026-07-11 19:04";
+export const APP_VERSION_TEXT = "版本 2026-07-11 21:24";
 
 export function Header({
   activePage,

@@ -1,4 +1,4 @@
-﻿import { useEffect, useId, useMemo, useState, type ReactNode } from "react";
+﻿import { useEffect, useId, useMemo, useRef, useState, type ReactNode } from "react";
 import type { InventoryItem } from "../types/inventory";
 import type { PatternProject, PatternStatus } from "../types/project";
 import type { ActiveTool } from "./DrawingToolbar";
@@ -97,12 +97,26 @@ export function PatternEditor({
   const [selectedCell, setSelectedCell] = useState<SelectedCell>(null);
   const [fitRequestKey, setFitRequestKey] = useState(0);
   const [clearSelectionKey, setClearSelectionKey] = useState(0);
+  const [layoutRefreshKey, setLayoutRefreshKey] = useState(0);
   const [completedBoardIds, setCompletedBoardIds] = useState<string[]>(() => readCompletedBoardIds(project.id, boardLayout));
   const [paletteCollapsed, setPaletteCollapsed] = useState(() => localStorage.getItem("paletteCollapsed") !== "false");
+  const [infoPanelCollapsed, setInfoPanelCollapsed] = useState(() => localStorage.getItem("infoPanelCollapsed") === "true");
+  const [focusMode, setFocusMode] = useState(false);
+  const [browserFullscreen, setBrowserFullscreen] = useState(false);
+  const focusRootRef = useRef<HTMLElement | null>(null);
   const togglePalette = () => {
     setPaletteCollapsed((current) => {
       const next = !current;
       localStorage.setItem("paletteCollapsed", String(next));
+      setLayoutRefreshKey((value) => value + 1);
+      return next;
+    });
+  };
+  const toggleInfoPanel = () => {
+    setInfoPanelCollapsed((current) => {
+      const next = !current;
+      localStorage.setItem("infoPanelCollapsed", String(next));
+      setLayoutRefreshKey((value) => value + 1);
       return next;
     });
   };
@@ -113,6 +127,23 @@ export function PatternEditor({
     setSelectedCell(null);
     setBoardCompletionMode(false);
   }, [project.id, boardLayout]);
+
+  useEffect(() => {
+    const previousOverflow = document.body.style.overflow;
+    if (focusMode) document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [focusMode]);
+
+  useEffect(() => {
+    const onFullscreenChange = () => {
+      setBrowserFullscreen(Boolean(document.fullscreenElement));
+      setLayoutRefreshKey((value) => value + 1);
+    };
+    document.addEventListener("fullscreenchange", onFullscreenChange);
+    return () => document.removeEventListener("fullscreenchange", onFullscreenChange);
+  }, []);
 
   const saveCompletedBoards = (ids: string[]) => {
     const valid = ids.filter((id) => boardLayout.tiles.some((tile) => tile.id === id));
@@ -125,12 +156,47 @@ export function PatternEditor({
     onToolChange("inspect");
   };
 
+  const enterFocusMode = () => {
+    setCraftMode(true);
+    setFocusMode(true);
+    onToolChange("inspect");
+    setLayoutRefreshKey((value) => value + 1);
+  };
+
   const leaveCraftMode = () => {
     setCraftMode(false);
+    setFocusMode(false);
     setBoardCompletionMode(false);
     setFocusedBoardId(null);
     setSelectedCell(null);
     setClearSelectionKey((value) => value + 1);
+  };
+
+  const leaveFocusMode = async () => {
+    if (document.fullscreenElement) {
+      try {
+        await document.exitFullscreen();
+      } catch {
+        // Fullscreen exit can fail on unsupported browsers; CSS focus mode still exits.
+      }
+    }
+    setFocusMode(false);
+    setLayoutRefreshKey((value) => value + 1);
+  };
+
+  const enterBrowserFullscreen = async () => {
+    setFocusMode(true);
+    setCraftMode(true);
+    onToolChange("inspect");
+    const target = focusRootRef.current;
+    if (target?.requestFullscreen) {
+      try {
+        await target.requestFullscreen();
+      } catch {
+        setBrowserFullscreen(false);
+      }
+    }
+    setLayoutRefreshKey((value) => value + 1);
   };
 
   const focusBoard = (boardId: string | null) => {
@@ -156,9 +222,39 @@ export function PatternEditor({
     if (window.confirm("確定要清除所有完成區塊嗎？")) saveCompletedBoards([]);
   };
 
+  const layoutClassName = [
+    "editor-layout",
+    paletteCollapsed ? "palette-collapsed" : "",
+    infoPanelCollapsed ? "info-collapsed" : "",
+    focusMode ? "bf-focus-mode" : ""
+  ].filter(Boolean).join(" ");
+
   return (
-    <main className={paletteCollapsed ? "editor-layout palette-collapsed" : "editor-layout"}>
+    <main ref={focusRootRef} className={layoutClassName}>
       <section className="editor-main">
+        {focusMode && (
+          <FocusToolbar
+            renderMode={renderMode}
+            showCoordinates={showCoordinates}
+            selectedColorCode={selectedColorCode}
+            boardCompletionMode={boardCompletionMode}
+            completedCount={completedBoardIds.length}
+            boardCount={boardLayout.totalBoards}
+            focusedBoardId={focusedBoardId}
+            boardLayout={boardLayout}
+            browserFullscreen={browserFullscreen}
+            onExit={leaveFocusMode}
+            onBrowserFullscreen={enterBrowserFullscreen}
+            onRenderModeChange={setRenderMode}
+            onToggleCoordinates={onToggleCoordinates}
+            onClearHighlight={() => onSelectedColorChange(null)}
+            onToggleBoardCompletionMode={() => setBoardCompletionMode((value) => !value)}
+            onClearCompletedBoards={clearCompletedBoards}
+            onFitAll={() => focusBoard(null)}
+            onPrevBoard={() => moveBoardFocus(-1)}
+            onNextBoard={() => moveBoardFocus(1)}
+          />
+        )}
         {craftMode ? (
           <CraftToolbar
             renderMode={renderMode}
@@ -182,11 +278,15 @@ export function PatternEditor({
             onFitAll={() => focusBoard(null)}
             onPrevBoard={() => moveBoardFocus(-1)}
             onNextBoard={() => moveBoardFocus(1)}
+            onEnterFocusMode={enterFocusMode}
+            onBrowserFullscreen={enterBrowserFullscreen}
           />
         ) : (
           <>
             <div className="bf-craft-entry">
               <button type="button" className="primary" onClick={enterCraftMode}>進入製作模式</button>
+              <button type="button" onClick={enterFocusMode}>專注製作</button>
+              <button type="button" aria-label="進入全螢幕製作" onClick={enterBrowserFullscreen}>⛶ 全螢幕製作</button>
               <span>製作模式會顯示固定座標尺、拼板、定位與拼豆預覽，不會修改圖紙內容。</span>
             </div>
             <Toolbar
@@ -242,6 +342,7 @@ export function PatternEditor({
           boardCompletionMode={boardCompletionMode}
           fitRequestKey={fitRequestKey}
           clearSelectionKey={clearSelectionKey}
+          layoutRefreshKey={layoutRefreshKey}
           onCellAction={onCellAction}
           onSelectedCellChange={setSelectedCell}
           onToggleBoardComplete={toggleBoardComplete}
@@ -252,30 +353,43 @@ export function PatternEditor({
         {!paletteCollapsed && <PalettePanel selectedCode={brushColorCode} recentColors={recentColors} onSelect={onBrushColorChange} />}
       </aside>
       <aside className="right-rail">
-        <AccordionSection title="圖紙資訊" defaultOpen>
-          <ProjectDetailPanel project={project} onRename={onRename} onStatusChange={onStatusChange} />
-        </AccordionSection>
-        <AccordionSection title="商業成本" defaultOpen>
-          <CostEstimatePanel project={project} colorCount={stats.length} />
-        </AccordionSection>
-        <AccordionSection title="色號統計" defaultOpen>
-          <ColorStatsPanel
-            stats={stats}
-            inventory={inventory}
-            selectedColorCode={selectedColorCode}
-            onlyUnfinished={onlyUnfinished}
-            onSelect={onSelectedColorChange}
-            onBrush={onBrushColorChange}
-            onCompleteColor={onCompleteColor}
-            onClearCompleteColor={onClearCompleteColor}
-            onPrev={onPrevColor}
-            onNext={onNextColor}
-            onToggleOnlyUnfinished={onToggleOnlyUnfinished}
-          />
-        </AccordionSection>
-        <AccordionSection title="庫存管理">
-          <InventoryPanel inventory={inventory} stats={stats} onChange={onInventoryChange} onConsume={onConsumeInventory} />
-        </AccordionSection>
+        <button
+          className="info-toggle"
+          type="button"
+          onClick={toggleInfoPanel}
+          aria-expanded={!infoPanelCollapsed}
+          aria-controls="pattern-info-panels"
+        >
+          {infoPanelCollapsed ? "展開資訊" : "收合資訊"}
+        </button>
+        {!infoPanelCollapsed && (
+          <div id="pattern-info-panels" className="info-panel-stack">
+            <AccordionSection title="圖紙資訊" defaultOpen>
+              <ProjectDetailPanel project={project} onRename={onRename} onStatusChange={onStatusChange} />
+            </AccordionSection>
+            <AccordionSection title="商業成本" defaultOpen>
+              <CostEstimatePanel project={project} colorCount={stats.length} />
+            </AccordionSection>
+            <AccordionSection title="色號統計" defaultOpen>
+              <ColorStatsPanel
+                stats={stats}
+                inventory={inventory}
+                selectedColorCode={selectedColorCode}
+                onlyUnfinished={onlyUnfinished}
+                onSelect={onSelectedColorChange}
+                onBrush={onBrushColorChange}
+                onCompleteColor={onCompleteColor}
+                onClearCompleteColor={onClearCompleteColor}
+                onPrev={onPrevColor}
+                onNext={onNextColor}
+                onToggleOnlyUnfinished={onToggleOnlyUnfinished}
+              />
+            </AccordionSection>
+            <AccordionSection title="庫存管理">
+              <InventoryPanel inventory={inventory} stats={stats} onChange={onInventoryChange} onConsume={onConsumeInventory} />
+            </AccordionSection>
+          </div>
+        )}
       </aside>
     </main>
   );
@@ -299,7 +413,9 @@ function CraftToolbar({
   onClearCompletedBoards,
   onFitAll,
   onPrevBoard,
-  onNextBoard
+  onNextBoard,
+  onEnterFocusMode,
+  onBrowserFullscreen
 }: {
   renderMode: PatternRenderMode;
   showCoordinates: boolean;
@@ -319,6 +435,8 @@ function CraftToolbar({
   onFitAll: () => void;
   onPrevBoard: () => void;
   onNextBoard: () => void;
+  onEnterFocusMode: () => void;
+  onBrowserFullscreen: () => void;
 }) {
   const currentTile = boardLayout.tiles.find((tile) => tile.id === focusedBoardId);
   return (
@@ -326,6 +444,8 @@ function CraftToolbar({
       <div className="bf-toolbar-group">
         <span>模式</span>
         <button type="button" className="bf-tool-button-active">製作模式</button>
+        <button type="button" onClick={onEnterFocusMode}>專注製作</button>
+        <button type="button" aria-label="進入全螢幕製作" onClick={onBrowserFullscreen}>⛶ 全螢幕</button>
         <button type="button" onClick={onLeaveCraftMode}>離開製作模式</button>
       </div>
       <div className="bf-toolbar-group bf-render-mode-switch">
@@ -356,6 +476,72 @@ function CraftToolbar({
         {boardCount > 1 && <button type="button" onClick={onNextBoard}>下一塊</button>}
         <strong>{currentTile ? `目前查看：第 ${currentTile.index} 塊` : "目前查看：全部"}</strong>
       </div>
+    </div>
+  );
+}
+
+function FocusToolbar({
+  renderMode,
+  showCoordinates,
+  selectedColorCode,
+  boardCompletionMode,
+  completedCount,
+  boardCount,
+  focusedBoardId,
+  boardLayout,
+  browserFullscreen,
+  onExit,
+  onBrowserFullscreen,
+  onRenderModeChange,
+  onToggleCoordinates,
+  onClearHighlight,
+  onToggleBoardCompletionMode,
+  onClearCompletedBoards,
+  onFitAll,
+  onPrevBoard,
+  onNextBoard
+}: {
+  renderMode: PatternRenderMode;
+  showCoordinates: boolean;
+  selectedColorCode: string | null;
+  boardCompletionMode: boolean;
+  completedCount: number;
+  boardCount: number;
+  focusedBoardId: string | null;
+  boardLayout: BoardLayout;
+  browserFullscreen: boolean;
+  onExit: () => void;
+  onBrowserFullscreen: () => void;
+  onRenderModeChange: (mode: PatternRenderMode) => void;
+  onToggleCoordinates: () => void;
+  onClearHighlight: () => void;
+  onToggleBoardCompletionMode: () => void;
+  onClearCompletedBoards: () => void;
+  onFitAll: () => void;
+  onPrevBoard: () => void;
+  onNextBoard: () => void;
+}) {
+  const [moreOpen, setMoreOpen] = useState(false);
+  const currentTile = boardLayout.tiles.find((tile) => tile.id === focusedBoardId);
+  return (
+    <div className="bf-focus-toolbar" aria-label="專注製作工具列">
+      <button type="button" aria-label="退出專注製作模式" onClick={onExit}>退出</button>
+      <button type="button" aria-label="進入全螢幕製作" className={browserFullscreen ? "bf-tool-button-active" : ""} onClick={onBrowserFullscreen}>⛶ 全螢幕</button>
+      <button type="button" className={showCoordinates ? "bf-tool-button-active" : ""} onClick={onToggleCoordinates}>座標</button>
+      <button type="button" className={boardCompletionMode ? "bf-tool-button-active" : ""} onClick={onToggleBoardCompletionMode}>完成區塊</button>
+      <button type="button" onClick={onFitAll}>查看全部</button>
+      {boardCount > 1 && <button type="button" onClick={onPrevBoard}>上一塊</button>}
+      {boardCount > 1 && <button type="button" onClick={onNextBoard}>下一塊</button>}
+      <button type="button" aria-expanded={moreOpen} aria-controls="bf-focus-more" onClick={() => setMoreOpen((value) => !value)}>更多</button>
+      <span className="bf-focus-status">{currentTile ? `第 ${currentTile.index} 塊` : "全部"}・完成 {completedCount}/{boardCount}{selectedColorCode ? `・高亮 ${selectedColorCode}` : ""}</span>
+      {moreOpen && (
+        <div id="bf-focus-more" className="bf-focus-more">
+          <button type="button" className={renderMode === "grid" ? "bf-tool-button-active" : ""} onClick={() => onRenderModeChange("grid")}>圖紙模式</button>
+          <button type="button" className={renderMode === "beads" ? "bf-tool-button-active" : ""} onClick={() => onRenderModeChange("beads")}>拼豆預覽</button>
+          <button type="button" onClick={onClearHighlight} disabled={!selectedColorCode}>清除高亮</button>
+          <button type="button" onClick={onClearCompletedBoards} disabled={!completedCount}>全部取消完成</button>
+        </div>
+      )}
     </div>
   );
 }

@@ -37,6 +37,7 @@ export function PatternCanvas({
   boardCompletionMode,
   fitRequestKey,
   clearSelectionKey,
+  layoutRefreshKey,
   onCellAction,
   onSelectedCellChange,
   onToggleBoardComplete
@@ -56,6 +57,7 @@ export function PatternCanvas({
   boardCompletionMode: boolean;
   fitRequestKey: number;
   clearSelectionKey: number;
+  layoutRefreshKey: number;
   onCellAction: (row: number, col: number, tool: ActiveTool) => void;
   onSelectedCellChange: (cell: SelectedCell) => void;
   onToggleBoardComplete: (boardId: string) => void;
@@ -74,9 +76,19 @@ export function PatternCanvas({
   const hasFittedViewport = useRef(false);
   const [viewport, setViewport] = useState({ width: 0, height: 0 });
   const [transform, setTransform] = useState<ViewTransform>({ scale: 1, offsetX: 24, offsetY: 24 });
+  const transformRef = useRef(transform);
+  const viewportSizeRef = useRef(viewport);
   const [selectedCell, setSelectedCell] = useState<SelectedCell>(null);
   const selectedCellData = selectedCell ? grid[selectedCell.row]?.[selectedCell.col] : null;
   const completedSet = useMemo(() => new Set(completedBoardIds), [completedBoardIds]);
+
+  useEffect(() => {
+    transformRef.current = transform;
+  }, [transform]);
+
+  useEffect(() => {
+    viewportSizeRef.current = viewport;
+  }, [viewport]);
 
   useEffect(() => {
     const viewportElement = viewportRef.current;
@@ -84,12 +96,12 @@ export function PatternCanvas({
     const observer = new ResizeObserver((entries) => {
       const rect = entries[0]?.contentRect;
       if (!rect || rect.width <= 0 || rect.height <= 0) return;
-      setViewport({ width: rect.width, height: rect.height });
+      updateViewportSize(rect.width, rect.height);
     });
     observer.observe(viewportElement);
     const onResize = () => {
       const rect = viewportElement.getBoundingClientRect();
-      if (rect.width > 0 && rect.height > 0) setViewport({ width: rect.width, height: rect.height });
+      if (rect.width > 0 && rect.height > 0) updateViewportSize(rect.width, rect.height);
     };
     window.addEventListener("resize", onResize);
     window.addEventListener("orientationchange", onResize);
@@ -102,6 +114,26 @@ export function PatternCanvas({
       window.visualViewport?.removeEventListener("resize", onResize);
     };
   }, []);
+
+  const updateViewportSize = (width: number, height: number) => {
+    const previous = viewportSizeRef.current;
+    const currentTransform = transformRef.current;
+    if (
+      previous.width > 0 &&
+      previous.height > 0 &&
+      Number.isFinite(currentTransform.scale) &&
+      currentTransform.scale > 0
+    ) {
+      const centerGridX = (previous.width / 2 - currentTransform.offsetX) / (CELL_SIZE * currentTransform.scale);
+      const centerGridY = (previous.height / 2 - currentTransform.offsetY) / (CELL_SIZE * currentTransform.scale);
+      setTransform({
+        scale: currentTransform.scale,
+        offsetX: width / 2 - centerGridX * CELL_SIZE * currentTransform.scale,
+        offsetY: height / 2 - centerGridY * CELL_SIZE * currentTransform.scale
+      });
+    }
+    setViewport({ width, height });
+  };
 
   useEffect(() => {
     drawAll();
@@ -126,6 +158,16 @@ export function PatternCanvas({
   useEffect(() => {
     setSelected(null);
   }, [clearSelectionKey]);
+
+  useEffect(() => {
+    const measure = () => {
+      const element = viewportRef.current;
+      if (!element) return;
+      const rect = element.getBoundingClientRect();
+      if (rect.width > 0 && rect.height > 0) updateViewportSize(rect.width, rect.height);
+    };
+    requestAnimationFrame(() => requestAnimationFrame(measure));
+  }, [layoutRefreshKey]);
 
   const setSelected = (cell: SelectedCell) => {
     setSelectedCell(cell);

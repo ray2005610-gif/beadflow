@@ -329,6 +329,99 @@ h4 { font-size: 13px; margin-bottom: 8px; color: #6f5f51; }
   color: #6b452a;
   font-weight: 850;
 }
+.bf-focus-toolbar {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 10001;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  max-width: min(760px, calc(100vw - 36px));
+  padding: 8px 10px;
+  border: 1px solid #e3d5c5;
+  border-radius: 18px;
+  background: rgba(255, 253, 248, 0.92);
+  box-shadow: 0 10px 28px rgba(63, 51, 42, 0.14);
+  backdrop-filter: blur(12px);
+}
+.bf-focus-toolbar button {
+  min-height: 38px;
+  padding: 7px 10px;
+}
+.bf-focus-status {
+  color: #6b452a;
+  font-size: 12px;
+  font-weight: 850;
+}
+.bf-focus-more {
+  position: absolute;
+  right: 8px;
+  bottom: calc(100% + 8px);
+  display: grid;
+  gap: 6px;
+  min-width: 170px;
+  padding: 8px;
+  border: 1px solid #e3d5c5;
+  border-radius: 14px;
+  background: rgba(255, 253, 248, 0.96);
+  box-shadow: 0 10px 28px rgba(63, 51, 42, 0.14);
+}
+.editor-layout.bf-focus-mode {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  width: 100vw;
+  height: 100dvh;
+  padding: 0;
+  gap: 0;
+  overflow: hidden;
+  background: var(--color-bg);
+}
+.bf-focus-mode .left-rail,
+.bf-focus-mode .right-rail,
+.bf-focus-mode .bf-craft-toolbar,
+.bf-focus-mode .bf-board-panel {
+  display: none;
+}
+.bf-focus-mode .editor-main {
+  flex: 1 1 auto;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+}
+.bf-focus-mode .canvas-wrap {
+  flex: 1 1 auto;
+  min-height: 0;
+  height: 100dvh;
+  padding: 0;
+}
+.bf-focus-mode .canvas-tools {
+  position: fixed;
+  top: 12px;
+  left: 50%;
+  z-index: 10000;
+  transform: translateX(-50%);
+  max-width: min(680px, calc(100vw - 24px));
+  border: 1px solid #e3d5c5;
+  border-radius: 18px;
+  background: rgba(255, 253, 248, 0.92);
+  box-shadow: 0 10px 28px rgba(63, 51, 42, 0.12);
+  backdrop-filter: blur(12px);
+}
+.bf-focus-mode .pattern-workspace {
+  width: 100%;
+  height: 100dvh;
+  min-height: 0;
+  border: 0;
+  border-radius: 0;
+}
+.bf-focus-mode .bf-pattern-viewport,
+.bf-focus-mode .pattern-content-canvas {
+  min-height: 0;
+}
 .cell-debug {
   position: absolute;
   left: 12px;
@@ -371,20 +464,32 @@ h4 { font-size: 13px; margin-bottom: 8px; color: #6f5f51; }
 .editor-layout.palette-collapsed {
   grid-template-columns: minmax(0, 1fr) 54px 360px;
 }
+.editor-layout.info-collapsed {
+  grid-template-columns: minmax(0, 1fr) 320px 54px;
+}
+.editor-layout.palette-collapsed.info-collapsed {
+  grid-template-columns: minmax(0, 1fr) 54px 54px;
+}
 .left-rail, .right-rail {
   display: grid;
   gap: 12px;
   align-content: start;
   overflow: auto;
 }
+.info-panel-stack {
+  display: grid;
+  gap: 12px;
+}
 .palette-rail {
   min-width: 0;
 }
-.palette-toggle {
+.palette-toggle,
+.info-toggle {
   width: 100%;
   writing-mode: horizontal-tb;
 }
-.palette-collapsed .palette-toggle {
+.palette-collapsed .palette-toggle,
+.info-collapsed .info-toggle {
   writing-mode: vertical-rl;
   min-height: 120px;
   padding: 10px 6px;
@@ -528,8 +633,11 @@ h4 { font-size: 13px; margin-bottom: 8px; color: #6f5f51; }
 
 @media (max-width: 1100px) {
   .two-col, .editor-layout, .editor-layout.palette-collapsed { grid-template-columns: 1fr; height: auto; }
+  .editor-layout.info-collapsed,
+  .editor-layout.palette-collapsed.info-collapsed { grid-template-columns: 1fr; }
   .left-rail, .right-rail { overflow: visible; }
-  .palette-collapsed .palette-toggle { writing-mode: horizontal-tb; min-height: 40px; }
+  .palette-collapsed .palette-toggle,
+  .info-collapsed .info-toggle { writing-mode: horizontal-tb; min-height: 40px; }
   .editor-main .canvas-wrap { min-height: 420px; }
   .editor-main .pattern-canvas { height: 70svh; min-height: 420px; }
   .editor-main .pattern-workspace { height: 70svh; min-height: 420px; }
@@ -575,6 +683,49 @@ h4 { font-size: 13px; margin-bottom: 8px; color: #6f5f51; }
     bottom: 8px;
     max-width: none;
     font-size: 11px;
+  }
+  .bf-focus-mode .bf-coordinate-hud {
+    bottom: 92px;
+  }
+  .bf-focus-toolbar {
+    left: 8px;
+    right: 8px;
+    bottom: 8px;
+    max-width: none;
+    justify-content: center;
+    padding: 7px;
+  }
+  .bf-focus-toolbar button {
+    min-height: 44px;
+  }
+  .bf-focus-status {
+    width: 100%;
+    text-align: center;
+  }
+  .bf-focus-more {
+    right: 8px;
+    bottom: calc(100% + 8px);
+  }
+  .bf-focus-mode .canvas-tools {
+    top: 8px;
+    left: 8px;
+    right: 8px;
+    max-width: none;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    transform: none;
+  }
+  .bf-focus-mode .canvas-wrap,
+  .bf-focus-mode .pattern-workspace {
+    height: 100dvh;
+    min-height: 0;
+  }
+  .bf-focus-mode .bf-pattern-viewport,
+  .bf-focus-mode .pattern-content-canvas {
+    min-height: 0;
+  }
+  .bf-focus-mode .canvas-hint {
+    display: none;
   }
   .photo-preview {
     max-height: 58svh;
