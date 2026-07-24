@@ -2,6 +2,7 @@ import type { BeadColor, RGB } from "../types/bead";
 import type { ChartLocalPaletteEntry, GridCalibration, GridRecognitionOptions } from "../types/calibration";
 import type { PatternGrid } from "../types/pattern";
 import { mardPaletteByCode } from "../data/mardPalette";
+import { recognitionPalette } from "../data/recognitionPalette";
 import { EMPTY_COLOR, EMPTY_COLOR_CODE } from "../data/emptyColor";
 import { findClosestBeadColorWithDebug, hexToRgb, oklabDistance, rgbToHex, rgbToHsl, rgbToOklab } from "./colorUtils";
 import { createEmptyCell, loadImage } from "./imageToPattern";
@@ -121,14 +122,25 @@ export async function extractLegendPalette(
     if (distinct.length >= 24) break;
   }
 
-  return distinct.map((color, index) => ({
-    id: crypto.randomUUID(),
-    code: "",
-    sampledHex: rgbToHex(color),
-    source: "legend",
-    confidence: Math.max(0.55, 0.9 - index * 0.012),
-    enabled: true
-  }));
+  const byCode = new Map<string, ChartLocalPaletteEntry>();
+  distinct.forEach((color, index) => {
+    const match = findClosestBeadColorWithDebug(color, recognitionPalette);
+    const code = match.color.code.trim().toUpperCase();
+    if (!code || code === EMPTY_COLOR_CODE || !mardPaletteByCode.has(code)) return;
+    const previous = byCode.get(code);
+    if (previous && (previous.confidence ?? 0) >= match.confidence) return;
+    byCode.set(code, {
+      id: previous?.id ?? crypto.randomUUID(),
+      code,
+      sampledHex: rgbToHex(color),
+      officialHex: mardPaletteByCode.get(code)?.hex,
+      source: "legend",
+      confidence: Math.max(0.55, Math.min(0.98, match.confidence - index * 0.004)),
+      enabled: true
+    });
+  });
+
+  return Array.from(byCode.values()).slice(0, 24);
 }
 
 export function buildChartLocalPalette(entries: ChartLocalPaletteEntry[]): BeadColor[] {

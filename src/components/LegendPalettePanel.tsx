@@ -20,9 +20,9 @@ export function LegendPalettePanel({
 }) {
   const [query, setQuery] = useState("");
   const [series, setSeries] = useState("all");
-  const activeEntries = entries.filter((entry) => entry.enabled && mardPaletteByCode.has(entry.code.trim().toUpperCase()));
-  const legendCount = entries.filter((entry) => entry.source === "legend" && entry.enabled && mardPaletteByCode.has(entry.code.trim().toUpperCase())).length;
-  const customCount = entries.filter((entry) => entry.source === "manual" && entry.enabled && mardPaletteByCode.has(entry.code.trim().toUpperCase())).length;
+  const activeEntries = getUniqueValidEntries(entries);
+  const legendCount = getUniqueValidEntries(entries.filter((entry) => entry.source === "legend")).length;
+  const customCount = getUniqueValidEntries(entries.filter((entry) => entry.source === "manual")).length;
 
   const seriesList = useMemo(() => {
     return Array.from(new Set(mardPalette.map((color) => color.series ?? color.code[0]).filter(Boolean))).sort();
@@ -188,4 +188,14 @@ export function LegendPalettePanel({
       )}
     </details>
   );
+}
+
+function getUniqueValidEntries(entries: ChartLocalPaletteEntry[]): ChartLocalPaletteEntry[] {
+  const unique = new Map<string, ChartLocalPaletteEntry>();
+  for (const entry of entries) {
+    const code = entry.code.trim().toUpperCase();
+    if (!entry.enabled || !code || code === "TRANSPARENT" || code === "EMPTY" || !mardPaletteByCode.has(code)) continue;
+    if (!unique.has(code)) unique.set(code, entry);
+  }
+  return Array.from(unique.values());
 }

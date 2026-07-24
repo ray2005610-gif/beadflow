@@ -82,7 +82,7 @@ export function GridImportPage({ onProjectReady }: { onProjectReady: (project: P
       <section className="main-stage">
         <div className="panel">
           <h2>辨識格線圖紙</h2>
-          <p>請上傳有格線的拼豆圖紙，先用 3×3 中心選取完成校正，再選擇辨識色號範圍。</p>
+          <p>請上傳有格線的拼豆圖紙，先框選 3×3 校正區域，再選擇辨識色號範圍。</p>
           <input type="file" accept="image/png,image/jpeg,image/webp" onChange={(event) => upload(event.target.files?.[0] ?? null)} />
         </div>
         {imageDataUrl && <GridCalibrationCanvas imageDataUrl={imageDataUrl} calibration={calibration} onCalibrationChange={setCalibration} />}
@@ -108,9 +108,15 @@ export function GridImportPage({ onProjectReady }: { onProjectReady: (project: P
 
 function getActiveKnownColorEntries(entries: ChartLocalPaletteEntry[], mode: GridRecognitionPaletteMode): ChartLocalPaletteEntry[] {
   if (mode === "all") return [];
-  return entries.filter((entry) => {
+  const unique = new Map<string, ChartLocalPaletteEntry>();
+  entries.filter((entry) => {
     if (!entry.enabled) return false;
-    if (!mardPaletteByCode.has(entry.code.trim().toUpperCase())) return false;
+    const code = entry.code.trim().toUpperCase();
+    if (!code || code === "TRANSPARENT" || code === "EMPTY" || !mardPaletteByCode.has(code)) return false;
     return mode === "custom" || entry.source === "legend";
+  }).forEach((entry) => {
+    const code = entry.code.trim().toUpperCase();
+    if (!unique.has(code)) unique.set(code, entry);
   });
+  return Array.from(unique.values());
 }
