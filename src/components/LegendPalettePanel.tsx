@@ -1,17 +1,41 @@
-import type { ChartLocalPaletteEntry } from "../types/calibration";
+import { useMemo, useState } from "react";
+import type { ChartLocalPaletteEntry, GridRecognitionPaletteMode } from "../types/calibration";
 import { mardPalette, mardPaletteByCode } from "../data/mardPalette";
+import { recognitionPalette } from "../data/recognitionPalette";
 
 export function LegendPalettePanel({
   entries,
   detecting,
+  paletteMode,
+  onPaletteModeChange,
   onDetect,
   onChange
 }: {
   entries: ChartLocalPaletteEntry[];
   detecting: boolean;
+  paletteMode: GridRecognitionPaletteMode;
+  onPaletteModeChange: (mode: GridRecognitionPaletteMode) => void;
   onDetect: () => void;
   onChange: (entries: ChartLocalPaletteEntry[]) => void;
 }) {
+  const [query, setQuery] = useState("");
+  const [series, setSeries] = useState("all");
+  const activeEntries = entries.filter((entry) => entry.enabled && mardPaletteByCode.has(entry.code.trim().toUpperCase()));
+  const legendCount = entries.filter((entry) => entry.source === "legend" && entry.enabled && mardPaletteByCode.has(entry.code.trim().toUpperCase())).length;
+  const customCount = entries.filter((entry) => entry.source === "manual" && entry.enabled && mardPaletteByCode.has(entry.code.trim().toUpperCase())).length;
+
+  const seriesList = useMemo(() => {
+    return Array.from(new Set(mardPalette.map((color) => color.series ?? color.code[0]).filter(Boolean))).sort();
+  }, []);
+
+  const filteredPalette = useMemo(() => {
+    const normalized = query.trim().toUpperCase();
+    return mardPalette
+      .filter((color) => series === "all" || color.series === series || color.code.startsWith(series))
+      .filter((color) => !normalized || color.code.includes(normalized) || color.name.toUpperCase().includes(normalized))
+      .slice(0, 80);
+  }, [query, series]);
+
   const update = (id: string, patch: Partial<ChartLocalPaletteEntry>) => {
     onChange(entries.map((entry) => {
       if (entry.id !== id) return entry;
@@ -21,12 +45,33 @@ export function LegendPalettePanel({
         const official = mardPaletteByCode.get(code);
         next.code = code;
         next.officialHex = official?.hex;
+        if (official && entry.source === "manual") next.sampledHex = official.hex;
       }
       return next;
     }));
   };
 
-  const add = () => {
+  const addManualColor = (code: string) => {
+    const normalized = code.trim().toUpperCase();
+    const color = mardPaletteByCode.get(normalized);
+    if (!color) return;
+    const exists = entries.some((entry) => entry.code.trim().toUpperCase() === normalized);
+    if (exists) {
+      onChange(entries.map((entry) => entry.code.trim().toUpperCase() === normalized ? { ...entry, enabled: true } : entry));
+      return;
+    }
+    onChange([...entries, {
+      id: crypto.randomUUID(),
+      code: color.code,
+      sampledHex: color.hex,
+      officialHex: color.hex,
+      source: "manual",
+      confidence: 1,
+      enabled: true
+    }]);
+  };
+
+  const addBlankLegend = () => {
     onChange([...entries, {
       id: crypto.randomUUID(),
       code: "",
@@ -37,60 +82,110 @@ export function LegendPalettePanel({
     }]);
   };
 
-  const activeCount = entries.filter((entry) => entry.enabled && entry.code).length;
+  const restoreLegend = () => {
+    onChange(entries.map((entry) => entry.source === "legend" ? { ...entry, enabled: true } : entry));
+    onPaletteModeChange("legend");
+  };
 
   return (
-    <details className="panel">
-      <summary><strong>圖紙色表校正</strong>{activeCount > 0 ? `（已設定 ${activeCount} 色）` : ""}</summary>
-      <p>先偵測圖片下方的色塊，再填入圖紙上標示的色號。辨識時只會使用已啟用且有色號的項目。</p>
-      <div className="toolbar compact-toolbar">
-        <button type="button" onClick={onDetect} disabled={detecting}>{detecting ? "正在偵測…" : "偵測圖中色塊"}</button>
-        <button type="button" onClick={add}>新增色號</button>
-        {entries.length > 0 && <button type="button" onClick={() => onChange([])}>清除色表</button>}
+    <details className="panel" open>
+      <summary><strong>辨識色號範圍</strong>{activeEntries.length > 0 ? `（已啟用 ${activeEntries.length} 色）` : ""}</summary>
+      <div className="stacked-options">
+        <label className="radio-card">
+          <input type="radio" checked={paletteMode === "all"} onChange={() => onPaletteModeChange("all")} />
+          <span><strong>所有 MARD 標準色</strong><small>使用原本的自動辨識候選色。</small></span>
+        </label>
+        <label className="radio-card">
+          <input type="radio" checked={paletteMode === "legend"} onChange={() => onPaletteModeChange("legend")} />
+          <span><strong>使用圖紙底部色號</strong><small>推薦，已辨識 {legendCount} 色。</small></span>
+        </label>
+        <label className="radio-card">
+          <input type="radio" checked={paletteMode === "custom"} onChange={() => onPaletteModeChange("custom")} />
+          <span><strong>自訂色號</strong><small>已選擇 {customCount} 色，可手動加入特殊色。</small></span>
+        </label>
       </div>
-      <datalist id="mard-color-codes">
-        <option value="TRANSPARENT">透明 / 空白</option>
-        {mardPalette.map((color) => <option key={color.code} value={color.code}>{color.name}</option>)}
-      </datalist>
+
+      <div className="toolbar compact-toolbar">
+        <button type="button" onClick={onDetect} disabled={detecting}>{detecting ? "辨識中..." : "辨識底部色塊"}</button>
+        <button type="button" onClick={addBlankLegend}>新增底部色號</button>
+        <button type="button" onClick={() => onChange(entries.map((entry) => ({ ...entry, enabled: true })))} disabled={!entries.length}>全選</button>
+        <button type="button" onClick={() => onChange(entries.map((entry) => ({ ...entry, enabled: false })))} disabled={!entries.length}>全部取消</button>
+        <button type="button" onClick={restoreLegend} disabled={!entries.some((entry) => entry.source === "legend")}>恢復底部結果</button>
+      </div>
+
       {entries.length === 0 ? (
-        <p>尚未建立圖紙專用色卡。辨識時會使用 MARD 標準辨識色卡。</p>
+        <p className="muted-note">尚未建立已知色號。可以先辨識底部色塊，或用下方色卡手動新增。</p>
       ) : (
         <div className="legend-palette-list">
-          {entries.map((entry, index) => (
-            <div className="legend-palette-row" key={entry.id}>
-              <input
-                type="checkbox"
-                checked={entry.enabled}
-                aria-label={`啟用色塊 ${index + 1}`}
-                onChange={(event) => update(entry.id, { enabled: event.target.checked })}
-              />
-              <input
-                type="color"
-                value={entry.sampledHex}
-                aria-label={`色塊 ${index + 1} 取樣色`}
-                onChange={(event) => update(entry.id, { sampledHex: event.target.value.toUpperCase() })}
-              />
-              <input
-                list="mard-color-codes"
-                value={entry.code}
-                placeholder="色號，例如 B13"
-                aria-label={`色塊 ${index + 1} 色號`}
-                onChange={(event) => update(entry.id, { code: event.target.value })}
-              />
-              <input
-                type="number"
-                min={0}
-                value={entry.countFromLegend ?? ""}
-                placeholder="顆數"
-                aria-label={`色塊 ${index + 1} 顆數`}
-                onChange={(event) => update(entry.id, { countFromLegend: event.target.value ? Number(event.target.value) : undefined })}
-              />
-              <button type="button" aria-label={`刪除色塊 ${index + 1}`} onClick={() => onChange(entries.filter((item) => item.id !== entry.id))}>刪除</button>
-            </div>
-          ))}
+          {entries.map((entry, index) => {
+            const official = mardPaletteByCode.get(entry.code.trim().toUpperCase());
+            return (
+              <div className="legend-palette-row" key={entry.id}>
+                <input
+                  type="checkbox"
+                  checked={entry.enabled}
+                  aria-label={`啟用色號 ${index + 1}`}
+                  onChange={(event) => update(entry.id, { enabled: event.target.checked })}
+                />
+                <input
+                  type="color"
+                  value={entry.sampledHex}
+                  aria-label={`色號 ${index + 1} 圖紙取樣色`}
+                  onChange={(event) => update(entry.id, { sampledHex: event.target.value.toUpperCase() })}
+                />
+                <input
+                  list="mard-color-codes"
+                  value={entry.code}
+                  placeholder="色號，例如 B13"
+                  aria-label={`色號 ${index + 1}`}
+                  onChange={(event) => update(entry.id, { code: event.target.value })}
+                />
+                <span className="legend-source">{entry.source === "legend" ? "底部" : "手動"}</span>
+                <span className={official ? "legend-valid" : "legend-invalid"}>{official ? official.series ?? official.code[0] : "無效"}</span>
+                <button type="button" aria-label={`移除色號 ${index + 1}`} onClick={() => onChange(entries.filter((item) => item.id !== entry.id))}>移除</button>
+              </div>
+            );
+          })}
         </div>
       )}
-      {activeCount > 0 && <p>已套用本圖專用色卡；按「辨識圖紙」即可重新辨識。</p>}
+
+      <datalist id="mard-color-codes">
+        {mardPalette.map((color) => <option key={color.code} value={color.code}>{color.name}</option>)}
+      </datalist>
+
+      <div className="known-color-picker">
+        <div className="grid-fields">
+          <label>搜尋色號<input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="A01 / B13" /></label>
+          <label>系列
+            <select value={series} onChange={(event) => setSeries(event.target.value)}>
+              <option value="all">全部系列</option>
+              {seriesList.map((item) => <option key={item} value={item}>{item} 系列</option>)}
+            </select>
+          </label>
+        </div>
+        <div className="known-color-grid">
+          {filteredPalette.map((color) => {
+            const added = entries.some((entry) => entry.code.trim().toUpperCase() === color.code && entry.enabled);
+            const isStandardCandidate = recognitionPalette.some((item) => item.code === color.code);
+            return (
+              <button
+                type="button"
+                key={color.code}
+                className={added ? "active" : ""}
+                onClick={() => addManualColor(color.code)}
+                title={isStandardCandidate ? color.name : `${color.name}，手動加入才會參與本張圖辨識`}
+              >
+                <span className="swatch" style={{ background: color.hex }} />
+                <span>{color.code}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {paletteMode !== "all" && activeEntries.length === 0 && (
+        <p className="warning-note">尚未選擇任何有效色號。請手動新增色號，或切回「所有 MARD 標準色」。</p>
+      )}
     </details>
   );
 }

@@ -141,17 +141,12 @@ export function buildChartLocalPalette(entries: ChartLocalPaletteEntry[]): BeadC
       unique.set(EMPTY_COLOR_CODE, { ...EMPTY_COLOR, hex: entry.sampledHex });
       continue;
     }
+    if (!official) continue;
     unique.set(code, {
-      ...(official ?? {
-        code,
-        name: `MARD ${code}`,
-        symbol: code,
-        series: code.match(/^[A-Z]+/)?.[0],
-        brand: "MARD"
-      }),
+      ...official,
       code,
       hex: entry.sampledHex,
-      symbol: official?.symbol ?? code
+      symbol: official.symbol ?? code
     });
   }
   return Array.from(unique.values());

@@ -2,7 +2,7 @@ import { Menu } from "lucide-react";
 import type { AppPage } from "../types/navigation";
 import { navItems } from "../types/navigation";
 
-export const APP_VERSION_TEXT = "版本 2026-07-11 21:24";
+export const APP_VERSION_TEXT = "版本 2026-07-24 19:20";
 
 export function Header({
   activePage,
@@ -24,7 +24,7 @@ export function Header({
           <span className="bf-brand-subtitle">拼豆圖紙辨識、繪製、製作輔助與庫存管理</span>
         </button>
       </div>
-      <nav className="bf-desktop-nav" aria-label="主要選單">
+      <nav className="bf-desktop-nav" aria-label="主選單">
         {navItems.map((item) => (
           <button
             key={item.id}

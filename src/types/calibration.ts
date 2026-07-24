@@ -35,7 +35,9 @@ export type ChartLocalPaletteEntry = {
   sampledHex: string;
   officialHex?: string;
   countFromLegend?: number;
-  source: "legend";
+  source: "legend" | "manual";
   confidence: number;
   enabled: boolean;
 };
+
+export type GridRecognitionPaletteMode = "all" | "legend" | "custom";

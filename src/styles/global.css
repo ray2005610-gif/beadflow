@@ -750,6 +750,98 @@ h4 { font-size: 13px; margin-bottom: 8px; color: #6f5f51; }
   }
 }
 
+.stacked-options {
+  display: grid;
+  gap: 8px;
+  margin: 10px 0;
+}
+
+.radio-card {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 10px;
+  align-items: start;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: rgba(255, 253, 248, 0.72);
+}
+
+.radio-card input {
+  margin-top: 4px;
+}
+
+.radio-card small {
+  display: block;
+  margin-top: 2px;
+  color: var(--muted);
+  line-height: 1.35;
+}
+
+.segmented-control {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 8px 0;
+}
+
+.legend-source,
+.legend-valid,
+.legend-invalid {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.legend-invalid,
+.warning-note {
+  color: #9d342d;
+}
+
+.known-color-picker {
+  margin-top: 12px;
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+}
+
+.known-color-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(74px, 1fr));
+  gap: 6px;
+  max-height: 220px;
+  overflow: auto;
+  padding: 4px;
+}
+
+.known-color-grid button {
+  justify-content: flex-start;
+  gap: 6px;
+  min-height: 36px;
+}
+
+.known-color-grid .swatch {
+  width: 18px;
+  height: 18px;
+  border-radius: 5px;
+  border: 1px solid rgba(63, 51, 42, 0.22);
+  flex: 0 0 auto;
+}
+
+.subject-mask-panel .toolbar {
+  margin-bottom: 8px;
+}
+
+.subject-mask-canvas {
+  display: block;
+  width: 100%;
+  max-width: 520px;
+  height: auto;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: #fffdf8;
+  touch-action: none;
+  cursor: crosshair;
+}
+
 /* BeadFlow warm craft polish */
 body {
   background:

@@ -15,6 +15,7 @@ import { EMPTY_COLOR, isEmptyOrTransparentCell } from "../data/emptyColor";
 export type PhotoColorMode = ColorMatchMode;
 export type PhotoFitMode = "contain" | "stretch" | "crop" | "manual";
 export type PhotoImageKind = "auto" | "photo" | "lineArt";
+export type PhotoQualityMode = "standard" | "detail";
 
 export type BackgroundRemovalOptions = {
   mode: "none" | "transparentOnly" | "auto" | "whiteBackground" | "checkerboard" | "pickedColor";
@@ -38,6 +39,17 @@ export type PhotoPatternOptions = {
   offsetX: number;
   offsetY: number;
   imageKind: PhotoImageKind;
+  qualityMode: PhotoQualityMode;
+  subjectMask?: SubjectMask | null;
+};
+
+export type SubjectMask = {
+  imageWidth: number;
+  imageHeight: number;
+  imageMask?: Uint8Array;
+  gridWidth?: number;
+  gridHeight?: number;
+  gridMask?: boolean[];
 };
 
 export type PhotoPatternMeta = {
@@ -102,7 +114,9 @@ export const defaultPhotoPatternOptions: PhotoPatternOptions = {
   manualScale: 1,
   offsetX: 0,
   offsetY: 0,
-  imageKind: "auto"
+  imageKind: "auto",
+  qualityMode: "standard",
+  subjectMask: null
 };
 
 export const defaultBackgroundRemovalOptions: BackgroundRemovalOptions = {
@@ -183,8 +197,11 @@ export async function convertImageToBeadPatternV2(
   const globalInfo = analyzeImageCharacteristics(imageData);
   const detectedKind = photoOptions.imageKind === "auto" ? (globalInfo.likelyLineArt ? "lineArt" : "photo") : photoOptions.imageKind;
   const placement = computePatternFit(imageData.width, imageData.height, width, height, photoOptions);
-  const cellPixels = buildCellPixels(imageData, width, height, placement, detectedKind);
-  const rawSamples = cellPixels.map((cell) => convertCellPixelsToSample(cell, detectedKind, globalInfo, backgroundOptions));
+  const normalizedMask = normalizeSubjectMask(photoOptions.subjectMask, width, height);
+  const hasSubjectMask = Boolean(normalizedMask);
+  const detailMode = photoOptions.qualityMode === "detail";
+  const cellPixels = buildCellPixels(imageData, width, height, placement, detectedKind, detailMode, normalizedMask);
+  const rawSamples = cellPixels.map((cell) => convertCellPixelsToSample(cell, detectedKind, detailMode, hasSubjectMask, globalInfo, backgroundOptions));
   const cellSamples = rawSamples.map((sample, index): CellSample => {
     const row = Math.floor(index / width);
     const col = index % width;
@@ -232,7 +249,7 @@ export async function convertImageToBeadPatternV2(
       };
     })
   );
-  const finalGrid = detectedKind === "photo" ? smoothIsolatedCells(grid, paletteForImage) : preserveLineArtGrid(grid);
+  const finalGrid = detectedKind === "photo" && !detailMode ? smoothIsolatedCells(grid, paletteForImage) : preserveLineArtGrid(grid);
   const beadCells = finalGrid.flat().filter((cell) => !isEmptyOrTransparentCell(cell)).length;
   return {
     grid: finalGrid,
@@ -341,13 +358,22 @@ export function analyzeImageCharacteristics(imageData: ImageData): ImageCharacte
   };
 }
 
-function buildCellPixels(imageData: ImageData, width: number, height: number, placement: Placement, imageKind: Exclude<PhotoImageKind, "auto">): CellPixels[] {
+function buildCellPixels(
+  imageData: ImageData,
+  width: number,
+  height: number,
+  placement: Placement,
+  imageKind: Exclude<PhotoImageKind, "auto">,
+  detailMode: boolean,
+  subjectMask: boolean[] | null
+): CellPixels[] {
   return Array.from({ length: width * height }, (_, index) => {
     const row = Math.floor(index / width);
     const col = index % width;
+    if (subjectMask && !subjectMask[index]) return { row, col, insideImage: false, pixels: [] };
     if (!cellInPlacedImage(row, col, placement)) return { row, col, insideImage: false, pixels: [] };
     const rect = mapCellToSourceRect(row, col, placement);
-    return { row, col, insideImage: true, pixels: sampleCellPixels(imageData, rect, imageKind) };
+    return { row, col, insideImage: true, pixels: sampleCellPixels(imageData, rect, imageKind, detailMode) };
   });
 }
 
@@ -364,9 +390,9 @@ function mapCellToSourceRect(row: number, col: number, placement: Placement) {
   };
 }
 
-function sampleCellPixels(imageData: ImageData, rect: { x: number; y: number; w: number; h: number }, imageKind: Exclude<PhotoImageKind, "auto">): SampledColor[] {
-  const steps = imageKind === "lineArt" ? 10 : 7;
-  const ratio = imageKind === "lineArt" ? 1 : 0.62;
+function sampleCellPixels(imageData: ImageData, rect: { x: number; y: number; w: number; h: number }, imageKind: Exclude<PhotoImageKind, "auto">, detailMode: boolean): SampledColor[] {
+  const steps = detailMode ? 11 : imageKind === "lineArt" ? 10 : 7;
+  const ratio = detailMode ? 0.84 : imageKind === "lineArt" ? 1 : 0.62;
   const sx = rect.x + (rect.w * (1 - ratio)) / 2;
   const sy = rect.y + (rect.h * (1 - ratio)) / 2;
   const sw = rect.w * ratio;
@@ -380,8 +406,16 @@ function sampleCellPixels(imageData: ImageData, rect: { x: number; y: number; w:
   return pixels;
 }
 
-function convertCellPixelsToSample(cell: CellPixels, imageKind: Exclude<PhotoImageKind, "auto">, globalInfo: ImageCharacteristics, options: BackgroundRemovalOptions): SampledColor {
+function convertCellPixelsToSample(
+  cell: CellPixels,
+  imageKind: Exclude<PhotoImageKind, "auto">,
+  detailMode: boolean,
+  hasSubjectMask: boolean,
+  globalInfo: ImageCharacteristics,
+  options: BackgroundRemovalOptions
+): SampledColor {
   if (!cell.insideImage || !cell.pixels.length) return { r: 255, g: 255, b: 255, alpha: 0 };
+  if (detailMode) return sampleDetailAwareColor(cell.pixels, globalInfo, options, hasSubjectMask);
   return imageKind === "lineArt" ? sampleLineAwareColor(cell.pixels, globalInfo, options) : samplePhotoColor(cell.pixels, globalInfo, options);
 }
 
@@ -391,6 +425,74 @@ function samplePhotoColor(pixels: SampledColor[], globalInfo: ImageCharacteristi
   const nonBackground = visible.filter((pixel) => !isLikelyBackgroundPixel(pixel, globalInfo.backgroundRgb, options, false));
   const usable = nonBackground.length >= Math.max(3, visible.length * 0.18) ? nonBackground : visible;
   return getRepresentativeColor(usable, false);
+}
+
+function sampleDetailAwareColor(pixels: SampledColor[], globalInfo: ImageCharacteristics, options: BackgroundRemovalOptions, hasSubjectMask: boolean): SampledColor {
+  const visible = pixels.filter((pixel) => pixel.alpha > options.alphaThreshold);
+  if (!visible.length) return { r: 255, g: 255, b: 255, alpha: 0 };
+  const usable = hasSubjectMask
+    ? visible
+    : visible.filter((pixel) => !isLikelyBackgroundPixel(pixel, globalInfo.backgroundRgb, options, false));
+  const source = usable.length >= Math.max(3, visible.length * 0.16) ? usable : visible;
+  const features = getCellSampleFeatures(source);
+  const highVariance = features.variance > 580 || features.edgeStrength > 54;
+  const highlight = source.filter((pixel) => luminance(pixel) >= features.luminanceMean + 28);
+  const shadow = source.filter((pixel) => luminance(pixel) <= features.luminanceMean - 28);
+  const dominant = dominantClusterColor(source);
+
+  if (highVariance) {
+    const centerWeighted = source.slice(Math.floor(source.length * 0.28), Math.ceil(source.length * 0.72));
+    const protectedSamples = [
+      dominant,
+      features.medianColor,
+      ...(highlight.length >= 3 ? [getRepresentativeColor(highlight, false)] : []),
+      ...(shadow.length >= 3 ? [getRepresentativeColor(shadow, true)] : []),
+      ...centerWeighted
+    ];
+    return getRepresentativeColor(protectedSamples, true);
+  }
+  return getRepresentativeColor([dominant, features.medianColor, features.meanColor, features.centerColor, ...source], false);
+}
+
+function getCellSampleFeatures(samples: SampledColor[]) {
+  const meanColor = averageRgb(samples);
+  const medianColor = {
+    r: median(samples.map((sample) => sample.r)),
+    g: median(samples.map((sample) => sample.g)),
+    b: median(samples.map((sample) => sample.b)),
+    alpha: median(samples.map((sample) => sample.alpha))
+  };
+  const centerColor = samples[Math.floor(samples.length / 2)] ?? medianColor;
+  const dominant = dominantClusterColor(samples);
+  const luminances = samples.map(luminance);
+  const luminanceMean = luminances.reduce((sum, value) => sum + value, 0) / Math.max(1, luminances.length);
+  const variance = luminances.reduce((sum, value) => sum + Math.pow(value - luminanceMean, 2), 0) / Math.max(1, luminances.length);
+  return {
+    meanColor: { ...meanColor, alpha: trimmedMean(samples.map((sample) => sample.alpha)) },
+    medianColor,
+    dominantColor: dominant,
+    centerColor,
+    luminanceMean,
+    luminanceMin: Math.min(...luminances),
+    luminanceMax: Math.max(...luminances),
+    variance,
+    edgeStrength: Math.sqrt(variance)
+  };
+}
+
+function dominantClusterColor(samples: SampledColor[]): SampledColor {
+  if (samples.length <= 4) return getRepresentativeColor(samples, true);
+  const groups = new Map<string, SampledColor[]>();
+  for (const sample of samples) {
+    const hsl = rgbToHsl(sample);
+    const key = `${Math.round(hsl.h * 16)},${Math.round(hsl.s * 8)},${Math.round(hsl.l * 10)}`;
+    groups.set(key, [...(groups.get(key) ?? []), sample]);
+  }
+  const ranked = Array.from(groups.values()).sort((a, b) => {
+    const score = (items: SampledColor[]) => items.length * 2 + items.reduce((sum, item) => sum + inkScore(item), 0) / Math.max(1, items.length);
+    return score(b) - score(a);
+  });
+  return getRepresentativeColor(ranked[0] ?? samples, true);
 }
 
 function sampleLineAwareColor(pixels: SampledColor[], globalInfo: ImageCharacteristics, options: BackgroundRemovalOptions): SampledColor {
@@ -543,6 +645,12 @@ function smoothIsolatedCells(grid: PatternGrid, palette: BeadColor[]): PatternGr
   }));
 }
 
+function normalizeSubjectMask(mask: SubjectMask | null | undefined, width: number, height: number): boolean[] | null {
+  if (!mask?.gridMask || mask.gridWidth !== width || mask.gridHeight !== height) return null;
+  if (mask.gridMask.length !== width * height) return null;
+  return mask.gridMask;
+}
+
 function neighborCells(grid: PatternGrid, row: number, col: number) {
   const cells: PatternCell[] = [];
   for (let dr = -1; dr <= 1; dr += 1) {
@@ -590,6 +698,10 @@ function sobelAt(imageData: ImageData, x: number, y: number): number {
   const gx = -lum(x - 1, y - 1) - 2 * lum(x - 1, y) - lum(x - 1, y + 1) + lum(x + 1, y - 1) + 2 * lum(x + 1, y) + lum(x + 1, y + 1);
   const gy = -lum(x - 1, y - 1) - 2 * lum(x, y - 1) - lum(x + 1, y - 1) + lum(x - 1, y + 1) + 2 * lum(x, y + 1) + lum(x + 1, y + 1);
   return Math.hypot(gx, gy);
+}
+
+function luminance(rgb: RGB): number {
+  return rgb.r * 0.2126 + rgb.g * 0.7152 + rgb.b * 0.0722;
 }
 
 function isLikelyCheckerboardPixel(rgb: RGB, tolerance: number): boolean {
