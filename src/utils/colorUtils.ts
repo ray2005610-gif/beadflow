@@ -164,7 +164,8 @@ export function findClosestBeadColorWithDebug(rgb: RGB, palette: BeadColor[], mo
   const sourceLab = rgbToLab(rgb);
   const sourceOklab = rgbToOklab(rgb);
   const ranked = palette.map((color) => {
-    const targetRgb = hexToRgb(color.hex);
+    const targetHex = color.matchHex ?? color.calibratedHex ?? color.referenceHex ?? color.hex;
+    const targetRgb = hexToRgb(targetHex);
     const targetHsl = rgbToHsl(targetRgb);
     const saturation = targetHsl.s;
     const targetLab = rgbToLab(targetRgb);

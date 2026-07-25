@@ -3,7 +3,7 @@ import type { ChartLocalPaletteEntry, GridCalibration, GridRecognitionPaletteMod
 import type { PatternProject } from "../types/project";
 import { recognitionPalette } from "../data/recognitionPalette";
 import { mardPaletteByCode } from "../data/mardPalette";
-import { extractLegendPalette, recognizeGridPatternFromImage, defaultRecognitionOptions } from "../utils/gridRecognition";
+import { recognizeGridPatternFromImage, defaultRecognitionOptions } from "../utils/gridRecognition";
 import { GridCalibrationCanvas } from "./GridCalibrationCanvas";
 import { CalibrationPanel } from "./CalibrationPanel";
 import { LegendPalettePanel } from "./LegendPalettePanel";
@@ -12,9 +12,8 @@ export function GridImportPage({ onProjectReady }: { onProjectReady: (project: P
   const [imageDataUrl, setImageDataUrl] = useState("");
   const [calibration, setCalibration] = useState<GridCalibration | null>(null);
   const [working, setWorking] = useState(false);
-  const [detectingLegend, setDetectingLegend] = useState(false);
-  const [chartLocalPalette, setChartLocalPalette] = useState<ChartLocalPaletteEntry[]>([]);
-  const [paletteMode, setPaletteMode] = useState<GridRecognitionPaletteMode>("all");
+  const [manualKnownColors, setManualKnownColors] = useState<ChartLocalPaletteEntry[]>([]);
+  const [paletteMode, setPaletteMode] = useState<GridRecognitionPaletteMode>("all-standard");
   const [recognitionWarning, setRecognitionWarning] = useState("");
 
   const upload = (file: File | null) => {
@@ -22,8 +21,8 @@ export function GridImportPage({ onProjectReady }: { onProjectReady: (project: P
     const reader = new FileReader();
     reader.onload = () => {
       setCalibration(null);
-      setChartLocalPalette([]);
-      setPaletteMode("all");
+      setManualKnownColors([]);
+      setPaletteMode("all-standard");
       setRecognitionWarning("");
       setImageDataUrl(String(reader.result));
     };
@@ -32,12 +31,13 @@ export function GridImportPage({ onProjectReady }: { onProjectReady: (project: P
 
   const recognize = async () => {
     if (!imageDataUrl || !calibration) return;
-    const activeKnownColors = getActiveKnownColorEntries(chartLocalPalette, paletteMode);
-    if (paletteMode !== "all" && activeKnownColors.length === 0) {
-      setRecognitionWarning("尚未選擇任何有效色號。請手動新增色號，或切回所有 MARD 標準色辨識。");
+    const activeKnownColors = getActiveKnownColorEntries(manualKnownColors, paletteMode);
+    if (paletteMode === "manual-known" && activeKnownColors.length === 0) {
+      setRecognitionWarning("請先匯入至少一個有效色號，才能使用已知色號限制辨識。");
       return;
     }
-    setRecognitionWarning(activeKnownColors.length === 1 ? "目前只啟用 1 個已知色號，所有非透明格都會使用同一個色號。" : "");
+
+    setRecognitionWarning(activeKnownColors.length === 1 ? "目前只使用 1 個已知色號，辨識結果會全部接近這個色號。" : "");
     setWorking(true);
     try {
       const grid = await recognizeGridPatternFromImage(
@@ -58,22 +58,10 @@ export function GridImportPage({ onProjectReady }: { onProjectReady: (project: P
         createdAt: now,
         updatedAt: now,
         status: "draft",
-        tags: [paletteMode === "all" ? "所有標準色" : `已知色號 ${activeKnownColors.length} 色`]
+        tags: [paletteMode === "all-standard" ? "所有標準色" : `已知色號 ${activeKnownColors.length} 色`]
       });
     } finally {
       setWorking(false);
-    }
-  };
-
-  const detectLegend = async () => {
-    if (!imageDataUrl || !calibration) return;
-    setDetectingLegend(true);
-    try {
-      const entries = await extractLegendPalette(imageDataUrl, calibration);
-      setChartLocalPalette(entries);
-      if (entries.length) setPaletteMode("legend");
-    } finally {
-      setDetectingLegend(false);
     }
   };
 
@@ -82,7 +70,7 @@ export function GridImportPage({ onProjectReady }: { onProjectReady: (project: P
       <section className="main-stage">
         <div className="panel">
           <h2>辨識格線圖紙</h2>
-          <p>請上傳有格線的拼豆圖紙，先框選 3×3 校正區域，再選擇辨識色號範圍。</p>
+          <p>請上傳有格線的拼豆圖紙，框選 3×3 區域後再微調辨識範圍。</p>
           <input type="file" accept="image/png,image/jpeg,image/webp" onChange={(event) => upload(event.target.files?.[0] ?? null)} />
         </div>
         {imageDataUrl && <GridCalibrationCanvas imageDataUrl={imageDataUrl} calibration={calibration} onCalibrationChange={setCalibration} />}
@@ -91,12 +79,10 @@ export function GridImportPage({ onProjectReady }: { onProjectReady: (project: P
         <CalibrationPanel calibration={calibration} onChange={setCalibration} onRecognize={recognize} />
         {calibration && (
           <LegendPalettePanel
-            entries={chartLocalPalette}
-            detecting={detectingLegend}
+            entries={manualKnownColors}
             paletteMode={paletteMode}
             onPaletteModeChange={setPaletteMode}
-            onDetect={detectLegend}
-            onChange={setChartLocalPalette}
+            onChange={setManualKnownColors}
           />
         )}
         {recognitionWarning && <div className="panel warning-note">{recognitionWarning}</div>}
@@ -107,16 +93,13 @@ export function GridImportPage({ onProjectReady }: { onProjectReady: (project: P
 }
 
 function getActiveKnownColorEntries(entries: ChartLocalPaletteEntry[], mode: GridRecognitionPaletteMode): ChartLocalPaletteEntry[] {
-  if (mode === "all") return [];
+  if (mode === "all-standard") return [];
   const unique = new Map<string, ChartLocalPaletteEntry>();
-  entries.filter((entry) => {
-    if (!entry.enabled) return false;
+  for (const entry of entries) {
+    if (!entry.enabled || entry.source !== "manual") continue;
     const code = entry.code.trim().toUpperCase();
-    if (!code || code === "TRANSPARENT" || code === "EMPTY" || !mardPaletteByCode.has(code)) return false;
-    return mode === "custom" || entry.source === "legend";
-  }).forEach((entry) => {
-    const code = entry.code.trim().toUpperCase();
+    if (!code || code === "TRANSPARENT" || code === "EMPTY" || !mardPaletteByCode.has(code)) continue;
     if (!unique.has(code)) unique.set(code, entry);
-  });
+  }
   return Array.from(unique.values());
 }

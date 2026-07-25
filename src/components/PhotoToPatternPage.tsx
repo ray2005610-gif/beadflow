@@ -17,6 +17,7 @@ import {
   type SubjectMask
 } from "../utils/imageToPattern";
 import { reducePatternPalette, type PhotoColorLimit } from "../utils/photoPaletteReduction";
+import { applyMardCalibrations, getMardCalibrationCount, loadMardCalibrations } from "../utils/mardCalibrationUtils";
 import { BoardPresetSelector } from "./BoardPresetSelector";
 
 type PreviewMode = "compare" | "original" | "bead";
@@ -51,6 +52,9 @@ export function PhotoToPatternPage({ onProjectReady }: { onProjectReady: (projec
   const [brushSize, setBrushSize] = useState(2);
   const [maskHistory, setMaskHistory] = useState<boolean[][]>([]);
   const [maskFuture, setMaskFuture] = useState<boolean[][]>([]);
+  const mardCalibrations = useMemo(() => loadMardCalibrations(), []);
+  const calibratedColorCount = useMemo(() => getMardCalibrationCount(mardCalibrations), [mardCalibrations]);
+  const photoMatchingPalette = useMemo(() => applyMardCalibrations(recognitionPalette, mardCalibrations), [mardCalibrations]);
 
   const photoOptions = useMemo(() => ({
     colorMode: "natural" as const,
@@ -123,7 +127,7 @@ export function PhotoToPatternPage({ onProjectReady }: { onProjectReady: (projec
     setPreviewing(true);
     const timer = window.setTimeout(async () => {
       try {
-        const result = await imageToPattern(imageDataUrl, width, height, recognitionPalette, backgroundOptions, photoOptions);
+        const result = await imageToPattern(imageDataUrl, width, height, photoMatchingPalette, backgroundOptions, photoOptions);
         if (!cancelled) setPreviewResult(result);
       } finally {
         if (!cancelled) setPreviewing(false);
@@ -133,13 +137,13 @@ export function PhotoToPatternPage({ onProjectReady }: { onProjectReady: (projec
       cancelled = true;
       window.clearTimeout(timer);
     };
-  }, [backgroundOptions, height, imageDataUrl, photoOptions, width]);
+  }, [backgroundOptions, height, imageDataUrl, photoMatchingPalette, photoOptions, width]);
 
   const convert = async () => {
     if (!imageDataUrl) return;
     setWorking(true);
     try {
-      const result = displayResult ?? previewResult ?? await imageToPattern(imageDataUrl, width, height, recognitionPalette, backgroundOptions, photoOptions);
+      const result = displayResult ?? previewResult ?? await imageToPattern(imageDataUrl, width, height, photoMatchingPalette, backgroundOptions, photoOptions);
       const now = new Date().toISOString();
       onProjectReady({
         id: crypto.randomUUID(),
@@ -162,9 +166,9 @@ export function PhotoToPatternPage({ onProjectReady }: { onProjectReady: (projec
     if (!previewResult || colorLimit === 0) return previewResult;
     return {
       ...previewResult,
-      grid: reducePatternPalette(previewResult.grid, recognitionPalette, colorLimit)
+      grid: reducePatternPalette(previewResult.grid, photoMatchingPalette, colorLimit)
     };
-  }, [colorLimit, previewResult]);
+  }, [colorLimit, photoMatchingPalette, previewResult]);
 
   const meta = displayResult?.meta;
 
@@ -233,6 +237,9 @@ export function PhotoToPatternPage({ onProjectReady }: { onProjectReady: (projec
         </div>
         <div className="panel">
           <h3>辨識品質</h3>
+          <p className="muted-note">
+            色彩匹配使用 {calibratedColorCount > 0 ? `實體校色色卡（${calibratedColorCount} 色）` : "內建參考色"}；只影響照片配色，不改變圖案形狀。
+          </p>
           <div className="stacked-options">
             <label className="radio-card">
               <input type="radio" checked={qualityMode === "standard"} onChange={() => setQualityMode("standard")} />

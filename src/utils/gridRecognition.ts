@@ -2,7 +2,6 @@ import type { BeadColor, RGB } from "../types/bead";
 import type { ChartLocalPaletteEntry, GridCalibration, GridRecognitionOptions } from "../types/calibration";
 import type { PatternGrid } from "../types/pattern";
 import { mardPaletteByCode } from "../data/mardPalette";
-import { recognitionPalette } from "../data/recognitionPalette";
 import { EMPTY_COLOR, EMPTY_COLOR_CODE } from "../data/emptyColor";
 import { findClosestBeadColorWithDebug, hexToRgb, oklabDistance, rgbToHex, rgbToHsl, rgbToOklab } from "./colorUtils";
 import { createEmptyCell, loadImage } from "./imageToPattern";
@@ -26,6 +25,8 @@ type CellClassification = {
   empty: boolean;
   match?: ReturnType<typeof findClosestBeadColorWithDebug>;
   confidence: number;
+  foregroundCoverage: number;
+  backgroundConfidence: number;
 };
 
 export async function recognizeGridPatternFromImage(
@@ -44,7 +45,7 @@ export async function recognizeGridPatternFromImage(
   const outputRows = crop.endRow - crop.startRow + 1;
   const outputCols = crop.endCol - crop.startCol + 1;
 
-  return Array.from({ length: outputRows }, (_, outRow) =>
+  const classifications = Array.from({ length: outputRows }, (_, outRow) =>
     Array.from({ length: outputCols }, (_, outCol) => {
       const sourceRow = crop.startRow + outRow;
       const sourceCol = crop.startCol + outCol;
@@ -54,9 +55,20 @@ export async function recognizeGridPatternFromImage(
         width: calibration.cellWidth,
         height: calibration.cellHeight
       };
-      const classification = classifyGridCellColor(cellRect, imageData, candidates, opt);
+      return classifyGridCellColor(cellRect, imageData, candidates, opt);
+    })
+  );
+  const connectedBackground = markConnectedBackground(classifications);
+
+  return Array.from({ length: outputRows }, (_, outRow) =>
+    Array.from({ length: outputCols }, (_, outCol) => {
+      const sourceRow = crop.startRow + outRow;
+      const sourceCol = crop.startCol + outCol;
+      const classification = classifications[outRow][outCol];
       const rgb = classification.rgb;
-      if (classification.empty || classification.alpha <= 20) return createEmptyCell(outRow, outCol, rgb, classification.alpha, sourceRow, sourceCol);
+      if (connectedBackground[outRow][outCol] || classification.empty || classification.alpha <= 20) {
+        return createEmptyCell(outRow, outCol, rgb, classification.alpha, sourceRow, sourceCol);
+      }
 
       const match = classification.match ?? findClosestBeadColorWithDebug(rgb, candidates);
       if (match.color.code === EMPTY_COLOR_CODE) {
@@ -89,67 +101,6 @@ export async function recognizeGridPatternFromImage(
       };
     })
   );
-}
-
-export async function extractLegendPalette(
-  imageDataUrl: string,
-  calibration: GridCalibration
-): Promise<ChartLocalPaletteEntry[]> {
-  const imageData = await readImageData(imageDataUrl);
-  const gridBottom = calibration.originY + calibration.rows * calibration.cellHeight;
-  const startY = Math.max(0, Math.floor(gridBottom + calibration.cellHeight * 0.35));
-  if (startY >= imageData.height - 2) return [];
-
-  const x0 = Math.max(0, Math.floor(calibration.originX - calibration.cellWidth));
-  const x1 = Math.min(imageData.width, Math.ceil(calibration.originX + calibration.columns * calibration.cellWidth + calibration.cellWidth));
-  const stride = Math.max(1, Math.round(Math.min(calibration.cellWidth, calibration.cellHeight) / 4));
-  const bins = new Map<string, { pixels: SampledPixel[]; count: number }>();
-
-  for (let y = startY; y < imageData.height; y += stride) {
-    for (let x = x0; x < x1; x += stride) {
-      const pixel = pixelAt(imageData, x, y);
-      if (!isLegendColorPixel(pixel)) continue;
-      const key = `${Math.round(pixel.r / 16)},${Math.round(pixel.g / 16)},${Math.round(pixel.b / 16)}`;
-      const bin = bins.get(key) ?? { pixels: [], count: 0 };
-      bin.count += 1;
-      if (bin.pixels.length < 80) bin.pixels.push(pixel);
-      bins.set(key, bin);
-    }
-  }
-
-  const minimumCount = Math.max(3, Math.round((calibration.cellWidth * calibration.cellHeight) / Math.max(1, stride * stride) * 0.18));
-  const colors = Array.from(bins.values())
-    .filter((bin) => bin.count >= minimumCount)
-    .sort((a, b) => b.count - a.count)
-    .map((bin) => robustRepresentative(bin.pixels));
-
-  const distinct: SampledPixel[] = [];
-  for (const color of colors) {
-    if (distinct.every((existing) => oklabDistance(rgbToOklab(existing), rgbToOklab(color)) > 4.2)) {
-      distinct.push(color);
-    }
-    if (distinct.length >= 24) break;
-  }
-
-  const byCode = new Map<string, ChartLocalPaletteEntry>();
-  distinct.forEach((color, index) => {
-    const match = findClosestBeadColorWithDebug(color, recognitionPalette);
-    const code = match.color.code.trim().toUpperCase();
-    if (!code || code === EMPTY_COLOR_CODE || !mardPaletteByCode.has(code)) return;
-    const previous = byCode.get(code);
-    if (previous && (previous.confidence ?? 0) >= match.confidence) return;
-    byCode.set(code, {
-      id: previous?.id ?? crypto.randomUUID(),
-      code,
-      sampledHex: rgbToHex(color),
-      officialHex: mardPaletteByCode.get(code)?.hex,
-      source: "legend",
-      confidence: Math.max(0.55, Math.min(0.98, match.confidence - index * 0.004)),
-      enabled: true
-    });
-  });
-
-  return Array.from(byCode.values()).slice(0, 24);
 }
 
 export function buildChartLocalPalette(entries: ChartLocalPaletteEntry[]): BeadColor[] {
@@ -191,7 +142,9 @@ function classifyGridCellColor(
   const visible = patches.filter((patch) => patch.alpha > 20);
   const representative = robustRepresentative(visible);
   const fallbackRgb = { r: representative.r, g: representative.g, b: representative.b };
-  if (!visible.length) return { rgb: fallbackRgb, alpha: 0, empty: true, confidence: 1 };
+  if (!visible.length) {
+    return { rgb: fallbackRgb, alpha: 0, empty: true, confidence: 1, foregroundCoverage: 0, backgroundConfidence: 1 };
+  }
 
   const patchVotes = visible
     .map((patch) => {
@@ -205,13 +158,15 @@ function classifyGridCellColor(
       const tooFarFromKnownColors = candidates.length <= 32 && vote.match.adjustedDistance > 62;
       return !textOrGrid && !tooFarFromKnownColors;
     });
+  const foregroundCoverage = patchVotes.length / Math.max(1, visible.length);
+  const backgroundConfidence = estimateBackgroundConfidence(visible, patchVotes.length);
 
   if (isCheckerboardTransparentCell(visible, patchVotes)) {
-    return { rgb: fallbackRgb, alpha: representative.alpha, empty: true, confidence: 0.82 };
+    return { rgb: fallbackRgb, alpha: representative.alpha, empty: true, confidence: 0.82, foregroundCoverage, backgroundConfidence: Math.max(backgroundConfidence, 0.9) };
   }
 
   if (!patchVotes.length) {
-    return { rgb: fallbackRgb, alpha: representative.alpha, empty: true, confidence: 0.35 };
+    return { rgb: fallbackRgb, alpha: representative.alpha, empty: true, confidence: 0.35, foregroundCoverage, backgroundConfidence: Math.max(backgroundConfidence, 0.72) };
   }
 
   const votesByCode = new Map<string, { count: number; distance: number; colors: RGB[]; match: ReturnType<typeof findClosestBeadColorWithDebug> }>();
@@ -237,11 +192,83 @@ function classifyGridCellColor(
     alpha: representative.alpha,
     empty: false,
     confidence,
+    foregroundCoverage,
+    backgroundConfidence,
     match: {
       ...bestVote.match,
       color: bestColor
     }
   };
+}
+
+function markConnectedBackground(classifications: CellClassification[][]): boolean[][] {
+  const height = classifications.length;
+  const width = classifications[0]?.length ?? 0;
+  const visited = Array.from({ length: height }, () => Array.from({ length: width }, () => false));
+  const queue: Array<{ row: number; col: number }> = [];
+
+  const enqueueIfBackground = (row: number, col: number) => {
+    if (row < 0 || row >= height || col < 0 || col >= width || visited[row][col]) return;
+    if (!isTraversableBackground(classifications[row][col], true)) return;
+    visited[row][col] = true;
+    queue.push({ row, col });
+  };
+
+  for (let col = 0; col < width; col += 1) {
+    enqueueIfBackground(0, col);
+    enqueueIfBackground(height - 1, col);
+  }
+  for (let row = 0; row < height; row += 1) {
+    enqueueIfBackground(row, 0);
+    enqueueIfBackground(row, width - 1);
+  }
+
+  while (queue.length) {
+    const current = queue.shift();
+    if (!current) break;
+    const neighbors = [
+      { row: current.row - 1, col: current.col },
+      { row: current.row + 1, col: current.col },
+      { row: current.row, col: current.col - 1 },
+      { row: current.row, col: current.col + 1 }
+    ];
+    for (const next of neighbors) {
+      if (next.row < 0 || next.row >= height || next.col < 0 || next.col >= width || visited[next.row][next.col]) continue;
+      if (!isTraversableBackground(classifications[next.row][next.col], false)) continue;
+      visited[next.row][next.col] = true;
+      queue.push(next);
+    }
+  }
+
+  return visited;
+}
+
+function isTraversableBackground(classification: CellClassification, onBorder: boolean): boolean {
+  if (classification.empty || classification.alpha <= 20) return true;
+  if (classification.backgroundConfidence >= 0.82 && classification.foregroundCoverage < 0.46) return true;
+  if (classification.foregroundCoverage < 0.24 && classification.confidence < 0.7) return true;
+  if (onBorder && classification.backgroundConfidence >= 0.7 && classification.confidence < 0.78) return true;
+  return false;
+}
+
+function estimateBackgroundConfidence(samples: SampledPixel[], keptVoteCount: number): number {
+  if (!samples.length) return 1;
+  const hslValues = samples.map(rgbToHsl);
+  const lightNeutralRatio = hslValues.filter((hsl) => hsl.l >= 0.88 && hsl.s <= 0.16).length / samples.length;
+  const darkBorderRatio = hslValues.filter((hsl) => hsl.l <= 0.1 && hsl.s <= 0.16).length / samples.length;
+  const transparentRatio = samples.filter((sample) => sample.alpha <= 20).length / samples.length;
+  const foregroundRatio = keptVoteCount / Math.max(1, samples.length);
+  const luminances = samples.map(luminance);
+  const minLuminance = Math.min(...luminances);
+  const maxLuminance = Math.max(...luminances);
+  const checkerLike = hslValues.every((hsl) => hsl.s <= 0.1) && maxLuminance - minLuminance > 34;
+  return Math.max(
+    transparentRatio,
+    lightNeutralRatio * 0.86,
+    darkBorderRatio * 0.78,
+    checkerLike ? 0.78 : 0,
+    foregroundRatio < 0.18 ? 0.68 : 0
+  );
 }
 
 function sampleGridCellPatches(
@@ -340,13 +367,6 @@ async function readImageData(imageDataUrl: string): Promise<ImageData> {
   if (!ctx) throw new Error("無法建立格線辨識畫布");
   ctx.drawImage(image, 0, 0);
   return ctx.getImageData(0, 0, canvas.width, canvas.height);
-}
-
-function isLegendColorPixel(pixel: SampledPixel): boolean {
-  if (pixel.alpha <= 20) return false;
-  const hsl = rgbToHsl(pixel);
-  if (hsl.l < 0.08 || hsl.l > 0.96) return false;
-  return hsl.s > 0.1 || hsl.l < 0.72;
 }
 
 function normalizeCrop(calibration: GridCalibration) {

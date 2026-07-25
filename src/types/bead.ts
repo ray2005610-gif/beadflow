@@ -31,4 +31,12 @@ export type BeadColor = {
   source?: string;
   sourceUrl?: string;
   sourceNote?: string;
+  displayHex?: string;
+  referenceHex?: string;
+  calibratedHex?: string;
+  matchHex?: string;
+  sourceType?: "existing-reference" | "official-reference" | "third-party-reference" | "user-calibrated" | "measured";
+  sourceName?: string;
+  measuredUnder?: string;
+  updatedAt?: string;
 };
