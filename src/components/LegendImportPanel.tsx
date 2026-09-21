@@ -77,16 +77,18 @@ export function LegendImportPanel({ imageUrl, calibration, entries, onChange, on
       <div className="legend-edit-list" aria-label="已辨識圖例">
         <div className="legend-edit-head"><span>色塊</span><span>色號</span><span>顆數</span><span>核對</span></div>
         {entries.map((entry,index)=><div className="legend-edit-row" key={`${index}-${entry.colorCode}`}>
-          <span className="swatch" style={{background:entry.swatchColor ?? recognitionPalette.find(color=>color.code===entry.colorCode)?.hex ?? "#fff"}} />
+          <span className="swatch" style={{background:entry.sampledColor ?? entry.swatchColor ?? recognitionPalette.find(color=>color.code===entry.colorCode)?.hex ?? "#fff"}} />
           <input aria-label={`第 ${index+1} 筆色號`} value={entry.colorCode} disabled={busy}
             onChange={event=>onChange(entries.map((item,itemIndex)=>itemIndex===index?{...item,colorCode:event.target.value.toUpperCase(),confirmed:false}:item))} />
           <input aria-label={`第 ${index+1} 筆顆數`} type="number" min={0} max={14400} value={entry.expectedCount} disabled={busy}
             onChange={event=>onChange(entries.map((item,itemIndex)=>itemIndex===index?{...item,expectedCount:Number(event.target.value),confirmed:false}:item))} />
           <input aria-label={`第 ${index+1} 筆已核對`} type="checkbox" disabled={busy} checked={entry.confirmed}
             onChange={event=>onChange(entries.map((item,itemIndex)=>itemIndex===index?{...item,confirmed:event.target.checked,confidence:event.target.checked?1:item.confidence}:item))} />
+          <button type="button" disabled={busy} aria-label={`刪除 ${entry.colorCode || `第 ${index+1} 筆`}`} onClick={()=>onChange(entries.filter((_,itemIndex)=>itemIndex!==index))}>刪除</button>
         </div>)}
       </div>
       <div className="toolbar compact-toolbar">
+        <button type="button" disabled={busy} onClick={()=>onChange([...entries,{colorCode:"",expectedCount:0,confidence:1,confirmed:false,source:"manual"}])}>新增色號</button>
         <button className="primary" disabled={busy} onClick={()=>{
           const allowed = new Set(recognitionPalette.map(color=>color.code));
           const normalized = entries.map(entry=>({...entry,colorCode:entry.colorCode.trim().toUpperCase(),expectedCount:Math.round(entry.expectedCount),confirmed:true,confidence:1}));

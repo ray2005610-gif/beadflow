@@ -9,6 +9,8 @@ import { validateLegend, applySafeCorrections, correctIsolatedCells, assignCellC
 import { detectLegendRegions, parseLegendText, parseLegendWords } from "../src/utils/legendRecognition";
 import { calculateColorStats } from "../src/utils/patternStats";
 import type { GridCalibration } from "../src/types/calibration";
+import { assignLegendCapacities, buildConfirmedLegendPalette } from "../src/utils/legendAssignment";
+import type { LegendEntry } from "../src/types/legend";
 
 const color = (code:string) => mardPaletteByCode.get(code)!;
 const legend = parseLegendText("B26 161\nB29 145").entries;
@@ -130,4 +132,71 @@ test("Empty/cropped cells excluded; optional validation fields survive JSON stor
   assert.equal(grid.length,3);assert.equal(grid[0].length,3);grid[0][0]=createEmptyCell(0,0);
   assert.equal(calculateColorStats(grid).reduce((n,s)=>n+s.total,0),8);
   assert.deepEqual(JSON.parse(JSON.stringify({grid,legend})).legend,legend);
+});
+
+const confirmedLegend = (counts: Record<string, number>): LegendEntry[] => Object.entries(counts).map(([colorCode, expectedCount]) => ({
+  colorCode,
+  expectedCount,
+  sampledColor: color(colorCode).hex,
+  confidence: 1,
+  confirmed: true,
+  source: "manual"
+}));
+
+test("LEGEND TEST A capacity assignment produces every confirmed count exactly",()=>{
+  const counts = { A2:7,A16:34,A17:14,A22:1,A26:14,D6:13,D8:144,D9:51,D18:17,D20:14 };
+  const entries = confirmedLegend(counts);
+  const palette = buildConfirmedLegendPalette(entries, recognitionPalette);
+  const grid = createBlankPattern(309,1,color("D8"));
+  let cursor = 0;
+  for (const [code, amount] of Object.entries(counts)) for (let i=0;i<amount;i++) {
+    grid[0][cursor] = assignCellColor(grid[0][cursor],color(code),undefined);
+    grid[0][cursor].rawRgb = hexToRgb(color(code).hex);
+    cursor++;
+  }
+  const result = assignLegendCapacities(grid,entries,palette);
+  const actual = new Map<string,number>();
+  result.grid.flat().forEach(cell=>actual.set(cell.colorCode,(actual.get(cell.colorCode)??0)+1));
+  assert.deepEqual(Object.fromEntries(actual),counts);
+  assert.equal(result.summary.constraintApplied,true);
+  assert.equal(result.summary.detectedValidCells,309);
+});
+
+test("LEGEND TEST B final codes never escape the confirmed local palette",()=>{
+  const entries = confirmedLegend({ A2:2,A16:2 });
+  const palette = buildConfirmedLegendPalette(entries,recognitionPalette);
+  const grid = createBlankPattern(4,1,color("H9"));
+  grid.flat().forEach(cell=>cell.rawRgb=hexToRgb(color("H9").hex));
+  const result = assignLegendCapacities(grid,entries,palette);
+  assert.deepEqual(new Set(result.grid.flat().map(cell=>cell.colorCode)),new Set(["A2","A16"]));
+  assert.ok(result.grid.flat().every(cell=>cell.colorCode!=="H9"));
+});
+
+test("LEGEND TEST C confirmed H2 remains a bead instead of near-white empty",()=>{
+  const entries = confirmedLegend({ H2:25 });
+  const chartPalette = [{id:"legend-H2",code:"H2",sampledHex:color("H2").hex,source:"legend" as const,enabled:true,confidence:1,countFromLegend:25}];
+  const detected = recognizeGridPatternFromPixels(solidGridData(5,"H2"),calibration(5),recognitionPalette,undefined,chartPalette);
+  const result = assignLegendCapacities(detected,entries,buildConfirmedLegendPalette(entries,recognitionPalette));
+  assert.equal(result.grid.flat().filter(cell=>!cell.empty&&cell.colorCode==="H2").length,25);
+});
+
+test("LEGEND TEST D OCR outside local palette is ignored",()=>{
+  const entries = confirmedLegend({ A2:1 });
+  const grid = createBlankPattern(1,1,color("A2"));
+  grid[0][0].rawRgb=hexToRgb(color("A2").hex);
+  const result=assignLegendCapacities(grid,entries,buildConfirmedLegendPalette(entries,recognitionPalette),[
+    {sourceRow:0,sourceCol:0,textCandidate:"H9",textConfidence:1}
+  ]);
+  assert.equal(result.grid[0][0].colorCode,"A2");
+  assert.equal(result.grid[0][0].textCandidate,"H9");
+});
+
+test("LEGEND TEST E count mismatch never claims a forced capacity assignment",()=>{
+  const entries = confirmedLegend({ A2:2,A16:2 });
+  const grid = createBlankPattern(3,1,color("A2"));
+  grid.flat().forEach(cell=>cell.rawRgb=hexToRgb(color("A2").hex));
+  const result=assignLegendCapacities(grid,entries,buildConfirmedLegendPalette(entries,recognitionPalette));
+  assert.equal(result.summary.totalsMatch,false);
+  assert.equal(result.summary.constraintApplied,false);
+  assert.equal(result.summary.difference,-1);
 });

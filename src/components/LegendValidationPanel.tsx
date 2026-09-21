@@ -15,11 +15,20 @@ export function LegendValidationPanel({ result, grid, selectedCode, onSelect, on
   const mismatched = result.entries.some(e=>e.difference!==0) || result.unexpected.length>0;
   const corrected = grid.flat().filter(c=>c.correctionReason==="legend" || c.correctionReason==="neighbor").length;
   return <div className="legend-validation">
+    <p><strong>{result.assignment?.mode === "legend-driven" ? "圖例限制辨識" : "影像辨識"}</strong></p>
     <p>原圖色表合計：{result.expectedTotal} 顆<br/>目前辨識：{result.detectedTotal} 顆<br/>差異：{result.detectedTotal-result.expectedTotal} 顆</p>
+    {result.assignment && <p>
+      可辨識格數：{result.assignment.detectedValidCells} 格<br/>
+      低信心格數：{result.assignment.lowConfidenceCount} 格<br/>
+      顆數約束：{result.assignment.constraintApplied ? "已套用" : "未套用"}
+    </p>}
+    {result.assignment && !result.assignment.totalsMatch && <p className="warning-note" role="status">
+      圖例合計與辨識範圍內的有效格數不一致（相差 {Math.abs(result.assignment.difference)} 格），系統沒有強制湊數。請檢查圖例顆數或辨識裁切範圍。
+    </p>}
     {corrected>0 && <p>已依色彩證據校正 {corrected} 格。</p>}
     <div className="toolbar compact-toolbar">
       <button disabled={!selectedCode} onClick={()=>onSelect(null)}>清除校驗高亮</button>
-      <button disabled={!result.suspiciousCells.some(s=>s.safe)} onClick={onSafeCorrection}>套用安全校正</button>
+      {!result.assignment && <button disabled={!result.suspiciousCells.some(s=>s.safe)} onClick={onSafeCorrection}>套用安全校正</button>}
     </div>
     {result.entries.map(e=><button className={selectedCode===e.colorCode?"wide active":"wide"} key={e.colorCode} onClick={()=>{setLimit(20);onSelect(e.colorCode);}}>
       {e.difference===0 ? "✓ 數量一致" : "需要確認"}　{e.colorCode}<br/>

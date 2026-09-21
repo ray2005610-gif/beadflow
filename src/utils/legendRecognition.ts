@@ -34,7 +34,15 @@ export function parseLegendText(text: string, source: LegendEntry["source"] = "m
     if (entries.has(colorCode) && entries.get(colorCode)!.expectedCount !== expectedCount) {
       conflicts.add(colorCode); rejected.push(`${colorCode} 數量重複且不一致`); continue;
     }
-    entries.set(colorCode, { colorCode, expectedCount, confidence, confirmed: source === "manual", source });
+    const reference = allowed.get(colorCode)!;
+    entries.set(colorCode, {
+      colorCode,
+      expectedCount,
+      sampledColor: reference.matchHex ?? reference.calibratedHex ?? reference.referenceHex ?? reference.hex,
+      confidence,
+      confirmed: source === "manual",
+      source
+    });
   }
   for (const code of conflicts) entries.delete(code);
   return { entries: [...entries.values()], rejected };
@@ -111,7 +119,8 @@ export async function recognizeLegend(imageUrl: string, region: LegendRegion, on
       const group = [...groups.values()].sort((a,b) => b.count-a.count)[0];
       if (group && group.count > h * h * 0.15) {
         const rgb = { r: group.r/group.count, g: group.g/group.count, b: group.b/group.count };
-        entry.swatchColor = rgbToHex(rgb);
+        entry.sampledColor = rgbToHex(rgb);
+        entry.swatchColor = entry.sampledColor;
         if (deltaE2000(rgbToLab(rgb),rgbToLab(hexToRgb(allowed.get(entry.colorCode)!.hex))) > 18) entry.confidence = Math.min(entry.confidence,0.5);
       }
     }

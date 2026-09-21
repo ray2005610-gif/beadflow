@@ -15,6 +15,8 @@ export type PatternStatus =
 
 export type PatternProject = {
   legend?: import("./legend").LegendEntry[];
+  recognitionMode?: import("./legend").GridRecognitionMode;
+  legendAssignment?: import("./legend").LegendAssignmentSummary;
   id: string;
   name: string;
   sourceType: PatternSourceType;

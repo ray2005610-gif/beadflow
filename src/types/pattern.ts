@@ -17,6 +17,13 @@ export type PatternCell = {
     g: number;
     b: number;
   };
+  sampledColor?: { r: number; g: number; b: number };
+  textCandidate?: string;
+  textConfidence?: number;
+  bestColorCost?: number;
+  secondBestColorCost?: number;
+  assignedColorCost?: number;
+  candidateMargin?: number;
   rawHex?: string;
   alpha?: number;
   confidence?: number;
@@ -30,6 +37,9 @@ export type PatternCell = {
     saturation?: number;
     hue?: number;
     lightness?: number;
+    colorCost?: number;
+    textCost?: number;
+    totalCost?: number;
   }>;
   rawHue?: number;
   rawSaturation?: number;

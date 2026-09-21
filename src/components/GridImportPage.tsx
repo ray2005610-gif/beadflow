@@ -3,7 +3,7 @@ import type { ChartLocalPaletteEntry, GridCalibration, GridRecognitionPaletteMod
 import type { PatternProject } from "../types/project";
 import { recognitionPalette } from "../data/recognitionPalette";
 import { defaultRecognitionOptions } from "../utils/gridRecognition";
-import { recognizeGridPatternFromImage } from "../utils/gridRecognitionClient";
+import { recognizeGridPatternDetailedFromImage } from "../utils/gridRecognitionClient";
 import type { LegendEntry } from "../types/legend";
 import { LegendImportPanel } from "./LegendImportPanel";
 import { beginRecognitionProfile, markRecognitionCommit, recordRecognitionStages } from "../utils/recognitionProfile";
@@ -61,7 +61,7 @@ export function GridImportPage({ onProjectReady }: { onProjectReady: (project: P
     beginRecognitionProfile();
     abortController.current = new AbortController();
     try {
-      const grid = await recognizeGridPatternFromImage(
+      const result = await recognizeGridPatternDetailedFromImage(
         imageDataUrl,
         calibration,
         recognitionPalette,
@@ -70,6 +70,7 @@ export function GridImportPage({ onProjectReady }: { onProjectReady: (project: P
         legendKnownColors.length ? currentLegend : [],
         abortController.current.signal
       );
+      const grid = result.grid;
       const now = new Date().toISOString();
       markRecognitionCommit();
       onProjectReady({
@@ -79,6 +80,8 @@ export function GridImportPage({ onProjectReady }: { onProjectReady: (project: P
         size: { width: grid[0]?.length ?? 0, height: grid.length },
         grid,
         legend: legendKnownColors.length ? currentLegend : undefined,
+        recognitionMode: result.recognitionMode,
+        legendAssignment: result.assignmentSummary,
         originalImageDataUrl: imageDataUrl,
         createdAt: now,
         updatedAt: now,
@@ -135,7 +138,7 @@ function getLegendKnownColorEntries(entries: LegendEntry[]): ChartLocalPaletteEn
     unique.set(code, {
       id: `legend-${code}`,
       code,
-      sampledHex: entry.swatchColor ?? official.matchHex ?? official.calibratedHex ?? official.referenceHex ?? official.hex,
+      sampledHex: entry.sampledColor ?? entry.swatchColor ?? official.matchHex ?? official.calibratedHex ?? official.referenceHex ?? official.hex,
       officialHex: official.hex,
       countFromLegend: entry.expectedCount,
       source: "legend",

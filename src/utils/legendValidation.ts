@@ -19,8 +19,9 @@ export function buildLegendMatchPalette(legend: LegendEntry[]): BeadColor[] {
     const official = colors.get(code);
     if (!official || seen.has(code)) continue;
     seen.add(code);
-    result.push(entry.swatchColor && /^#[0-9A-F]{6}$/i.test(entry.swatchColor)
-      ? { ...official, matchHex: entry.swatchColor }
+    const sampled = entry.sampledColor ?? entry.swatchColor;
+    result.push(sampled && /^#[0-9A-F]{6}$/i.test(sampled)
+      ? { ...official, matchHex: sampled }
       : official);
   }
   return result;

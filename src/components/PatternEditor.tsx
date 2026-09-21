@@ -95,7 +95,9 @@ export function PatternEditor({
 }) {
   const stats = useMemo(() => calculateColorStats(project.grid), [project.grid]);
   const legendMatchPalette = useMemo(() => buildLegendMatchPalette(project.legend ?? []), [project.legend]);
-  const validation = useMemo(() => project.legend?.length ? validateLegend(project.grid,project.legend,legendMatchPalette) : null, [legendMatchPalette,project.grid,project.legend]);
+  const validation = useMemo(() => project.legend?.length
+    ? { ...validateLegend(project.grid,project.legend,legendMatchPalette), assignment: project.legendAssignment }
+    : null, [legendMatchPalette,project.grid,project.legend,project.legendAssignment]);
   const [validationCode,setValidationCode] = useState<string|null>(null);
   const [reviewFocus,setReviewFocus] = useState<{row:number;col:number}|null>(null);
   const reviewKeys = useMemo(()=>new Set(validation?.suspiciousCells.filter(s=>validationCode && (s.from===validationCode || s.to===validationCode)).map(s=>`${s.row}:${s.col}`) ?? []),[validation,validationCode]);

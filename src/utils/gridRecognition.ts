@@ -99,17 +99,27 @@ export function recognizeGridPatternFromPixels(
         finalDetectedColor: resultColor.code,
         suspectedMismatch: false,
         rawRgb: rgb,
+        sampledColor: rgb,
         rawHex: rgbToHex(rgb),
         matchedHex: match.color.hex,
         alpha: classification.alpha,
         confidence: Math.min(match.confidence, classification.confidence),
         distance: match.distance,
         adjustedDistance: match.adjustedDistance,
-        // Candidate rankings are derived from rawRgb; duplicating them per cell exceeds localStorage quotas.
+        candidates: localPalette.length ? match.candidates.slice(0, 8).map(candidate => ({
+          code: candidate.code,
+          hex: candidate.hex,
+          distance: candidate.distance,
+          adjustedDistance: candidate.adjustedDistance,
+          colorCost: candidate.distance,
+          totalCost: candidate.adjustedDistance
+        })) : undefined,
       };
     })
   );
-  return profile.time("neighborCleanup", () => correctIsolatedCells(grid, candidates));
+  // Legend-driven recognition applies a global capacity assignment next. Local smoothing here
+  // would destroy small details before that global evidence can be considered.
+  return localPalette.length ? grid : profile.time("neighborCleanup", () => correctIsolatedCells(grid, candidates));
 }
 
 export function buildChartLocalPalette(entries: ChartLocalPaletteEntry[]): BeadColor[] {
@@ -126,7 +136,9 @@ export function buildChartLocalPalette(entries: ChartLocalPaletteEntry[]): BeadC
     unique.set(code, {
       ...official,
       code,
-      hex: entry.sampledHex,
+      hex: official.hex,
+      displayHex: official.hex,
+      matchHex: entry.sampledHex,
       symbol: official.symbol ?? code
     });
   }
