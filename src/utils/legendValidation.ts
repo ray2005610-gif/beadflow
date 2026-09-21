@@ -3,14 +3,32 @@ import type { PatternCell, PatternGrid } from "../types/pattern";
 import type { CellSuggestion, LegendEntry, ValidationResult } from "../types/legend";
 import { isEmptyOrTransparentCell } from "../data/emptyColor";
 import { recognitionPalette } from "../data/recognitionPalette";
+import { mardPaletteByCode } from "../data/mardPalette";
 import { deltaE2000, hexToRgb, rgbToLab } from "./colorUtils";
 
 function colorLab(color: BeadColor) {
   return rgbToLab(hexToRgb(color.matchHex ?? color.calibratedHex ?? color.referenceHex ?? color.hex));
 }
 
+export function buildLegendMatchPalette(legend: LegendEntry[]): BeadColor[] {
+  const colors = new Map(recognitionPalette.map((color) => [color.code, color]));
+  const result: BeadColor[] = [];
+  const seen = new Set<string>();
+  for (const entry of legend) {
+    const code = entry.colorCode.trim().toUpperCase();
+    const official = colors.get(code);
+    if (!official || seen.has(code)) continue;
+    seen.add(code);
+    result.push(entry.swatchColor && /^#[0-9A-F]{6}$/i.test(entry.swatchColor)
+      ? { ...official, matchHex: entry.swatchColor }
+      : official);
+  }
+  return result;
+}
+
 export function assignCellColor(cell: PatternCell, color: BeadColor, reason: PatternCell["correctionReason"]): PatternCell {
-  return { ...cell, colorCode: color.code, colorName: color.name, hex: color.hex, symbol: color.symbol,
+  const displayColor = mardPaletteByCode.get(color.code) ?? color;
+  return { ...cell, colorCode: displayColor.code, colorName: displayColor.name, hex: displayColor.hex, symbol: displayColor.symbol,
     finalDetectedColor: color.code, correctionReason: reason, empty: false, done: false,
     suspectedMismatch: false, validationConfirmed: reason === "manual" };
 }
@@ -74,11 +92,14 @@ export function validateLegend(grid: PatternGrid, legend: LegendEntry[], palette
     const currentDistance = deltaE2000(source, currentLab);
     for (const { entry, lab } of deficits) {
       const alternativeDistance = deltaE2000(source, lab);
-      if (alternativeDistance > 10 || alternativeDistance - currentDistance > 2) continue;
+      const neighborSupport = countNeighborSupport(grid, cell.row, cell.col, entry.colorCode);
+      const ambiguityAllowance = neighborSupport >= 3 ? 3.25 : 2;
+      if (alternativeDistance > 12 || alternativeDistance - currentDistance > ambiguityAllowance) continue;
       const fromEntry = unique.get(cell.colorCode)!;
       candidates.push({ row: cell.row, col: cell.col, from: cell.colorCode, to: entry.colorCode, currentDistance, alternativeDistance,
         safe: entry.confirmed && fromEntry.confirmed && entry.confidence >= 0.9 && fromEntry.confidence >= 0.9
-          && (cell.confidence ?? 0) >= 0.65 && currentDistance <= 10 && alternativeDistance - currentDistance <= 0.8 });
+          && (cell.confidence ?? 0) >= 0.55 && currentDistance <= 12
+          && alternativeDistance - currentDistance <= (neighborSupport >= 3 ? 1.8 : 0.8) });
     }
   }
   candidates.sort((a,b) => (a.alternativeDistance - a.currentDistance) - (b.alternativeDistance - b.currentDistance) || a.alternativeDistance - b.alternativeDistance);
@@ -91,6 +112,18 @@ export function validateLegend(grid: PatternGrid, legend: LegendEntry[], palette
     return true;
   });
   return { expectedTotal: entries.reduce((n,e) => n + e.expectedCount,0), detectedTotal, entries, unexpected, suspiciousCells };
+}
+
+function countNeighborSupport(grid: PatternGrid, row: number, col: number, colorCode: string): number {
+  let count = 0;
+  for (let dr = -1; dr <= 1; dr += 1) {
+    for (let dc = -1; dc <= 1; dc += 1) {
+      if (!dr && !dc) continue;
+      const neighbor = grid[row + dr]?.[col + dc];
+      if (neighbor && !isEmptyOrTransparentCell(neighbor) && neighbor.colorCode === colorCode) count += 1;
+    }
+  }
+  return count;
 }
 
 export function applySafeCorrections(grid: PatternGrid, legend: LegendEntry[], palette = recognitionPalette): PatternGrid {

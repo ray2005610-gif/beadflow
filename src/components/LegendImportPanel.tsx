@@ -4,10 +4,12 @@ import type { LegendEntry, LegendRegion } from "../types/legend";
 import { detectLegendRegions, parseLegendText, recognizeLegend } from "../utils/legendRecognition";
 import { loadImage } from "../utils/imageToPattern";
 import { recordRecognitionStages } from "../utils/recognitionProfile";
+import { recognitionPalette } from "../data/recognitionPalette";
 
-export function LegendImportPanel({ imageUrl, calibration, entries, onChange, onBusyChange }: {
+export function LegendImportPanel({ imageUrl, calibration, entries, onChange, onBusyChange, onConfirmAndRecognize }: {
   imageUrl: string; calibration: GridCalibration; entries: LegendEntry[];
   onChange: (entries: LegendEntry[]) => void; onBusyChange: (busy: boolean) => void;
+  onConfirmAndRecognize: (entries: LegendEntry[]) => void;
 }) {
   const regions = useMemo(() => detectLegendRegions(calibration), [calibration]);
   const [region, setRegion] = useState<LegendRegion>(() => regions[0] ?? { x:0,y:0,width:calibration.imageWidth,height:calibration.imageHeight,label:"自訂範圍" });
@@ -72,13 +74,33 @@ export function LegendImportPanel({ imageUrl, calibration, entries, onChange, on
     }}>套用手動數量表</button>
     {entries.length>0 && <>
       <p>色表合計：{entries.reduce((n,e)=>n+e.expectedCount,0)} 顆</p>
-      {entries.map(entry=><label className="checkbox-row" key={entry.colorCode}>
-        <input type="checkbox" disabled={busy} checked={entry.confirmed} onChange={e=>onChange(entries.map(item=>item===entry?{...item,confirmed:e.target.checked}:item))} />
-        {entry.swatchColor && <span className="swatch" style={{background:entry.swatchColor}} />}
-        {entry.colorCode}：{entry.expectedCount} 顆，已核對
-      </label>)}
+      <div className="legend-edit-list" aria-label="已辨識圖例">
+        <div className="legend-edit-head"><span>色塊</span><span>色號</span><span>顆數</span><span>核對</span></div>
+        {entries.map((entry,index)=><div className="legend-edit-row" key={`${index}-${entry.colorCode}`}>
+          <span className="swatch" style={{background:entry.swatchColor ?? recognitionPalette.find(color=>color.code===entry.colorCode)?.hex ?? "#fff"}} />
+          <input aria-label={`第 ${index+1} 筆色號`} value={entry.colorCode} disabled={busy}
+            onChange={event=>onChange(entries.map((item,itemIndex)=>itemIndex===index?{...item,colorCode:event.target.value.toUpperCase(),confirmed:false}:item))} />
+          <input aria-label={`第 ${index+1} 筆顆數`} type="number" min={0} max={14400} value={entry.expectedCount} disabled={busy}
+            onChange={event=>onChange(entries.map((item,itemIndex)=>itemIndex===index?{...item,expectedCount:Number(event.target.value),confirmed:false}:item))} />
+          <input aria-label={`第 ${index+1} 筆已核對`} type="checkbox" disabled={busy} checked={entry.confirmed}
+            onChange={event=>onChange(entries.map((item,itemIndex)=>itemIndex===index?{...item,confirmed:event.target.checked,confidence:event.target.checked?1:item.confidence}:item))} />
+        </div>)}
+      </div>
       <div className="toolbar compact-toolbar">
-        <button disabled={busy} onClick={()=>onChange(entries.map(e=>({...e,confirmed:true})))}>確認全部數量</button>
+        <button className="primary" disabled={busy} onClick={()=>{
+          const allowed = new Set(recognitionPalette.map(color=>color.code));
+          const normalized = entries.map(entry=>({...entry,colorCode:entry.colorCode.trim().toUpperCase(),expectedCount:Math.round(entry.expectedCount),confirmed:true,confidence:1}));
+          const invalid = normalized.find(entry=>!allowed.has(entry.colorCode)||!Number.isSafeInteger(entry.expectedCount)||entry.expectedCount<0||entry.expectedCount>14400);
+          const duplicated = normalized.some((entry,index)=>normalized.findIndex(item=>item.colorCode===entry.colorCode)!==index);
+          if (invalid || duplicated) {
+            setMessage(invalid ? `請修正無效的色號或顆數：${invalid.colorCode || "未填色號"}` : "圖例中有重複色號，請先合併顆數。");
+            return;
+          }
+          onChange(normalized);
+          setMessage(`已確認 ${normalized.length} 個圖例色號，辨識結果將只使用這些色號。`);
+          onConfirmAndRecognize(normalized);
+        }}>確認圖例並開始辨識</button>
+        <button disabled={busy} onClick={()=>onChange(entries.map(e=>({...e,confirmed:true,confidence:1})))}>只確認全部</button>
         <button disabled={busy} onClick={()=>{onChange([]);setText("");}}>清除數量表</button>
       </div>
     </>}

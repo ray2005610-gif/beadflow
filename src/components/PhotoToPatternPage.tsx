@@ -17,16 +17,22 @@ import {
 } from "../utils/imageToPattern";
 import { applyMardCalibrations, loadMardCalibrations } from "../utils/mardCalibrationUtils";
 import { BoardPresetSelector } from "./BoardPresetSelector";
+import {
+  generateChibiImage,
+  getChibiServiceStatus,
+  type ChibiStylePreset,
+  type ChibiSubjectType
+} from "../services/chibiGeneration";
 
 type PreviewMode = "compare" | "original" | "bead";
 type MaskTool = "rectangle" | "brush-add" | "brush-remove" | "grid";
 type MaskOperation = "replace" | "add" | "remove";
+type ConversionMode = "direct" | "chibi";
 
 const fitModeLabels: Record<PhotoFitMode, string> = {
   contain: "保持原比例",
   stretch: "填滿底板",
-  crop: "等比例裁切",
-  manual: "手動調整"
+  crop: "等比例裁切"
 };
 
 export function PhotoToPatternPage({ onProjectReady }: { onProjectReady: (project: PatternProject) => void }) {
@@ -34,9 +40,6 @@ export function PhotoToPatternPage({ onProjectReady }: { onProjectReady: (projec
   const [width, setWidth] = useState(52);
   const [height, setHeight] = useState(52);
   const [fitMode, setFitMode] = useState<PhotoFitMode>("contain");
-  const [manualScale, setManualScale] = useState(1);
-  const [offsetX, setOffsetX] = useState(0);
-  const [offsetY, setOffsetY] = useState(0);
   const [previewMode, setPreviewMode] = useState<PreviewMode>("compare");
   const [working, setWorking] = useState(false);
   const [previewing, setPreviewing] = useState(false);
@@ -48,15 +51,25 @@ export function PhotoToPatternPage({ onProjectReady }: { onProjectReady: (projec
   const [brushSize, setBrushSize] = useState(2);
   const [maskHistory, setMaskHistory] = useState<boolean[][]>([]);
   const [maskFuture, setMaskFuture] = useState<boolean[][]>([]);
+  const [conversionMode, setConversionMode] = useState<ConversionMode>("direct");
+  const [subjectType, setSubjectType] = useState<ChibiSubjectType>("auto");
+  const [stylePreset, setStylePreset] = useState<ChibiStylePreset>("standard");
+  const [chibiAvailable, setChibiAvailable] = useState<boolean | null>(null);
+  const [chibiImageDataUrl, setChibiImageDataUrl] = useState("");
+  const [chibiAccepted, setChibiAccepted] = useState(false);
+  const [chibiWorking, setChibiWorking] = useState(false);
+  const [chibiError, setChibiError] = useState("");
+  const [previewError, setPreviewError] = useState("");
+  const chibiAbort = useRef<AbortController | null>(null);
   const mardCalibrations = useMemo(() => loadMardCalibrations(), []);
   const photoMatchingPalette = useMemo(() => applyMardCalibrations(recognitionPalette, mardCalibrations), [mardCalibrations]);
+  const sourceImageDataUrl = conversionMode === "chibi" && chibiAccepted && chibiImageDataUrl
+    ? chibiImageDataUrl
+    : imageDataUrl;
 
   const photoOptions = useMemo(() => ({
     colorMode: "natural" as const,
     fitMode,
-    manualScale,
-    offsetX,
-    offsetY,
     imageKind: "auto" as const,
     subjectMask: maskGrid ? {
       imageWidth: width,
@@ -65,7 +78,7 @@ export function PhotoToPatternPage({ onProjectReady }: { onProjectReady: (projec
       gridHeight: height,
       gridMask: maskGrid
     } satisfies SubjectMask : null
-  }), [fitMode, manualScale, maskGrid, offsetX, offsetY, width, height]);
+  }), [fitMode, maskGrid, width, height]);
 
   const upload = (file: File | null) => {
     if (!file) return;
@@ -74,9 +87,53 @@ export function PhotoToPatternPage({ onProjectReady }: { onProjectReady: (projec
       setMaskGrid(null);
       setMaskHistory([]);
       setMaskFuture([]);
+      setConversionMode("direct");
+      setChibiImageDataUrl("");
+      setChibiAccepted(false);
+      setChibiAvailable(null);
+      setChibiError("");
       setImageDataUrl(String(reader.result));
     };
     reader.readAsDataURL(file);
+  };
+
+  useEffect(() => () => chibiAbort.current?.abort(), []);
+
+  useEffect(() => {
+    if (!imageDataUrl || conversionMode !== "chibi" || chibiAvailable !== null) return;
+    const controller = new AbortController();
+    getChibiServiceStatus(controller.signal)
+      .then((status) => setChibiAvailable(status.available))
+      .catch(() => setChibiAvailable(false));
+    return () => controller.abort();
+  }, [chibiAvailable, conversionMode, imageDataUrl]);
+
+  const createChibi = async () => {
+    if (!imageDataUrl || !chibiAvailable || chibiWorking) return;
+    chibiAbort.current?.abort();
+    const controller = new AbortController();
+    chibiAbort.current = controller;
+    setChibiWorking(true);
+    setChibiAccepted(false);
+    setChibiError("");
+    try {
+      const result = await generateChibiImage({ imageDataUrl, subjectType, stylePreset }, controller.signal);
+      setChibiImageDataUrl(result.imageDataUrl);
+    } catch (error) {
+      if (!(error instanceof DOMException && error.name === "AbortError")) {
+        setChibiError(error instanceof Error ? error.message : "Q 版生成失敗，請直接使用原圖或重新嘗試");
+      }
+    } finally {
+      if (chibiAbort.current === controller) setChibiWorking(false);
+    }
+  };
+
+  const acceptChibi = () => {
+    if (!chibiImageDataUrl) return;
+    setChibiAccepted(true);
+    setMaskGrid(null);
+    setMaskHistory([]);
+    setMaskFuture([]);
   };
 
   useEffect(() => {
@@ -112,16 +169,19 @@ export function PhotoToPatternPage({ onProjectReady }: { onProjectReady: (projec
   };
 
   useEffect(() => {
-    if (!imageDataUrl) {
+    if (!sourceImageDataUrl) {
       setPreviewResult(null);
       return;
     }
     let cancelled = false;
     setPreviewing(true);
+    setPreviewError("");
     const timer = window.setTimeout(async () => {
       try {
-        const result = await imageToPattern(imageDataUrl, width, height, photoMatchingPalette, backgroundOptions, photoOptions);
+        const result = await imageToPattern(sourceImageDataUrl, width, height, photoMatchingPalette, backgroundOptions, photoOptions);
         if (!cancelled) setPreviewResult(result);
+      } catch (error) {
+        if (!cancelled) setPreviewError(error instanceof Error ? error.message : "預覽產生失敗");
       } finally {
         if (!cancelled) setPreviewing(false);
       }
@@ -130,13 +190,13 @@ export function PhotoToPatternPage({ onProjectReady }: { onProjectReady: (projec
       cancelled = true;
       window.clearTimeout(timer);
     };
-  }, [backgroundOptions, height, imageDataUrl, photoMatchingPalette, photoOptions, width]);
+  }, [backgroundOptions, height, photoMatchingPalette, photoOptions, sourceImageDataUrl, width]);
 
   const convert = async () => {
-    if (!imageDataUrl) return;
+    if (!sourceImageDataUrl || (conversionMode === "chibi" && !chibiAccepted)) return;
     setWorking(true);
     try {
-      const result = displayResult ?? previewResult ?? await imageToPattern(imageDataUrl, width, height, photoMatchingPalette, backgroundOptions, photoOptions);
+      const result = displayResult ?? previewResult ?? await imageToPattern(sourceImageDataUrl, width, height, photoMatchingPalette, backgroundOptions, photoOptions);
       const now = new Date().toISOString();
       onProjectReady({
         id: crypto.randomUUID(),
@@ -144,11 +204,11 @@ export function PhotoToPatternPage({ onProjectReady }: { onProjectReady: (projec
         sourceType: "photo_to_pattern",
         size: { width, height },
         grid: result.grid,
-        originalImageDataUrl: imageDataUrl,
+        originalImageDataUrl: sourceImageDataUrl,
         createdAt: now,
         updatedAt: now,
         status: "draft",
-        tags: [fitModeLabels[fitMode], `${result.meta.patternWidth}x${result.meta.patternHeight}`]
+        tags: [fitModeLabels[fitMode], `${result.meta.patternWidth}x${result.meta.patternHeight}`, conversionMode === "chibi" ? "AI Q版來源" : "原圖來源"]
       });
     } finally {
       setWorking(false);
@@ -167,6 +227,19 @@ export function PhotoToPatternPage({ onProjectReady }: { onProjectReady: (projec
           <p>上傳照片或插畫後，BeadFlow 會保留圖案比例並用自然感知色差配對 MARD 色號。</p>
           <input type="file" accept="image/png,image/jpeg,image/webp" onChange={(event) => upload(event.target.files?.[0] ?? null)} />
         </div>
+        {imageDataUrl && conversionMode === "chibi" && chibiImageDataUrl && (
+          <div className="panel chibi-review-panel">
+            <h3>確認 Q 版圖片</h3>
+            <div className="photo-compare compare">
+              <figure><img className="photo-preview" src={imageDataUrl} alt="原始照片" /><figcaption>原圖</figcaption></figure>
+              <figure><img className="photo-preview" src={chibiImageDataUrl} alt="AI Q 版預覽" /><figcaption>Q 版預覽</figcaption></figure>
+            </div>
+            <div className="toolbar compact-toolbar">
+              <button type="button" onClick={createChibi} disabled={chibiWorking}>{chibiWorking ? "重新生成中..." : "重新生成"}</button>
+              <button type="button" className="primary" onClick={acceptChibi} disabled={chibiAccepted}>{chibiAccepted ? "已使用這張" : "使用這張轉拼豆"}</button>
+            </div>
+          </div>
+        )}
         {imageDataUrl && (
           <div className="panel preview-panel">
             <div className="preview-toolbar">
@@ -178,13 +251,45 @@ export function PhotoToPatternPage({ onProjectReady }: { onProjectReady: (projec
               </select>
             </div>
             <div className={`photo-compare ${previewMode}`}>
-              {previewMode !== "bead" && <figure><img className="photo-preview" src={imageDataUrl} alt="原圖預覽" /><figcaption>原圖</figcaption></figure>}
+              {previewMode !== "bead" && <figure><img className="photo-preview" src={sourceImageDataUrl} alt="轉換來源預覽" /><figcaption>{conversionMode === "chibi" && chibiAccepted ? "Q 版來源" : "原圖"}</figcaption></figure>}
               {previewMode !== "original" && <figure><PatternPreviewCanvas grid={displayResult?.grid ?? null} /><figcaption>{previewing ? "拼豆預覽更新中" : "拼豆預覽"}</figcaption></figure>}
             </div>
+            {previewError && <p className="warning-note" role="alert">{previewError}</p>}
           </div>
         )}
       </section>
       <aside className="side-rail">
+        {imageDataUrl && <div className="panel chibi-settings">
+          <h3>轉換方式</h3>
+          <div className="segmented-control" aria-label="照片轉換方式">
+            <button type="button" className={conversionMode === "direct" ? "active" : ""} onClick={() => setConversionMode("direct")}>直接轉拼豆</button>
+            <button type="button" className={conversionMode === "chibi" ? "active" : ""} onClick={() => setConversionMode("chibi")}>AI Q 版後轉拼豆</button>
+          </div>
+          {conversionMode === "chibi" && <>
+            {chibiAvailable === null && <p className="muted-note">正在確認 Q 版服務...</p>}
+            {chibiAvailable === false && <p className="warning-note" role="status">AI Q 版服務尚未設定；原圖仍可直接轉拼豆。</p>}
+            {chibiAvailable && <>
+              <label>主體類型
+                <select value={subjectType} onChange={(event) => setSubjectType(event.target.value as ChibiSubjectType)}>
+                  <option value="auto">自動判斷</option>
+                  <option value="person">人物</option>
+                  <option value="pet">寵物</option>
+                  <option value="object">物品</option>
+                </select>
+              </label>
+              <label>Q 版程度
+                <select value={stylePreset} onChange={(event) => setStylePreset(event.target.value as ChibiStylePreset)}>
+                  <option value="light">輕度</option>
+                  <option value="standard">標準</option>
+                  <option value="cute">可愛 Q 版</option>
+                </select>
+              </label>
+              <button type="button" className="primary wide" onClick={createChibi} disabled={chibiWorking}>{chibiWorking ? "Q 版生成中..." : chibiImageDataUrl ? "重新生成 Q 版" : "生成 Q 版預覽"}</button>
+            </>}
+            {chibiError && <p className="warning-note" role="alert">{chibiError}</p>}
+            <button type="button" onClick={() => setConversionMode("direct")}>改用原圖直接轉拼豆</button>
+          </>}
+        </div>}
         <BoardPresetSelector width={width} height={height} onChange={(nextWidth, nextHeight) => { setWidth(nextWidth); setHeight(nextHeight); }} />
         <div className="panel">
           <h3>圖片適配</h3>
@@ -194,16 +299,8 @@ export function PhotoToPatternPage({ onProjectReady }: { onProjectReady: (projec
               <option value="contain">保持原比例，不裁切、不變形</option>
               <option value="stretch">填滿底板，可能會變形</option>
               <option value="crop">等比例裁切，填滿底板</option>
-              <option value="manual">手動調整縮放與位置</option>
             </select>
           </label>
-          {fitMode === "manual" && (
-            <div className="grid-fields">
-              <label>縮放比例<input type="number" min={0.2} max={3} step={0.05} value={manualScale} onChange={(event) => setManualScale(Number(event.target.value))} /></label>
-              <label>X 偏移<input type="number" step={1} value={offsetX} onChange={(event) => setOffsetX(Number(event.target.value))} /></label>
-              <label>Y 偏移<input type="number" step={1} value={offsetY} onChange={(event) => setOffsetY(Number(event.target.value))} /></label>
-            </div>
-          )}
           <PhotoMeta meta={meta} width={width} height={height} />
         </div>
         <div className="panel">
@@ -211,7 +308,7 @@ export function PhotoToPatternPage({ onProjectReady }: { onProjectReady: (projec
           <label>
             背景模式
             <select value={backgroundOptions.mode} onChange={(event) => setBackgroundOptions((value) => ({ ...value, mode: event.target.value as BackgroundRemovalOptions["mode"] }))}>
-              <option value="auto">移除透明 / 邊界背景</option>
+              <option value="auto">自動移除透明 / 棋盤背景</option>
               <option value="transparentOnly">只移除透明背景</option>
               <option value="none">保留背景</option>
               <option value="pickedColor">移除指定背景色</option>
@@ -246,13 +343,10 @@ export function PhotoToPatternPage({ onProjectReady }: { onProjectReady: (projec
               </label>
             )}
             <SubjectMaskCanvas
-              imageDataUrl={imageDataUrl}
+              imageDataUrl={sourceImageDataUrl}
               width={width}
               height={height}
               fitMode={fitMode}
-              manualScale={manualScale}
-              offsetX={offsetX}
-              offsetY={offsetY}
               maskGrid={maskGrid}
               maskTool={maskTool}
               maskOperation={maskOperation}
@@ -270,7 +364,7 @@ export function PhotoToPatternPage({ onProjectReady }: { onProjectReady: (projec
           </div>
         )}
 
-        <button className="primary wide" onClick={convert} disabled={!imageDataUrl || working || previewing}>{working ? "轉換中..." : "產生可編輯圖紙"}</button>
+        <button className="primary wide" onClick={convert} disabled={!sourceImageDataUrl || working || previewing || (conversionMode === "chibi" && !chibiAccepted)}>{working ? "轉換中..." : conversionMode === "chibi" && !chibiAccepted ? "請先確認 Q 版圖片" : "產生可編輯圖紙"}</button>
       </aside>
     </main>
   );
@@ -293,9 +387,6 @@ function SubjectMaskCanvas({
   width,
   height,
   fitMode,
-  manualScale,
-  offsetX,
-  offsetY,
   maskGrid,
   maskTool,
   maskOperation,
@@ -306,9 +397,6 @@ function SubjectMaskCanvas({
   width: number;
   height: number;
   fitMode: PhotoFitMode;
-  manualScale: number;
-  offsetX: number;
-  offsetY: number;
   maskGrid: boolean[] | null;
   maskTool: MaskTool;
   maskOperation: MaskOperation;
@@ -337,7 +425,7 @@ function SubjectMaskCanvas({
 
   useEffect(() => {
     draw();
-  }, [width, height, fitMode, manualScale, offsetX, offsetY, maskGrid, liveRect, paintVersion]);
+  }, [width, height, fitMode, maskGrid, liveRect, paintVersion]);
 
   const currentMask = () => draftMaskRef.current ?? maskGrid ?? createMask(width, height, true);
 
@@ -356,7 +444,7 @@ function SubjectMaskCanvas({
     if (!ctx) return;
     ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
     drawChecker(ctx, width * cell, height * cell, cell);
-    const placement = calculatePhotoPlacement(image.naturalWidth, image.naturalHeight, width, height, { fitMode, manualScale, offsetX, offsetY });
+    const placement = calculatePhotoPlacement(image.naturalWidth, image.naturalHeight, width, height, { fitMode });
     ctx.drawImage(
       image,
       placement.cropX,

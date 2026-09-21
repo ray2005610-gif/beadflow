@@ -105,6 +105,19 @@ test("TEST 9 automatic and known palettes exclude all configured special series"
   const special=[...mardPaletteByCode.values()].find(c=>c.isSpecial)!;
   assert.equal(buildChartLocalPalette([{id:"x",code:special.code,sampledHex:special.hex,source:"manual",enabled:true,confidence:1}]).length,0);
 });
+test("Confirmed legend swatches form a strict local palette",()=>{
+  const local=buildChartLocalPalette([
+    {id:"legend-B13",code:"B13",sampledHex:color("B29").hex,officialHex:color("B13").hex,countFromLegend:13,source:"legend",enabled:true,confidence:1},
+    {id:"legend-F14",code:"F14",sampledHex:color("F14").hex,officialHex:color("F14").hex,countFromLegend:12,source:"legend",enabled:true,confidence:1}
+  ]);
+  const grid=recognizeGridPatternFromPixels(solidGridData(5,"B29"),calibration(5),recognitionPalette,undefined,[
+    {id:"legend-B13",code:"B13",sampledHex:color("B29").hex,officialHex:color("B13").hex,countFromLegend:13,source:"legend",enabled:true,confidence:1},
+    {id:"legend-F14",code:"F14",sampledHex:color("F14").hex,officialHex:color("F14").hex,countFromLegend:12,source:"legend",enabled:true,confidence:1}
+  ]);
+  assert.deepEqual(new Set(local.map(item=>item.code)),new Set(["B13","F14"]));
+  assert.ok(grid.flat().every(cell=>cell.empty||cell.colorCode==="B13"||cell.colorCode==="F14"));
+  assert.equal(grid.flat().filter(cell=>cell.colorCode==="B13").length,25);
+});
 test("Color cache preserves exact scores and reacts to updated calibration hex",()=>{
   const p=[{...color("B29")}];const rgb={r:192.125,g:45.5,b:71.25};
   assert.deepEqual(createColorMatcher(p)(rgb),findClosestBeadColorWithDebug(rgb,p));

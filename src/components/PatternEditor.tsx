@@ -12,7 +12,7 @@ import { ColorStatsPanel } from "./ColorStatsPanel";
 import { InventoryPanel } from "./InventoryPanel";
 import { ProjectDetailPanel } from "./ProjectDetailPanel";
 import type { PatternGrid } from "../types/pattern";
-import { applySafeCorrections, assignCellColor, validateLegend } from "../utils/legendValidation";
+import { applySafeCorrections, assignCellColor, buildLegendMatchPalette, validateLegend } from "../utils/legendValidation";
 import { visiblePalette } from "../data/recognitionPalette";
 import { LegendValidationPanel } from "./LegendValidationPanel";
 
@@ -94,7 +94,8 @@ export function PatternEditor({
   onToggleOnlyUnfinished: () => void;
 }) {
   const stats = useMemo(() => calculateColorStats(project.grid), [project.grid]);
-  const validation = useMemo(() => project.legend?.length ? validateLegend(project.grid,project.legend) : null, [project.grid,project.legend]);
+  const legendMatchPalette = useMemo(() => buildLegendMatchPalette(project.legend ?? []), [project.legend]);
+  const validation = useMemo(() => project.legend?.length ? validateLegend(project.grid,project.legend,legendMatchPalette) : null, [legendMatchPalette,project.grid,project.legend]);
   const [validationCode,setValidationCode] = useState<string|null>(null);
   const [reviewFocus,setReviewFocus] = useState<{row:number;col:number}|null>(null);
   const reviewKeys = useMemo(()=>new Set(validation?.suspiciousCells.filter(s=>validationCode && (s.from===validationCode || s.to===validationCode)).map(s=>`${s.row}:${s.col}`) ?? []),[validation,validationCode]);
@@ -386,7 +387,7 @@ export function PatternEditor({
               <LegendValidationPanel result={validation} grid={project.grid} selectedCode={validationCode}
                 onSelect={code=>{setValidationCode(code);onSelectedColorChange(null);}}
                 onFocus={(row,col)=>setReviewFocus({row,col})} onReview={reviewCell}
-                onSafeCorrection={()=>onGridChange(applySafeCorrections(project.grid,project.legend ?? []))} />
+                onSafeCorrection={()=>onGridChange(applySafeCorrections(project.grid,project.legend ?? [],legendMatchPalette))} />
             </AccordionSection>}
             <AccordionSection title="圖紙資訊" defaultOpen>
               <ProjectDetailPanel project={project} onRename={onRename} onStatusChange={onStatusChange} />
@@ -467,7 +468,7 @@ function CraftToolbar({
     <div className="bf-craft-toolbar" aria-label="製作模式工具列">
       <div className="bf-toolbar-group">
         <span>模式</span>
-        <button type="button" className="bf-tool-button-active">製作模式</button>
+        <strong className="bf-mode-label">製作模式</strong>
         <button type="button" onClick={onEnterFocusMode}>專注製作</button>
         <button type="button" aria-label="進入全螢幕製作" onClick={onBrowserFullscreen}>⛶ 全螢幕</button>
         <button type="button" onClick={onLeaveCraftMode}>離開製作模式</button>
@@ -644,7 +645,6 @@ function AccordionSection({ title, defaultOpen = false, children }: { title: str
 
 function CostEstimatePanel({ project, colorCount }: { project: PatternProject; colorCount: number }) {
   const [costPerBead, setCostPerBead] = useState(0.1);
-  const [includeBackground, setIncludeBackground] = useState(false);
   const beadCount = totalCells(project.grid);
   const boardCells = project.size.width * project.size.height;
   const blankCells = boardCells - beadCount;
@@ -661,12 +661,8 @@ function CostEstimatePanel({ project, colorCount }: { project: PatternProject; c
         單顆成本（元）
         <input type="number" min={0} step={0.01} value={costPerBead} onChange={(event) => setCostPerBead(Number(event.target.value))} />
       </label>
-      <label className="checkbox-row">
-        <input type="checkbox" checked={includeBackground} onChange={(event) => setIncludeBackground(event.target.checked)} />
-        背景若已轉成豆子則計入成本
-      </label>
       <p className="cost-total">預估材料成本：{Math.round(materialCost).toLocaleString("zh-TW")} 元</p>
-      <p className="muted-note">留白與透明格不計入成本。</p>
+      <p className="muted-note">圖紙中的實際豆格會計入成本；留白與透明格不計入。</p>
     </div>
   );
 }

@@ -39,9 +39,17 @@ export function GridImportPage({ onProjectReady }: { onProjectReady: (project: P
     reader.readAsDataURL(file);
   };
 
-  const recognize = async () => {
+  const recognize = async (confirmedLegendOverride?: LegendEntry[]) => {
     if (!imageDataUrl || !calibration || running.current || legendBusy) return;
-    const activeKnownColors = getActiveKnownColorEntries(manualKnownColors, paletteMode);
+    const currentLegend = confirmedLegendOverride ?? legend;
+    if (currentLegend.length > 0 && currentLegend.some((entry) => !entry.confirmed)) {
+      setRecognitionWarning("請先核對圖例的色號與顆數，再按「確認圖例並開始辨識」。");
+      return;
+    }
+    const legendKnownColors = getLegendKnownColorEntries(currentLegend);
+    const activeKnownColors = legendKnownColors.length
+      ? legendKnownColors
+      : getActiveKnownColorEntries(manualKnownColors, paletteMode);
     if (paletteMode === "manual-known" && activeKnownColors.length === 0) {
       setRecognitionWarning("請先匯入至少一個有效色號，才能使用已知色號限制辨識。");
       return;
@@ -59,7 +67,7 @@ export function GridImportPage({ onProjectReady }: { onProjectReady: (project: P
         recognitionPalette,
         defaultRecognitionOptions,
         activeKnownColors,
-        legend,
+        legendKnownColors.length ? currentLegend : [],
         abortController.current.signal
       );
       const now = new Date().toISOString();
@@ -70,12 +78,14 @@ export function GridImportPage({ onProjectReady }: { onProjectReady: (project: P
         sourceType: "grid_recognition",
         size: { width: grid[0]?.length ?? 0, height: grid.length },
         grid,
-        legend,
+        legend: legendKnownColors.length ? currentLegend : undefined,
         originalImageDataUrl: imageDataUrl,
         createdAt: now,
         updatedAt: now,
         status: "draft",
-        tags: [paletteMode === "all-standard" ? "所有標準色" : `已知色號 ${activeKnownColors.length} 色`]
+        tags: [legendKnownColors.length
+          ? `已確認圖例 ${legendKnownColors.length} 色`
+          : paletteMode === "all-standard" ? "所有標準色" : `已知色號 ${activeKnownColors.length} 色`]
       });
     } catch (error) {
       if (!(error instanceof DOMException && error.name === "AbortError")) setRecognitionWarning(error instanceof Error ? error.message : "辨識失敗，請重新嘗試");
@@ -97,7 +107,8 @@ export function GridImportPage({ onProjectReady }: { onProjectReady: (project: P
       </section>
       <aside className="side-rail">
         <CalibrationPanel calibration={calibration} onChange={setCalibration} onRecognize={recognize} working={working || legendBusy} />
-        {calibration && <LegendImportPanel imageUrl={imageDataUrl} calibration={calibration} entries={legend} onChange={setLegend} onBusyChange={setLegendBusy} />}
+        {calibration && <LegendImportPanel imageUrl={imageDataUrl} calibration={calibration} entries={legend} onChange={setLegend} onBusyChange={setLegendBusy}
+          onConfirmAndRecognize={(confirmedEntries) => recognize(confirmedEntries)} />}
         {calibration && (
           <LegendPalettePanel
             entries={manualKnownColors}
@@ -111,6 +122,28 @@ export function GridImportPage({ onProjectReady }: { onProjectReady: (project: P
       </aside>
     </main>
   );
+}
+
+function getLegendKnownColorEntries(entries: LegendEntry[]): ChartLocalPaletteEntry[] {
+  if (!entries.length || entries.some((entry) => !entry.confirmed)) return [];
+  const colors = new Map(recognitionPalette.map((color) => [color.code, color]));
+  const unique = new Map<string, ChartLocalPaletteEntry>();
+  for (const entry of entries) {
+    const code = entry.colorCode.trim().toUpperCase();
+    const official = colors.get(code);
+    if (!official || !Number.isSafeInteger(entry.expectedCount) || entry.expectedCount < 0) continue;
+    unique.set(code, {
+      id: `legend-${code}`,
+      code,
+      sampledHex: entry.swatchColor ?? official.matchHex ?? official.calibratedHex ?? official.referenceHex ?? official.hex,
+      officialHex: official.hex,
+      countFromLegend: entry.expectedCount,
+      source: "legend",
+      confidence: 1,
+      enabled: true
+    });
+  }
+  return Array.from(unique.values());
 }
 
 function getActiveKnownColorEntries(entries: ChartLocalPaletteEntry[], mode: GridRecognitionPaletteMode): ChartLocalPaletteEntry[] {

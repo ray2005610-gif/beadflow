@@ -959,6 +959,44 @@ input:focus, select:focus {
   margin-top: 12px;
 }
 
+.legend-edit-list {
+  display: grid;
+  gap: 7px;
+}
+
+.legend-edit-head,
+.legend-edit-row {
+  display: grid;
+  grid-template-columns: 38px minmax(76px, 1fr) minmax(76px, 1fr) 48px;
+  gap: 8px;
+  align-items: center;
+}
+
+.legend-edit-head {
+  color: var(--color-muted);
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.legend-edit-row .swatch {
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--color-border);
+  border-radius: 5px;
+}
+
+.legend-edit-row input[type="checkbox"] {
+  justify-self: center;
+}
+
+.chibi-settings .segmented-control {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.chibi-review-panel .photo-preview {
+  max-height: 440px;
+}
+
 .legend-palette-row {
   display: grid;
   grid-template-columns: auto 42px minmax(90px, 1fr) 76px auto;
@@ -980,5 +1018,11 @@ input:focus, select:focus {
   .legend-palette-row input[type="number"],
   .legend-palette-row button {
     grid-column: 3;
+  }
+
+  .legend-edit-head,
+  .legend-edit-row {
+    grid-template-columns: 30px minmax(66px, 1fr) minmax(66px, 1fr) 36px;
+    gap: 5px;
   }
 }

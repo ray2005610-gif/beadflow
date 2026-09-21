@@ -13,7 +13,7 @@ import {
 import { EMPTY_COLOR, isEmptyOrTransparentCell } from "../data/emptyColor";
 
 export type PhotoColorMode = ColorMatchMode;
-export type PhotoFitMode = "contain" | "stretch" | "crop" | "manual";
+export type PhotoFitMode = "contain" | "stretch" | "crop";
 export type PhotoImageKind = "auto" | "photo" | "lineArt";
 
 export type BackgroundRemovalOptions = {
@@ -33,9 +33,6 @@ export type BackgroundRemovalOptions = {
 export type PhotoPatternOptions = {
   colorMode: PhotoColorMode;
   fitMode: PhotoFitMode;
-  manualScale: number;
-  offsetX: number;
-  offsetY: number;
   imageKind: PhotoImageKind;
   subjectMask?: SubjectMask | null;
 };
@@ -107,9 +104,6 @@ type ImageCharacteristics = {
 export const defaultPhotoPatternOptions: PhotoPatternOptions = {
   colorMode: "natural",
   fitMode: "contain",
-  manualScale: 1,
-  offsetX: 0,
-  offsetY: 0,
   imageKind: "auto",
   subjectMask: null
 };
@@ -283,17 +277,11 @@ function computePatternFit(imageWidth: number, imageHeight: number, boardWidth: 
     return { patternWidth: boardWidth, patternHeight: boardHeight, offsetX: 0, offsetY: 0, cropX, cropY, cropWidth, cropHeight, fitMode };
   }
   const containScale = Math.min(boardWidth / imageWidth, boardHeight / imageHeight);
-  const manualScale = fitMode === "manual" ? Math.max(0.1, Math.min(3, options.manualScale ?? 1)) : 1;
-  const targetWidth = imageWidth * containScale * manualScale;
-  const targetHeight = imageHeight * containScale * manualScale;
-  const fitWithinBoard = Math.min(1, boardWidth / targetWidth, boardHeight / targetHeight);
-  const scaledWidth = Math.max(1, Math.round(targetWidth * fitWithinBoard));
-  const scaledHeight = Math.max(1, Math.round(targetHeight * fitWithinBoard));
+  const scaledWidth = Math.max(1, Math.round(imageWidth * containScale));
+  const scaledHeight = Math.max(1, Math.round(imageHeight * containScale));
   const centeredX = Math.round((boardWidth - scaledWidth) / 2);
   const centeredY = Math.round((boardHeight - scaledHeight) / 2);
-  const offsetX = Math.max(0, Math.min(boardWidth - scaledWidth, centeredX + Math.round(options.offsetX ?? 0)));
-  const offsetY = Math.max(0, Math.min(boardHeight - scaledHeight, centeredY + Math.round(options.offsetY ?? 0)));
-  return { patternWidth: scaledWidth, patternHeight: scaledHeight, offsetX, offsetY, cropX: 0, cropY: 0, cropWidth: imageWidth, cropHeight: imageHeight, fitMode };
+  return { patternWidth: scaledWidth, patternHeight: scaledHeight, offsetX: centeredX, offsetY: centeredY, cropX: 0, cropY: 0, cropWidth: imageWidth, cropHeight: imageHeight, fitMode };
 }
 
 export function loadImage(src: string): Promise<HTMLImageElement> {

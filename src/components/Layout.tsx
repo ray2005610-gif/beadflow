@@ -8,7 +8,7 @@ export function Layout({ children }: { children: ReactNode }) {
           <h1>BeadFlow</h1>
           <p>拼豆圖紙辨識、繪製、製作輔助與庫存管理</p>
         </div>
-        <span className="version-badge">版本 2026-09-21 20:16</span>
+        <span className="version-badge">版本 2026-09-21 22:20</span>
       </header>
       {children}
     </div>

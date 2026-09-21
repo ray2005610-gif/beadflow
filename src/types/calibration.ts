@@ -35,7 +35,7 @@ export type ChartLocalPaletteEntry = {
   sampledHex: string;
   officialHex?: string;
   countFromLegend?: number;
-  source: "manual";
+  source: "manual" | "legend";
   confidence: number;
   enabled: boolean;
 };
