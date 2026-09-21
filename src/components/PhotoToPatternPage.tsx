@@ -11,13 +11,11 @@ import {
   loadImage,
   type BackgroundRemovalOptions,
   type PhotoFitMode,
-  type PhotoQualityMode,
   type PhotoPatternMeta,
   type PhotoPatternResult,
   type SubjectMask
 } from "../utils/imageToPattern";
-import { reducePatternPalette, type PhotoColorLimit } from "../utils/photoPaletteReduction";
-import { applyMardCalibrations, getMardCalibrationCount, loadMardCalibrations } from "../utils/mardCalibrationUtils";
+import { applyMardCalibrations, loadMardCalibrations } from "../utils/mardCalibrationUtils";
 import { BoardPresetSelector } from "./BoardPresetSelector";
 
 type PreviewMode = "compare" | "original" | "bead";
@@ -44,8 +42,6 @@ export function PhotoToPatternPage({ onProjectReady }: { onProjectReady: (projec
   const [previewing, setPreviewing] = useState(false);
   const [previewResult, setPreviewResult] = useState<PhotoPatternResult | null>(null);
   const [backgroundOptions, setBackgroundOptions] = useState<BackgroundRemovalOptions>(defaultBackgroundRemovalOptions);
-  const [colorLimit, setColorLimit] = useState<PhotoColorLimit>(0);
-  const [qualityMode, setQualityMode] = useState<PhotoQualityMode>("standard");
   const [maskGrid, setMaskGrid] = useState<boolean[] | null>(null);
   const [maskTool, setMaskTool] = useState<MaskTool>("rectangle");
   const [maskOperation, setMaskOperation] = useState<MaskOperation>("replace");
@@ -53,18 +49,15 @@ export function PhotoToPatternPage({ onProjectReady }: { onProjectReady: (projec
   const [maskHistory, setMaskHistory] = useState<boolean[][]>([]);
   const [maskFuture, setMaskFuture] = useState<boolean[][]>([]);
   const mardCalibrations = useMemo(() => loadMardCalibrations(), []);
-  const calibratedColorCount = useMemo(() => getMardCalibrationCount(mardCalibrations), [mardCalibrations]);
   const photoMatchingPalette = useMemo(() => applyMardCalibrations(recognitionPalette, mardCalibrations), [mardCalibrations]);
 
   const photoOptions = useMemo(() => ({
     colorMode: "natural" as const,
-    maxColors: 0,
     fitMode,
     manualScale,
     offsetX,
     offsetY,
     imageKind: "auto" as const,
-    qualityMode,
     subjectMask: maskGrid ? {
       imageWidth: width,
       imageHeight: height,
@@ -72,7 +65,7 @@ export function PhotoToPatternPage({ onProjectReady }: { onProjectReady: (projec
       gridHeight: height,
       gridMask: maskGrid
     } satisfies SubjectMask : null
-  }), [fitMode, manualScale, maskGrid, offsetX, offsetY, qualityMode, width, height]);
+  }), [fitMode, manualScale, maskGrid, offsetX, offsetY, width, height]);
 
   const upload = (file: File | null) => {
     if (!file) return;
@@ -162,13 +155,7 @@ export function PhotoToPatternPage({ onProjectReady }: { onProjectReady: (projec
     }
   };
 
-  const displayResult = useMemo<PhotoPatternResult | null>(() => {
-    if (!previewResult || colorLimit === 0) return previewResult;
-    return {
-      ...previewResult,
-      grid: reducePatternPalette(previewResult.grid, photoMatchingPalette, colorLimit)
-    };
-  }, [colorLimit, photoMatchingPalette, previewResult]);
+  const displayResult = previewResult;
 
   const meta = displayResult?.meta;
 
@@ -235,25 +222,7 @@ export function PhotoToPatternPage({ onProjectReady }: { onProjectReady: (projec
             <input type="color" value={backgroundOptions.backgroundSampleColor ?? "#ffffff"} onChange={(event) => setBackgroundOptions((value) => ({ ...value, backgroundSampleColor: event.target.value, removeNearBackgroundColor: true, mode: "pickedColor" }))} />
           </label>
         </div>
-        <div className="panel">
-          <h3>辨識品質</h3>
-          <p className="muted-note">
-            色彩匹配使用 {calibratedColorCount > 0 ? `實體校色色卡（${calibratedColorCount} 色）` : "內建參考色"}；只影響照片配色，不改變圖案形狀。
-          </p>
-          <div className="stacked-options">
-            <label className="radio-card">
-              <input type="radio" checked={qualityMode === "standard"} onChange={() => setQualityMode("standard")} />
-              <span><strong>標準</strong><small>保留目前既有照片轉拼豆流程。</small></span>
-            </label>
-            <label className="radio-card">
-              <input type="radio" checked={qualityMode === "detail"} onChange={() => setQualityMode("detail")} />
-              <span><strong>高精度細節</strong><small>使用多點取樣、邊緣與亮暗保護，較慢但保留更多細節。</small></span>
-            </label>
-          </div>
-          {qualityMode === "detail" && width * height <= 900 && (
-            <p className="muted-note">目前尺寸較小，部分細節仍可能被簡化。較大的圖紙尺寸能保留更多細節。</p>
-          )}
-        </div>
+
         {imageDataUrl && (
           <div className="panel subject-mask-panel">
             <h3>主體選取</h3>
@@ -300,20 +269,7 @@ export function PhotoToPatternPage({ onProjectReady }: { onProjectReady: (projec
             <p className="muted-note">目前保留 {countSelected(maskGrid, width, height).toLocaleString("zh-TW")} 格，透明 {((width * height) - countSelected(maskGrid, width, height)).toLocaleString("zh-TW")} 格。</p>
           </div>
         )}
-        <div className="panel">
-          <h3>色彩數量</h3>
-          <label>
-            色彩數量
-            <select value={colorLimit} onChange={(event) => setColorLimit(Number(event.target.value) as PhotoColorLimit)}>
-              <option value={0}>不限制</option>
-              <option value={24}>24 色</option>
-              <option value={48}>48 色</option>
-              <option value={72}>72 色</option>
-              <option value={96}>96 色</option>
-            </select>
-          </label>
-          <p className="muted-note">只影響照片轉拼豆，會從 MARD A～M 標準色中挑選最適合目前圖片的顏色。不限制時保留原始轉換結果。</p>
-        </div>
+
         <button className="primary wide" onClick={convert} disabled={!imageDataUrl || working || previewing}>{working ? "轉換中..." : "產生可編輯圖紙"}</button>
       </aside>
     </main>

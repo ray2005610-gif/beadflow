@@ -14,6 +14,7 @@ export type PatternStatus =
   | "stock_out_done";
 
 export type PatternProject = {
+  legend?: import("./legend").LegendEntry[];
   id: string;
   name: string;
   sourceType: PatternSourceType;

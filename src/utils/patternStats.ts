@@ -1,7 +1,9 @@
 import type { ColorStat, PatternGrid } from "../types/pattern";
 import { isEmptyOrTransparentCell } from "../data/emptyColor";
+import { recordRecognitionStages } from "./recognitionProfile";
 
 export function calculateColorStats(grid: PatternGrid): ColorStat[] {
+  const start = performance.now();
   const map = new Map<string, ColorStat>();
   for (const row of grid) {
     for (const cell of row) {
@@ -23,6 +25,7 @@ export function calculateColorStats(grid: PatternGrid): ColorStat[] {
       map.set(cell.colorCode, current);
     }
   }
+  recordRecognitionStages({ statistics: performance.now()-start });
   return Array.from(map.values());
 }
 

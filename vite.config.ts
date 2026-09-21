@@ -3,6 +3,7 @@ import react from "@vitejs/plugin-react";
 
 export default defineConfig({
   plugins: [react()],
+  optimizeDeps: { include: ["tesseract.js"] },
   base: "/",
   server: {
     host: "0.0.0.0",

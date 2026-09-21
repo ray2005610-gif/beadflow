@@ -5,11 +5,13 @@ type CropRange = NonNullable<GridCalibration["cropRange"]>;
 export function CalibrationPanel({
   calibration,
   onChange,
-  onRecognize
+  onRecognize,
+  working = false
 }: {
   calibration: GridCalibration | null;
   onChange: (next: GridCalibration) => void;
   onRecognize: () => void;
+  working?: boolean;
 }) {
   if (!calibration) return <div className="panel"><p>請上傳圖片，並框選 3×3 格子校準區域。</p></div>;
 
@@ -68,7 +70,7 @@ export function CalibrationPanel({
         <button onClick={() => updateCrop("endCol", crop.endCol + 1)}>右緣外擴</button>
         <button onClick={() => updateCrop("endCol", crop.endCol - 1)}>右緣內縮</button>
       </div>
-      <button className="primary wide" onClick={onRecognize}>辨識圖紙</button>
+      <button className="primary wide" disabled={working} onClick={onRecognize}>{working ? "處理中…" : "辨識圖紙"}</button>
     </div>
   );
 }

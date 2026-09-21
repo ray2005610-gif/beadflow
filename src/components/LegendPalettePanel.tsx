@@ -28,12 +28,12 @@ export function LegendPalettePanel({
 
   const recognitionCodeSet = useMemo(() => new Set(recognitionPalette.map((color) => color.code)), []);
   const seriesList = useMemo(() => {
-    return Array.from(new Set(mardPalette.map((color) => color.series ?? color.code[0]).filter(Boolean))).sort();
+    return Array.from(new Set(recognitionPalette.map((color) => color.series ?? color.code[0]).filter(Boolean))).sort();
   }, []);
 
   const filteredPalette = useMemo(() => {
     const normalized = query.trim().toUpperCase();
-    return mardPalette
+    return recognitionPalette
       .filter((color) => series === "all" || color.series === series || color.code.startsWith(series))
       .filter((color) => !normalized || color.code.includes(normalized) || color.name.toUpperCase().includes(normalized))
       .slice(0, 96);
@@ -85,7 +85,7 @@ export function LegendPalettePanel({
             checked={paletteMode === "all-standard"}
             onChange={() => onPaletteModeChange("all-standard")}
           />
-          <span><strong>所有 MARD 標準色</strong><small>用內建自動辨識候選色，不讀取底部色表。</small></span>
+          <span><strong>所有 MARD 標準色</strong><small>使用目前允許自動辨識的 MARD 標準色。</small></span>
         </label>
         <label className="radio-card">
           <input
@@ -208,7 +208,7 @@ function importCodes(codes: string[], currentEntries: ChartLocalPaletteEntry[]) 
     const code = rawCode.trim().toUpperCase();
     if (!code) continue;
     const color = mardPaletteByCode.get(code);
-    if (!color) {
+    if (!color || !recognitionPalette.some(item => item.code === code)) {
       if (!report.invalid.includes(code)) report.invalid.push(code);
       continue;
     }
@@ -240,7 +240,7 @@ function getUniqueValidEntries(entries: ChartLocalPaletteEntry[]): ChartLocalPal
   const unique = new Map<string, ChartLocalPaletteEntry>();
   for (const entry of entries) {
     const code = entry.code.trim().toUpperCase();
-    if (!entry.enabled || !code || code === "TRANSPARENT" || code === "EMPTY" || !mardPaletteByCode.has(code)) continue;
+    if (!entry.enabled || !recognitionPalette.some(color => color.code === code)) continue;
     if (!unique.has(code)) unique.set(code, entry);
   }
   return Array.from(unique.values());

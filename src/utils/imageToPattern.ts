@@ -15,7 +15,6 @@ import { EMPTY_COLOR, isEmptyOrTransparentCell } from "../data/emptyColor";
 export type PhotoColorMode = ColorMatchMode;
 export type PhotoFitMode = "contain" | "stretch" | "crop" | "manual";
 export type PhotoImageKind = "auto" | "photo" | "lineArt";
-export type PhotoQualityMode = "standard" | "detail";
 
 export type BackgroundRemovalOptions = {
   mode: "none" | "transparentOnly" | "auto" | "whiteBackground" | "checkerboard" | "pickedColor";
@@ -33,13 +32,11 @@ export type BackgroundRemovalOptions = {
 
 export type PhotoPatternOptions = {
   colorMode: PhotoColorMode;
-  maxColors: number;
   fitMode: PhotoFitMode;
   manualScale: number;
   offsetX: number;
   offsetY: number;
   imageKind: PhotoImageKind;
-  qualityMode: PhotoQualityMode;
   subjectMask?: SubjectMask | null;
 };
 
@@ -109,13 +106,11 @@ type ImageCharacteristics = {
 
 export const defaultPhotoPatternOptions: PhotoPatternOptions = {
   colorMode: "natural",
-  maxColors: 0,
   fitMode: "contain",
   manualScale: 1,
   offsetX: 0,
   offsetY: 0,
   imageKind: "auto",
-  qualityMode: "standard",
   subjectMask: null
 };
 
@@ -198,10 +193,8 @@ export async function convertImageToBeadPatternV2(
   const detectedKind = photoOptions.imageKind === "auto" ? (globalInfo.likelyLineArt ? "lineArt" : "photo") : photoOptions.imageKind;
   const placement = computePatternFit(imageData.width, imageData.height, width, height, photoOptions);
   const normalizedMask = normalizeSubjectMask(photoOptions.subjectMask, width, height);
-  const hasSubjectMask = Boolean(normalizedMask);
-  const detailMode = photoOptions.qualityMode === "detail";
-  const cellPixels = buildCellPixels(imageData, width, height, placement, detectedKind, detailMode, normalizedMask);
-  const rawSamples = cellPixels.map((cell) => convertCellPixelsToSample(cell, detectedKind, detailMode, hasSubjectMask, globalInfo, backgroundOptions));
+  const cellPixels = buildCellPixels(imageData, width, height, placement, detectedKind, normalizedMask);
+  const rawSamples = cellPixels.map((cell) => convertCellPixelsToSample(cell, detectedKind, globalInfo, backgroundOptions));
   const cellSamples = rawSamples.map((sample, index): CellSample => {
     const row = Math.floor(index / width);
     const col = index % width;
@@ -215,9 +208,7 @@ export async function convertImageToBeadPatternV2(
       empty: sample.alpha <= 0
     };
   });
-  const paletteForImage = detectedKind === "lineArt"
-    ? buildCandidatePaletteForLimitedColorImage(cellSamples, palette, photoOptions.colorMode)
-    : selectPaletteForImage(cellSamples, palette, photoOptions);
+  const paletteForImage = palette;
 
   const grid = Array.from({ length: height }, (_, row) =>
     Array.from({ length: width }, (_, col) => {
@@ -249,7 +240,7 @@ export async function convertImageToBeadPatternV2(
       };
     })
   );
-  const finalGrid = detectedKind === "photo" && !detailMode ? smoothIsolatedCells(grid, paletteForImage) : preserveLineArtGrid(grid);
+  const finalGrid = detectedKind === "photo" ? smoothIsolatedCells(grid, paletteForImage) : preserveLineArtGrid(grid);
   const beadCells = finalGrid.flat().filter((cell) => !isEmptyOrTransparentCell(cell)).length;
   return {
     grid: finalGrid,
@@ -364,7 +355,6 @@ function buildCellPixels(
   height: number,
   placement: Placement,
   imageKind: Exclude<PhotoImageKind, "auto">,
-  detailMode: boolean,
   subjectMask: boolean[] | null
 ): CellPixels[] {
   return Array.from({ length: width * height }, (_, index) => {
@@ -373,7 +363,7 @@ function buildCellPixels(
     if (subjectMask && !subjectMask[index]) return { row, col, insideImage: false, pixels: [] };
     if (!cellInPlacedImage(row, col, placement)) return { row, col, insideImage: false, pixels: [] };
     const rect = mapCellToSourceRect(row, col, placement);
-    return { row, col, insideImage: true, pixels: sampleCellPixels(imageData, rect, imageKind, detailMode) };
+    return { row, col, insideImage: true, pixels: sampleCellPixels(imageData, rect, imageKind) };
   });
 }
 
@@ -390,9 +380,9 @@ function mapCellToSourceRect(row: number, col: number, placement: Placement) {
   };
 }
 
-function sampleCellPixels(imageData: ImageData, rect: { x: number; y: number; w: number; h: number }, imageKind: Exclude<PhotoImageKind, "auto">, detailMode: boolean): SampledColor[] {
-  const steps = detailMode ? 11 : imageKind === "lineArt" ? 10 : 7;
-  const ratio = detailMode ? 0.84 : imageKind === "lineArt" ? 1 : 0.62;
+function sampleCellPixels(imageData: ImageData, rect: { x: number; y: number; w: number; h: number }, imageKind: Exclude<PhotoImageKind, "auto">): SampledColor[] {
+  const steps = imageKind === "lineArt" ? 10 : 7;
+  const ratio = imageKind === "lineArt" ? 1 : 0.62;
   const sx = rect.x + (rect.w * (1 - ratio)) / 2;
   const sy = rect.y + (rect.h * (1 - ratio)) / 2;
   const sw = rect.w * ratio;
@@ -409,13 +399,10 @@ function sampleCellPixels(imageData: ImageData, rect: { x: number; y: number; w:
 function convertCellPixelsToSample(
   cell: CellPixels,
   imageKind: Exclude<PhotoImageKind, "auto">,
-  detailMode: boolean,
-  hasSubjectMask: boolean,
   globalInfo: ImageCharacteristics,
   options: BackgroundRemovalOptions
 ): SampledColor {
   if (!cell.insideImage || !cell.pixels.length) return { r: 255, g: 255, b: 255, alpha: 0 };
-  if (detailMode) return sampleDetailAwareColor(cell.pixels, globalInfo, options, hasSubjectMask);
   return imageKind === "lineArt" ? sampleLineAwareColor(cell.pixels, globalInfo, options) : samplePhotoColor(cell.pixels, globalInfo, options);
 }
 
@@ -425,74 +412,6 @@ function samplePhotoColor(pixels: SampledColor[], globalInfo: ImageCharacteristi
   const nonBackground = visible.filter((pixel) => !isLikelyBackgroundPixel(pixel, globalInfo.backgroundRgb, options, false));
   const usable = nonBackground.length >= Math.max(3, visible.length * 0.18) ? nonBackground : visible;
   return getRepresentativeColor(usable, false);
-}
-
-function sampleDetailAwareColor(pixels: SampledColor[], globalInfo: ImageCharacteristics, options: BackgroundRemovalOptions, hasSubjectMask: boolean): SampledColor {
-  const visible = pixels.filter((pixel) => pixel.alpha > options.alphaThreshold);
-  if (!visible.length) return { r: 255, g: 255, b: 255, alpha: 0 };
-  const usable = hasSubjectMask
-    ? visible
-    : visible.filter((pixel) => !isLikelyBackgroundPixel(pixel, globalInfo.backgroundRgb, options, false));
-  const source = usable.length >= Math.max(3, visible.length * 0.16) ? usable : visible;
-  const features = getCellSampleFeatures(source);
-  const highVariance = features.variance > 580 || features.edgeStrength > 54;
-  const highlight = source.filter((pixel) => luminance(pixel) >= features.luminanceMean + 28);
-  const shadow = source.filter((pixel) => luminance(pixel) <= features.luminanceMean - 28);
-  const dominant = dominantClusterColor(source);
-
-  if (highVariance) {
-    const centerWeighted = source.slice(Math.floor(source.length * 0.28), Math.ceil(source.length * 0.72));
-    const protectedSamples = [
-      dominant,
-      features.medianColor,
-      ...(highlight.length >= 3 ? [getRepresentativeColor(highlight, false)] : []),
-      ...(shadow.length >= 3 ? [getRepresentativeColor(shadow, true)] : []),
-      ...centerWeighted
-    ];
-    return getRepresentativeColor(protectedSamples, true);
-  }
-  return getRepresentativeColor([dominant, features.medianColor, features.meanColor, features.centerColor, ...source], false);
-}
-
-function getCellSampleFeatures(samples: SampledColor[]) {
-  const meanColor = averageRgb(samples);
-  const medianColor = {
-    r: median(samples.map((sample) => sample.r)),
-    g: median(samples.map((sample) => sample.g)),
-    b: median(samples.map((sample) => sample.b)),
-    alpha: median(samples.map((sample) => sample.alpha))
-  };
-  const centerColor = samples[Math.floor(samples.length / 2)] ?? medianColor;
-  const dominant = dominantClusterColor(samples);
-  const luminances = samples.map(luminance);
-  const luminanceMean = luminances.reduce((sum, value) => sum + value, 0) / Math.max(1, luminances.length);
-  const variance = luminances.reduce((sum, value) => sum + Math.pow(value - luminanceMean, 2), 0) / Math.max(1, luminances.length);
-  return {
-    meanColor: { ...meanColor, alpha: trimmedMean(samples.map((sample) => sample.alpha)) },
-    medianColor,
-    dominantColor: dominant,
-    centerColor,
-    luminanceMean,
-    luminanceMin: Math.min(...luminances),
-    luminanceMax: Math.max(...luminances),
-    variance,
-    edgeStrength: Math.sqrt(variance)
-  };
-}
-
-function dominantClusterColor(samples: SampledColor[]): SampledColor {
-  if (samples.length <= 4) return getRepresentativeColor(samples, true);
-  const groups = new Map<string, SampledColor[]>();
-  for (const sample of samples) {
-    const hsl = rgbToHsl(sample);
-    const key = `${Math.round(hsl.h * 16)},${Math.round(hsl.s * 8)},${Math.round(hsl.l * 10)}`;
-    groups.set(key, [...(groups.get(key) ?? []), sample]);
-  }
-  const ranked = Array.from(groups.values()).sort((a, b) => {
-    const score = (items: SampledColor[]) => items.length * 2 + items.reduce((sum, item) => sum + inkScore(item), 0) / Math.max(1, items.length);
-    return score(b) - score(a);
-  });
-  return getRepresentativeColor(ranked[0] ?? samples, true);
 }
 
 function sampleLineAwareColor(pixels: SampledColor[], globalInfo: ImageCharacteristics, options: BackgroundRemovalOptions): SampledColor {
@@ -569,60 +488,6 @@ function adjustForMode(rgb: RGB, mode: PhotoColorMode): RGB {
   if (mode === "soft") return hslToRgb({ ...hsl, s: clamp01(hsl.s * 0.82), l: clamp01(hsl.l * 1.04 + 0.015) });
   if (mode === "contrast") return hslToRgb({ ...hsl, s: clamp01(hsl.s * 1.06), l: clamp01((hsl.l - 0.5) * 1.18 + 0.5) });
   return rgb;
-}
-
-function buildCandidatePaletteForLimitedColorImage(samples: CellSample[], palette: BeadColor[], mode: PhotoColorMode): BeadColor[] {
-  const colors = samples.filter((sample) => !sample.empty).map((sample) => sample.adjustedRgb);
-  if (!colors.length) return palette;
-  const centers = kMeansOklab(colors, Math.min(18, colors.length), 10);
-  const selected = new Map<string, BeadColor>();
-  for (const center of centers) {
-    const match = findClosestBeadColorWithDebug(center, palette, mode);
-    selected.set(match.color.code, match.color);
-  }
-  for (const color of colors) {
-    const match = findClosestBeadColorWithDebug(color, palette, mode);
-    selected.set(match.color.code, match.color);
-    if (selected.size >= 36) break;
-  }
-  return selected.size ? Array.from(selected.values()) : palette;
-}
-
-function selectPaletteForImage(samples: CellSample[], palette: BeadColor[], options: PhotoPatternOptions): BeadColor[] {
-  if (!options.maxColors || options.maxColors >= palette.length) return palette;
-  const colors = samples.filter((sample) => !sample.empty).map((sample) => sample.adjustedRgb);
-  if (!colors.length) return palette;
-  const centers = kMeansOklab(colors, Math.min(options.maxColors, colors.length), 8);
-  const selected = new Map<string, BeadColor>();
-  for (const center of centers) {
-    const match = findClosestBeadColorWithDebug(center, palette, options.colorMode);
-    selected.set(match.color.code, match.color);
-  }
-  return selected.size ? Array.from(selected.values()) : palette;
-}
-
-function kMeansOklab(colors: RGB[], k: number, iterations: number): RGB[] {
-  const sorted = [...colors].sort((a, b) => rgbToOklab(a).l - rgbToOklab(b).l);
-  let centers = Array.from({ length: k }, (_, index) => sorted[Math.floor((index / Math.max(1, k - 1)) * (sorted.length - 1))]);
-  for (let iteration = 0; iteration < iterations; iteration += 1) {
-    const groups = Array.from({ length: k }, () => [] as RGB[]);
-    for (const color of colors) {
-      const lab = rgbToOklab(color);
-      let bestIndex = 0;
-      let bestDistance = Number.POSITIVE_INFINITY;
-      for (let index = 0; index < centers.length; index += 1) {
-        const center = rgbToOklab(centers[index]);
-        const distance = Math.hypot((lab.l - center.l) * 1.35, lab.a - center.a, lab.b - center.b);
-        if (distance < bestDistance) {
-          bestDistance = distance;
-          bestIndex = index;
-        }
-      }
-      groups[bestIndex].push(color);
-    }
-    centers = centers.map((center, index) => groups[index].length ? averageRgb(groups[index]) : center);
-  }
-  return centers;
 }
 
 function preserveLineArtGrid(grid: PatternGrid): PatternGrid {

@@ -3,8 +3,11 @@ import type { ChartLocalPaletteEntry, GridCalibration, GridRecognitionOptions } 
 import type { PatternGrid } from "../types/pattern";
 import { mardPaletteByCode } from "../data/mardPalette";
 import { EMPTY_COLOR, EMPTY_COLOR_CODE } from "../data/emptyColor";
-import { findClosestBeadColorWithDebug, hexToRgb, oklabDistance, rgbToHex, rgbToHsl, rgbToOklab } from "./colorUtils";
-import { createEmptyCell, loadImage } from "./imageToPattern";
+import { createColorMatcher, findClosestBeadColorWithDebug, hexToRgb, oklabDistance, rgbToHex, rgbToHsl, rgbToOklab } from "./colorUtils";
+import { createEmptyCell } from "./imageToPattern";
+import { isRecognitionStandardMardColor } from "../data/mardColorMeta";
+import { createRecognitionProfile } from "./recognitionProfile";
+import { correctIsolatedCells } from "./legendValidation";
 
 export const defaultRecognitionOptions: GridRecognitionOptions = {
   sampleMode: "symbolAware",
@@ -29,22 +32,27 @@ type CellClassification = {
   backgroundConfidence: number;
 };
 
-export async function recognizeGridPatternFromImage(
-  imageDataUrl: string,
-  calibration: GridCalibration,
-  palette: BeadColor[],
+export function recognizeGridPatternFromPixels(
+  imageData: ImageData, calibration: GridCalibration, palette: BeadColor[],
   options: GridRecognitionOptions = defaultRecognitionOptions,
-  chartLocalPalette: ChartLocalPaletteEntry[] = []
-): Promise<PatternGrid> {
-  const imageData = await readImageData(imageDataUrl);
+  chartLocalPalette: ChartLocalPaletteEntry[] = [],
+  profile = createRecognitionProfile()
+): PatternGrid {
+  const coordinateStart = performance.now();
+  if (![calibration.cellWidth, calibration.cellHeight, calibration.rows, calibration.columns].every(n => Number.isFinite(n) && n > 0)
+    || calibration.rows > 120 || calibration.columns > 120) throw new Error("格線尺寸須有效，且不可超過 120 × 120");
+  profile.add("gridDetection", 0); // Coordinates come from the user's 3x3 calibration, not an automatic detector.
   const opt = { ...defaultRecognitionOptions, ...options };
   const crop = normalizeCrop(calibration);
   const localEntries = chartLocalPalette.filter((entry) => entry.enabled && isValidHex(entry.sampledHex) && entry.code.trim());
   const localPalette = buildChartLocalPalette(localEntries);
-  const candidates = localPalette.length ? localPalette : palette;
+  const candidates = localPalette.length ? localPalette : palette.filter(isRecognitionStandardMardColor);
+  if (!candidates.length) throw new Error("沒有可用的標準色號");
+  const matchColor = createColorMatcher(candidates);
   const outputRows = crop.endRow - crop.startRow + 1;
   const outputCols = crop.endCol - crop.startCol + 1;
 
+  profile.add("gridCoordinates", performance.now() - coordinateStart);
   const classifications = Array.from({ length: outputRows }, (_, outRow) =>
     Array.from({ length: outputCols }, (_, outCol) => {
       const sourceRow = crop.startRow + outRow;
@@ -55,12 +63,12 @@ export async function recognizeGridPatternFromImage(
         width: calibration.cellWidth,
         height: calibration.cellHeight
       };
-      return classifyGridCellColor(cellRect, imageData, candidates, opt);
+      return classifyGridCellColor(cellRect, imageData, candidates, opt, matchColor, profile);
     })
   );
-  const connectedBackground = markConnectedBackground(classifications);
+  const connectedBackground = profile.time("background", () => markConnectedBackground(classifications));
 
-  return Array.from({ length: outputRows }, (_, outRow) =>
+  const grid: PatternGrid = Array.from({ length: outputRows }, (_, outRow) =>
     Array.from({ length: outputCols }, (_, outCol) => {
       const sourceRow = crop.startRow + outRow;
       const sourceCol = crop.startCol + outCol;
@@ -70,7 +78,7 @@ export async function recognizeGridPatternFromImage(
         return createEmptyCell(outRow, outCol, rgb, classification.alpha, sourceRow, sourceCol);
       }
 
-      const match = classification.match ?? findClosestBeadColorWithDebug(rgb, candidates);
+      const match = classification.match ?? matchColor(rgb);
       if (match.color.code === EMPTY_COLOR_CODE) {
         return createEmptyCell(outRow, outCol, rgb, classification.alpha, sourceRow, sourceCol);
       }
@@ -87,6 +95,9 @@ export async function recognizeGridPatternFromImage(
         symbol: resultColor.symbol,
         done: false,
         empty: false,
+        rawDetectedColor: resultColor.code,
+        finalDetectedColor: resultColor.code,
+        suspectedMismatch: false,
         rawRgb: rgb,
         rawHex: rgbToHex(rgb),
         matchedHex: match.color.hex,
@@ -94,13 +105,11 @@ export async function recognizeGridPatternFromImage(
         confidence: Math.min(match.confidence, classification.confidence),
         distance: match.distance,
         adjustedDistance: match.adjustedDistance,
-        candidates: match.candidates,
-        rawHue: match.rawHue,
-        rawSaturation: match.rawSaturation,
-        rawLightness: match.rawLightness
+        // Candidate rankings are derived from rawRgb; duplicating them per cell exceeds localStorage quotas.
       };
     })
   );
+  return profile.time("neighborCleanup", () => correctIsolatedCells(grid, candidates));
 }
 
 export function buildChartLocalPalette(entries: ChartLocalPaletteEntry[]): BeadColor[] {
@@ -113,7 +122,7 @@ export function buildChartLocalPalette(entries: ChartLocalPaletteEntry[]): BeadC
       unique.set(EMPTY_COLOR_CODE, { ...EMPTY_COLOR, hex: entry.sampledHex });
       continue;
     }
-    if (!official) continue;
+    if (!official || !isRecognitionStandardMardColor(official)) continue;
     unique.set(code, {
       ...official,
       code,
@@ -136,28 +145,32 @@ function classifyGridCellColor(
   cellRect: { x: number; y: number; width: number; height: number },
   imageData: ImageData,
   candidates: BeadColor[],
-  options: GridRecognitionOptions = defaultRecognitionOptions
+  options: GridRecognitionOptions,
+  matchColor: ReturnType<typeof createColorMatcher>,
+  profile: ReturnType<typeof createRecognitionProfile>
 ): CellClassification {
-  const patches = sampleGridCellPatches(cellRect, imageData, options);
+  const patches = profile.time("pixelSampling", () => sampleGridCellPatches(cellRect, imageData, options));
   const visible = patches.filter((patch) => patch.alpha > 20);
-  const representative = robustRepresentative(visible);
+  const representative = profile.time("representativeColor", () => robustRepresentative(visible));
   const fallbackRgb = { r: representative.r, g: representative.g, b: representative.b };
   if (!visible.length) {
     return { rgb: fallbackRgb, alpha: 0, empty: true, confidence: 1, foregroundCoverage: 0, backgroundConfidence: 1 };
   }
 
-  const patchVotes = visible
+  const mostlySolidExtreme = visible.filter(p => luminance(p) < 20).length / visible.length > 0.75
+    || visible.filter(p => Math.min(p.r, p.g, p.b) > 245).length / visible.length > 0.75;
+  const patchVotes = profile.time("paletteMatching", () => visible
     .map((patch) => {
       const rgb = { r: patch.r, g: patch.g, b: patch.b };
-      const match = findClosestBeadColorWithDebug(rgb, candidates);
+      const match = matchColor(rgb);
       return { patch, rgb, match };
     })
     .filter((vote) => {
       const hsl = rgbToHsl(vote.rgb);
       const textOrGrid = hsl.l < 0.08 || (hsl.l > 0.96 && hsl.s < 0.08);
       const tooFarFromKnownColors = candidates.length <= 32 && vote.match.adjustedDistance > 62;
-      return !textOrGrid && !tooFarFromKnownColors;
-    });
+      return (mostlySolidExtreme || !textOrGrid) && !tooFarFromKnownColors;
+    }));
   const foregroundCoverage = patchVotes.length / Math.max(1, visible.length);
   const backgroundConfidence = estimateBackgroundConfidence(visible, patchVotes.length);
 
@@ -223,8 +236,8 @@ function markConnectedBackground(classifications: CellClassification[][]): boole
     enqueueIfBackground(row, width - 1);
   }
 
-  while (queue.length) {
-    const current = queue.shift();
+  for (let head = 0; head < queue.length; head += 1) {
+    const current = queue[head];
     if (!current) break;
     const neighbors = [
       { row: current.row - 1, col: current.col },
@@ -358,17 +371,6 @@ function isCheckerboardTransparentCell(
   return lowChromaAlternatingLightness && noStableKnownColor;
 }
 
-async function readImageData(imageDataUrl: string): Promise<ImageData> {
-  const image = await loadImage(imageDataUrl);
-  const canvas = document.createElement("canvas");
-  canvas.width = image.naturalWidth;
-  canvas.height = image.naturalHeight;
-  const ctx = canvas.getContext("2d", { willReadFrequently: true });
-  if (!ctx) throw new Error("無法建立格線辨識畫布");
-  ctx.drawImage(image, 0, 0);
-  return ctx.getImageData(0, 0, canvas.width, canvas.height);
-}
-
 function normalizeCrop(calibration: GridCalibration) {
   const range = calibration.cropRange;
   const startRow = clampInt(range?.startRow ?? 0, 0, Math.max(0, calibration.rows - 1));
@@ -383,6 +385,7 @@ function clampInt(value: number, min: number, max: number): number {
 }
 
 function pixelAt(imageData: ImageData, x: number, y: number): SampledPixel {
+  if (x < 0 || y < 0 || x >= imageData.width || y >= imageData.height) return { r: 255, g: 255, b: 255, alpha: 0 };
   const px = Math.max(0, Math.min(imageData.width - 1, Math.round(x)));
   const py = Math.max(0, Math.min(imageData.height - 1, Math.round(y)));
   const i = (py * imageData.width + px) * 4;

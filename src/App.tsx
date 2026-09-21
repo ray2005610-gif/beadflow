@@ -42,7 +42,7 @@ export default function App() {
   const [onlyUnfinished, setOnlyUnfinished] = useState(false);
   const [correctionMode, setCorrectionMode] = useState(false);
   const [mirrorOriginalGrid, setMirrorOriginalGrid] = useState<PatternGrid | null>(null);
-  const stats = useMemo(() => project ? calculateColorStats(project.grid) : [], [project]);
+  const stats = useMemo(() => project ? calculateColorStats(project.grid) : [], [project?.grid]);
 
   useEffect(() => storage.saveProjects(projects), [projects]);
   useEffect(() => storage.saveInventory(inventory), [inventory]);
@@ -165,6 +165,7 @@ export default function App() {
             <button onClick={saveProject}>儲存目前圖紙</button>
           </div>
           <PatternEditor
+            onGridChange={setGrid}
             project={project}
             inventory={inventory}
             activeTool={activeTool}

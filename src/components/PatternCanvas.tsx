@@ -6,6 +6,7 @@ import { isEmptyOrTransparentCell } from "../data/emptyColor";
 import type { ActiveTool } from "./DrawingToolbar";
 import { clamp } from "../utils/canvasMath";
 import { textColorForBackground } from "../utils/colorUtils";
+import { finishRecognitionRender } from "../utils/recognitionProfile";
 import { getVisibleGridRange, gridToScreenPoint, screenToGridPoint, tileForCell } from "../utils/craftViewUtils";
 
 type Point = { x: number; y: number };
@@ -22,6 +23,8 @@ const EDIT_DRAG_TOOLS: ActiveTool[] = ["paint", "eraser"];
 const TAP_TOOLS: ActiveTool[] = ["inspect", "eyedropper", "fill", "replaceColor"];
 
 export function PatternCanvas({
+  reviewKeys,
+  reviewFocus,
   grid,
   activeTool,
   selectedColorCode,
@@ -42,6 +45,8 @@ export function PatternCanvas({
   onSelectedCellChange,
   onToggleBoardComplete
 }: {
+  reviewKeys: Set<string>;
+  reviewFocus: {row:number;col:number}|null;
   grid: PatternGrid;
   activeTool: ActiveTool;
   selectedColorCode: string | null;
@@ -137,7 +142,13 @@ export function PatternCanvas({
 
   useEffect(() => {
     drawAll();
-  }, [boardCompletionMode, boardLayout, completedSet, craftMode, focusedBoardId, grid, onlyUnfinished, renderMode, selectedCell, selectedColorCode, showCoordinates, showGrid, showSymbols, transform, viewport]);
+  }, [reviewKeys, boardCompletionMode, boardLayout, completedSet, craftMode, focusedBoardId, grid, onlyUnfinished, renderMode, selectedCell, selectedColorCode, showCoordinates, showGrid, showSymbols, transform, viewport]);
+
+  useEffect(() => {
+    if (!reviewFocus) return;
+    setSelected(reviewFocus);
+    fitToBounds(Math.max(0,reviewFocus.col-4),Math.max(0,reviewFocus.row-4),9,9);
+  }, [reviewFocus]);
 
   useEffect(() => {
     if (viewport.width <= 0 || viewport.height <= 0) return;
@@ -228,8 +239,10 @@ export function PatternCanvas({
   };
 
   const drawAll = () => {
+    const start = performance.now();
     drawPatternCanvas();
     drawRulers();
+    if (viewport.width>0 && viewport.height>0) finishRecognitionRender(performance.now()-start);
   };
 
   const drawPatternCanvas = () => {
@@ -301,6 +314,12 @@ export function PatternCanvas({
       ctx.strokeStyle = "#b98c62";
       ctx.lineWidth = 3 / transform.scale;
       ctx.strokeRect(x + 1, y + 1, CELL_SIZE - 2, CELL_SIZE - 2);
+    }
+    if (reviewKeys.has(`${cell.row}:${cell.col}`)) {
+      ctx.strokeStyle = "#c43c20"; ctx.lineWidth = 3 / transform.scale;
+      ctx.strokeRect(x+1,y+1,CELL_SIZE-2,CELL_SIZE-2);
+    } else if (reviewKeys.size) {
+      ctx.fillStyle = "rgba(39,31,25,0.55)"; ctx.fillRect(x,y,CELL_SIZE,CELL_SIZE);
     }
   };
 

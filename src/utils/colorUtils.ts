@@ -158,23 +158,48 @@ export function findClosestBeadColor(rgb: RGB, palette: BeadColor[]) {
   return findClosestBeadColorWithDebug(rgb, palette);
 }
 
+// Cache by immutable color object and matching hex, including personal calibrations.
+const paletteColorCache = new WeakMap<BeadColor, { hex: string; rgb: RGB; hsl: ReturnType<typeof rgbToHsl>; lab: Lab; ok: Oklab }>();
+function preparedColor(color: BeadColor) {
+  const hex = color.matchHex ?? color.calibratedHex ?? color.referenceHex ?? color.hex;
+  const cached = paletteColorCache.get(color);
+  if (cached?.hex === hex) return cached;
+  const rgb = hexToRgb(hex);
+  const value = { hex, rgb, hsl: rgbToHsl(rgb), lab: rgbToLab(rgb), ok: rgbToOklab(rgb) };
+  paletteColorCache.set(color, value);
+  return value;
+}
+
+export function createColorMatcher(palette: BeadColor[]) {
+  const cache = new Map<string, ReturnType<typeof findClosestBeadColorWithDebug>>();
+  return (rgb: RGB) => {
+    const key = `${rgb.r},${rgb.g},${rgb.b}`;
+    const cached = cache.get(key);
+    if (cached) return cached;
+    const match = findClosestBeadColorWithDebug(rgb, palette);
+    if (cache.size < 32768) cache.set(key, match);
+    return match;
+  };
+}
+
 export function findClosestBeadColorWithDebug(rgb: RGB, palette: BeadColor[], mode: ColorMatchMode = "natural") {
+  if (!palette.length) throw new Error("沒有可用辨識色號");
   const sourceHsl = rgbToHsl(rgb);
   const sourceSaturation = sourceHsl.s;
   const sourceLab = rgbToLab(rgb);
   const sourceOklab = rgbToOklab(rgb);
+  const weights = modeWeights(mode);
   const ranked = palette.map((color) => {
-    const targetHex = color.matchHex ?? color.calibratedHex ?? color.referenceHex ?? color.hex;
-    const targetRgb = hexToRgb(targetHex);
-    const targetHsl = rgbToHsl(targetRgb);
+    const prepared = preparedColor(color);
+    const targetRgb = prepared.rgb;
+    const targetHsl = prepared.hsl;
     const saturation = targetHsl.s;
-    const targetLab = rgbToLab(targetRgb);
-    const targetOklab = rgbToOklab(targetRgb);
+    const targetLab = prepared.lab;
+    const targetOklab = prepared.ok;
     const distance = colorDistance(rgb, targetRgb);
     const deltaE = deltaE76(sourceLab, targetLab);
     const deltaE2k = deltaE2000(sourceLab, targetLab);
     const okDistance = oklabDistance(sourceOklab, targetOklab);
-    const weights = modeWeights(mode);
     const huePenalty = sourceSaturation > 0.13 && saturation > 0.1 ? hueDistance(sourceHsl.h, targetHsl.h) * weights.hue : 0;
     const grayPenalty = sourceSaturation > 0.13 && saturation < 0.09 ? weights.gray : 0;
     const colorPenalty = sourceSaturation < 0.1 && saturation > 0.24 ? 24 : 0;

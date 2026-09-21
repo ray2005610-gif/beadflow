@@ -11,6 +11,10 @@ import { PalettePanel } from "./PalettePanel";
 import { ColorStatsPanel } from "./ColorStatsPanel";
 import { InventoryPanel } from "./InventoryPanel";
 import { ProjectDetailPanel } from "./ProjectDetailPanel";
+import type { PatternGrid } from "../types/pattern";
+import { applySafeCorrections, assignCellColor, validateLegend } from "../utils/legendValidation";
+import { visiblePalette } from "../data/recognitionPalette";
+import { LegendValidationPanel } from "./LegendValidationPanel";
 
 export function PatternEditor({
   project,
@@ -31,6 +35,7 @@ export function PatternEditor({
   onBrushColorChange,
   onSelectedColorChange,
   onCellAction,
+  onGridChange,
   onSave,
   onExport,
   onExportMirror,
@@ -68,6 +73,7 @@ export function PatternEditor({
   onBrushColorChange: (code: string) => void;
   onSelectedColorChange: (code: string | null) => void;
   onCellAction: (row: number, col: number, tool: ActiveTool) => void;
+  onGridChange: (grid: PatternGrid) => void;
   onSave: () => void;
   onExport: () => void;
   onExportMirror: () => void;
@@ -88,6 +94,14 @@ export function PatternEditor({
   onToggleOnlyUnfinished: () => void;
 }) {
   const stats = useMemo(() => calculateColorStats(project.grid), [project.grid]);
+  const validation = useMemo(() => project.legend?.length ? validateLegend(project.grid,project.legend) : null, [project.grid,project.legend]);
+  const [validationCode,setValidationCode] = useState<string|null>(null);
+  const [reviewFocus,setReviewFocus] = useState<{row:number;col:number}|null>(null);
+  const reviewKeys = useMemo(()=>new Set(validation?.suspiciousCells.filter(s=>validationCode && (s.from===validationCode || s.to===validationCode)).map(s=>`${s.row}:${s.col}`) ?? []),[validation,validationCode]);
+  const reviewCell = (row:number,col:number,code:string) => {
+    const color=visiblePalette.find(c=>c.code===code);
+    if(color) onGridChange(project.grid.map((line,r)=>line.map((cell,c)=>r===row && c===col ? assignCellColor(cell,color,"manual") : cell)));
+  };
   const canDirectEdit = project.sourceType === "manual_drawing";
   const boardLayout = useMemo(() => createBoardLayout(project.size.width, project.size.height, DEFAULT_BOARD_CONFIG), [project.size.height, project.size.width]);
   const [craftMode, setCraftMode] = useState(false);
@@ -125,6 +139,8 @@ export function PatternEditor({
     setCompletedBoardIds(readCompletedBoardIds(project.id, boardLayout));
     setFocusedBoardId(null);
     setSelectedCell(null);
+    setValidationCode(null);
+    setReviewFocus(null);
     setBoardCompletionMode(false);
   }, [project.id, boardLayout]);
 
@@ -327,6 +343,8 @@ export function PatternEditor({
           />
         )}
         <PatternCanvas
+          reviewKeys={reviewKeys}
+          reviewFocus={reviewFocus}
           grid={project.grid}
           activeTool={activeTool}
           selectedColorCode={selectedColorCode}
@@ -364,6 +382,12 @@ export function PatternEditor({
         </button>
         {!infoPanelCollapsed && (
           <div id="pattern-info-panels" className="info-panel-stack">
+            {validation && <AccordionSection title="圖紙校驗" defaultOpen>
+              <LegendValidationPanel result={validation} grid={project.grid} selectedCode={validationCode}
+                onSelect={code=>{setValidationCode(code);onSelectedColorChange(null);}}
+                onFocus={(row,col)=>setReviewFocus({row,col})} onReview={reviewCell}
+                onSafeCorrection={()=>onGridChange(applySafeCorrections(project.grid,project.legend ?? []))} />
+            </AccordionSection>}
             <AccordionSection title="圖紙資訊" defaultOpen>
               <ProjectDetailPanel project={project} onRename={onRename} onStatusChange={onStatusChange} />
             </AccordionSection>

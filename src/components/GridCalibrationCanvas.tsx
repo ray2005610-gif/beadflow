@@ -62,7 +62,7 @@ export function GridCalibrationCanvas({
     return () => {
       cancelled = true;
     };
-  }, [imageDataUrl, calibration, onCalibrationChange]);
+  }, [imageDataUrl, onCalibrationChange]);
 
   useEffect(() => {
     const canvas = ref.current;

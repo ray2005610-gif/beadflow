@@ -1,4 +1,9 @@
 export type PatternCell = {
+  rawDetectedColor?: string;
+  finalDetectedColor?: string;
+  suspectedMismatch?: boolean;
+  correctionReason?: "neighbor" | "legend" | "manual";
+  validationConfirmed?: boolean;
   row: number;
   col: number;
   colorCode: string;

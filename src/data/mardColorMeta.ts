@@ -84,7 +84,7 @@ export function validateMardPalette() {
     missingSeries
   };
 
-  if (typeof console !== "undefined") {
+  if ((import.meta as ImportMeta & {env?: {DEV?:boolean}}).env?.DEV) {
     console.info("[BeadFlow] MARD palette validation", result);
   }
   return result;
